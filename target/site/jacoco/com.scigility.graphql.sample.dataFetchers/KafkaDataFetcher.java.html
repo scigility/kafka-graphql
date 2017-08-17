@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KafkaDataFetcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">graphql-spring-boot-starter-sample</a> &gt; <a href="index.source.html" class="el_package">com.scigility.graphql.sample.dataFetchers</a> &gt; <span class="el_source">KafkaDataFetcher.java</span></div><h1>KafkaDataFetcher.java</h1><pre class="source lang-java linenums">package com.scigility.graphql.sample.dataFetchers;
+
+import com.merapar.graphql.base.TypedValueMap;
+import com.scigility.graphql.sample.domain.Role;
+import com.scigility.graphql.sample.domain.Kafka;
+import com.scigility.graphql.sample.domain.Topic;
+import lombok.val;
+import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
+
+@Component
+<span class="fc" id="L15">public class KafkaDataFetcher {</span>
+<span class="fc" id="L16">    private Log log = LogFactory.getLog(KafkaDataFetcher.class);</span>
+<span class="fc" id="L17">    public Map&lt;Integer, Kafka&gt; kafkas = new HashMap&lt;&gt;();</span>
+
+    public List&lt;Kafka&gt; getKafkasByFilter(TypedValueMap arguments) {
+<span class="nc" id="L20">      log.info(&quot;getKafkasByFilter&quot;);</span>
+<span class="nc" id="L21">        Integer id = arguments.get(&quot;id&quot;);</span>
+
+<span class="nc bnc" id="L23" title="All 2 branches missed.">        if (id != null) {</span>
+<span class="nc" id="L24">            return Collections.singletonList(kafkas.get(id));</span>
+        } else {
+<span class="nc" id="L26">            return new ArrayList&lt;&gt;(kafkas.values());</span>
+        }
+    }
+
+    public Kafka addKafka(TypedValueMap arguments) {
+<span class="nc" id="L31">        log.info(&quot;addKafka&quot;);</span>
+<span class="nc" id="L32">        val kafka = new Kafka();</span>
+<span class="nc" id="L33">        kafka.setId(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L34">        kafka.setBroker(arguments.get(&quot;broker&quot;));</span>
+<span class="nc" id="L35">        kafka.setZookeeper(arguments.get(&quot;zookeeper&quot;));</span>
+
+<span class="nc" id="L37">        kafkas.put(kafka.getId(), kafka);</span>
+
+<span class="nc" id="L39">        return kafka;</span>
+    }
+
+    public Kafka updateKafka(TypedValueMap arguments) {
+<span class="nc" id="L43">        log.info(&quot;updateKafka&quot;);</span>
+<span class="nc" id="L44">        val kafka = kafkas.get(arguments.get(&quot;id&quot;));</span>
+
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (arguments.containsKey(&quot;broker&quot;)) {</span>
+<span class="nc" id="L47">            kafka.setBroker(arguments.get(&quot;broker&quot;));</span>
+        }
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (arguments.containsKey(&quot;zookeeper&quot;)) {</span>
+<span class="nc" id="L51">            kafka.setZookeeper(arguments.get(&quot;zookeeper&quot;));</span>
+        }
+
+<span class="nc" id="L54">        return kafka;</span>
+    }
+
+    public Kafka deleteKafka(TypedValueMap arguments) {
+<span class="nc" id="L58">        log.info(&quot;deleteKafka&quot;);</span>
+<span class="nc" id="L59">        val kafka = kafkas.get(arguments.get(&quot;id&quot;));</span>
+
+<span class="nc" id="L61">        kafkas.remove(kafka.getId());</span>
+
+<span class="nc" id="L63">        return kafka;</span>
+    }
+
+    public List&lt;Topic&gt; getTopics(Kafka kafka) {
+<span class="nc" id="L67">        log.info(&quot;getTopics&quot;);</span>
+        //TODO GET TOPICS
+<span class="nc" id="L69">        return new ArrayList&lt;Topic&gt;();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
