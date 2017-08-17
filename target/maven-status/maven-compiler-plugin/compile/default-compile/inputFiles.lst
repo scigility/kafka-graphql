@@ -1,0 +1,9 @@
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/CustomGraphQlExecutorImpl.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/User.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/RoleFields.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/UserFields.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/RoleDataFetcher.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/Application.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/UserDataFetcher.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/HelloWorldFields.java
+/Users/thbas/prod/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/Role.java

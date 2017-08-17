@@ -1,0 +1,9 @@
+com/scigility/graphql/sample/CustomGraphQlExecutorImpl.class
+com/scigility/graphql/sample/fields/UserFields.class
+com/scigility/graphql/sample/fields/HelloWorldFields.class
+com/scigility/graphql/sample/Application.class
+com/scigility/graphql/sample/domain/User.class
+com/scigility/graphql/sample/dataFetchers/RoleDataFetcher.class
+com/scigility/graphql/sample/fields/RoleFields.class
+com/scigility/graphql/sample/dataFetchers/UserDataFetcher.class
+com/scigility/graphql/sample/domain/Role.class

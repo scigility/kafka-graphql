@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserFields.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">graphql-spring-boot-starter-sample</a> &gt; <a href="index.source.html" class="el_package">com.scigility.graphql.sample.fields</a> &gt; <span class="el_source">UserFields.java</span></div><h1>UserFields.java</h1><pre class="source lang-java linenums">package com.scigility.graphql.sample.fields;
+
+import com.merapar.graphql.GraphQlFields;
+import com.scigility.graphql.sample.dataFetchers.UserDataFetcher;
+import com.scigility.graphql.sample.domain.User;
+import graphql.Scalars;
+import graphql.schema.*;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.merapar.graphql.base.GraphQlFieldsHelper.*;
+import static graphql.Scalars.GraphQLInt;
+import static graphql.Scalars.GraphQLString;
+import static graphql.schema.GraphQLArgument.newArgument;
+import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
+import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
+import static graphql.schema.GraphQLInputObjectType.newInputObject;
+import static graphql.schema.GraphQLObjectType.newObject;
+
+@Component
+<span class="fc" id="L27">public class UserFields implements GraphQlFields {</span>
+
+    @Autowired
+    private UserDataFetcher userDataFetcher;
+
+    @Autowired
+    private RoleFields roleFields;
+
+    private GraphQLObjectType userType;
+
+    private GraphQLInputObjectType addUserInputType;
+    private GraphQLInputObjectType updateUserInputType;
+    private GraphQLInputObjectType deleteUserInputType;
+
+    private GraphQLInputObjectType filterUserInputType;
+
+    private GraphQLFieldDefinition usersField;
+    private GraphQLFieldDefinition addUserField;
+    private GraphQLFieldDefinition updateUserField;
+    private GraphQLFieldDefinition deleteUserField;
+
+<span class="fc" id="L48">    @Getter</span>
+    private List&lt;GraphQLFieldDefinition&gt; queryFields;
+
+<span class="fc" id="L51">    @Getter</span>
+    private List&lt;GraphQLFieldDefinition&gt; mutationFields;
+
+    @PostConstruct
+    public void postConstruct() {
+<span class="fc" id="L56">        createTypes();</span>
+<span class="fc" id="L57">        createFields();</span>
+<span class="fc" id="L58">        queryFields = Collections.singletonList(usersField);</span>
+<span class="fc" id="L59">        mutationFields = Arrays.asList(addUserField, updateUserField, deleteUserField);</span>
+<span class="fc" id="L60">    }</span>
+
+    private void createTypes() {
+<span class="fc" id="L63">        userType = newObject().name(&quot;user&quot;).description(&quot;A user&quot;)</span>
+<span class="fc" id="L64">                .field(newFieldDefinition().name(&quot;id&quot;).description(&quot;The id&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L65">                .field(newFieldDefinition().name(&quot;name&quot;).description(&quot;The name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L66">                .field(newFieldDefinition().name(&quot;roles&quot;).description(&quot;The roles&quot;).type(new GraphQLList(roleFields.getRoleType()))</span>
+<span class="fc" id="L67">                        .dataFetcher(environment -&gt; userDataFetcher.getRoles((User) environment.getSource()))</span>
+<span class="fc" id="L68">                        .build())</span>
+<span class="fc" id="L69">                .build();</span>
+
+<span class="fc" id="L71">        addUserInputType = newInputObject().name(&quot;addUserInput&quot;)</span>
+<span class="fc" id="L72">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L73">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L74">                .build();</span>
+
+<span class="fc" id="L76">        updateUserInputType = newInputObject().name(&quot;updateUserInput&quot;)</span>
+<span class="fc" id="L77">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L78">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L79">                .build();</span>
+
+<span class="fc" id="L81">        deleteUserInputType = newInputObject().name(&quot;deleteUserInput&quot;)</span>
+<span class="fc" id="L82">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L83">                .build();</span>
+
+<span class="fc" id="L85">        filterUserInputType = newInputObject().name(&quot;filterUserInput&quot;)</span>
+<span class="fc" id="L86">                .field(newInputObjectField().name(&quot;id&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L87">                .build();</span>
+<span class="fc" id="L88">    }</span>
+
+    private void createFields() {
+<span class="fc" id="L91">        usersField = newFieldDefinition()</span>
+<span class="fc" id="L92">                .name(&quot;users&quot;).description(&quot;Provide an overview of all users&quot;)</span>
+<span class="fc" id="L93">                .type(new GraphQLList(userType))</span>
+<span class="fc" id="L94">                .argument(newArgument().name(FILTER).type(filterUserInputType).build())</span>
+<span class="fc" id="L95">                .dataFetcher(environment -&gt; userDataFetcher.getUsersByFilter(getFilterMap(environment)))</span>
+<span class="fc" id="L96">                .build();</span>
+
+<span class="fc" id="L98">        addUserField = newFieldDefinition()</span>
+<span class="fc" id="L99">                .name(&quot;addUser&quot;).description(&quot;Add new user&quot;)</span>
+<span class="fc" id="L100">                .type(userType)</span>
+<span class="fc" id="L101">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addUserInputType)).build())</span>
+<span class="fc" id="L102">                .dataFetcher(environment -&gt; userDataFetcher.addUser(getInputMap(environment)))</span>
+<span class="fc" id="L103">                .build();</span>
+
+<span class="fc" id="L105">        updateUserField = newFieldDefinition()</span>
+<span class="fc" id="L106">                .name(&quot;updateUser&quot;).description(&quot;Update existing user&quot;)</span>
+<span class="fc" id="L107">                .type(userType)</span>
+<span class="fc" id="L108">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateUserInputType)).build())</span>
+<span class="fc" id="L109">                .dataFetcher(environment -&gt; userDataFetcher.updateUser(getInputMap(environment)))</span>
+<span class="fc" id="L110">                .build();</span>
+
+<span class="fc" id="L112">        deleteUserField = newFieldDefinition()</span>
+<span class="fc" id="L113">                .name(&quot;deleteUser&quot;).description(&quot;Delete existing user&quot;)</span>
+<span class="fc" id="L114">                .type(userType)</span>
+<span class="fc" id="L115">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteUserInputType)).build())</span>
+<span class="fc" id="L116">                .dataFetcher(environment -&gt; userDataFetcher.deleteUser(getInputMap(environment)))</span>
+<span class="fc" id="L117">                .build();</span>
+<span class="fc" id="L118">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
