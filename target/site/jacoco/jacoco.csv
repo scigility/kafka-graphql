@@ -2,11 +2,11 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.dataFetchers,TopicDataFetcher,97,12,4,0,20,3,6,1,4,1
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.dataFetchers,UserDataFetcher,0,102,1,3,0,19,1,7,0,6
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.dataFetchers,RoleDataFetcher,0,89,1,3,0,18,1,6,0,5
-graphql-spring-boot-starter-sample,com.scigility.graphql.sample.dataFetchers,KafkaDataFetcher,121,12,6,0,25,3,8,1,5,1
+graphql-spring-boot-starter-sample,com.scigility.graphql.sample.dataFetchers,KafkaDataFetcher,257,12,12,0,54,3,13,1,7,1
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.fields,RoleFields,0,272,0,0,0,53,0,11,0,11
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.fields,HelloWorldFields,0,15,0,0,0,8,0,3,0,3
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.fields,UserFields,0,293,0,0,0,55,0,11,0,11
-graphql-spring-boot-starter-sample,com.scigility.graphql.sample.fields,KafkaFields,31,306,0,0,0,61,5,6,5,6
+graphql-spring-boot-starter-sample,com.scigility.graphql.sample.fields,KafkaFields,37,372,0,0,0,72,6,6,6,6
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.fields,TopicFields,24,248,0,0,0,53,4,7,4,7
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,Role,0,26,0,0,0,6,0,6,0,6
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,Consumer,46,0,0,0,10,0,10,0,10,0
@@ -16,6 +16,6 @@ graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,Producer,
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,TopicMessage,36,0,0,0,8,0,8,0,8,0
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,User,0,29,0,0,0,6,0,6,0,6
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,KStream,46,0,0,0,10,0,10,0,10,0
-graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,Kafka,39,0,0,0,8,0,8,0,8,0
+graphql-spring-boot-starter-sample,com.scigility.graphql.sample.domain,Kafka,59,0,0,0,12,0,10,0,10,0
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample,CustomGraphQlExecutorImpl,6,3,0,0,2,1,1,1,1,1
 graphql-spring-boot-starter-sample,com.scigility.graphql.sample,Application,5,3,0,0,2,1,1,1,1,1

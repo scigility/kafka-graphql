@@ -38,91 +38,106 @@ import static graphql.schema.GraphQLObjectType.newObject;
     private GraphQLObjectType kafkaType;
 
     private GraphQLInputObjectType addKafkaInputType;
+    private GraphQLInputObjectType addKafkaTopicInputType;
     private GraphQLInputObjectType updateKafkaInputType;
     private GraphQLInputObjectType deleteKafkaInputType;
 
     private GraphQLInputObjectType filterKafkaInputType;
 
     private GraphQLFieldDefinition kafkasField;
+    private GraphQLFieldDefinition addKafkaTopicField;
     private GraphQLFieldDefinition addKafkaField;
     private GraphQLFieldDefinition updateKafkaField;
     private GraphQLFieldDefinition deleteKafkaField;
 
-<span class="fc" id="L51">    @Getter</span>
+<span class="fc" id="L53">    @Getter</span>
     private List&lt;GraphQLFieldDefinition&gt; queryFields;
 
-<span class="fc" id="L54">    @Getter</span>
+<span class="fc" id="L56">    @Getter</span>
     private List&lt;GraphQLFieldDefinition&gt; mutationFields;
 
     @PostConstruct
     public void postConstruct() {
-<span class="fc" id="L59">        createTypes();</span>
-<span class="fc" id="L60">        createFields();</span>
-<span class="fc" id="L61">        queryFields = Collections.singletonList(kafkasField);</span>
-<span class="fc" id="L62">        mutationFields = Arrays.asList(addKafkaField, updateKafkaField, deleteKafkaField);</span>
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L61">        createTypes();</span>
+<span class="fc" id="L62">        createFields();</span>
+<span class="fc" id="L63">        queryFields = Collections.singletonList(kafkasField);</span>
+<span class="fc" id="L64">        mutationFields = Arrays.asList(addKafkaTopicField,addKafkaField, updateKafkaField, deleteKafkaField);</span>
+<span class="fc" id="L65">    }</span>
 
     private void createTypes() {
-<span class="fc" id="L66">        log.info(&quot;createTypes&quot;);</span>
-<span class="fc" id="L67">        kafkaType = newObject().name(&quot;kafka&quot;).description(&quot;A kafka connection&quot;)</span>
-<span class="fc" id="L68">                .field(newFieldDefinition().name(&quot;id&quot;).description(&quot;The id kafka connection&quot;).type(GraphQLInt).build())</span>
-<span class="fc" id="L69">                .field(newFieldDefinition().name(&quot;broker&quot;).description(&quot;The broker&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L70">                .field(newFieldDefinition().name(&quot;zookeeper&quot;).description(&quot;The zookeeper&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L71">                .field(newFieldDefinition().name(&quot;topics&quot;).description(&quot;The topics inside kafka&quot;).type(new GraphQLList(topicFields.getTopicType()))</span>
-<span class="pc" id="L72">                        .dataFetcher(environment -&gt; kafkaDataFetcher.getTopics((Kafka) environment.getSource()))</span>
-<span class="fc" id="L73">                        .build())</span>
-<span class="fc" id="L74">                .build();</span>
+<span class="fc" id="L68">        log.info(&quot;createTypes&quot;);</span>
+<span class="fc" id="L69">        kafkaType = newObject().name(&quot;kafka&quot;).description(&quot;A kafka connection&quot;)</span>
+<span class="fc" id="L70">                .field(newFieldDefinition().name(&quot;id&quot;).description(&quot;The id kafka connection&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L71">                .field(newFieldDefinition().name(&quot;broker&quot;).description(&quot;The broker&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L72">                .field(newFieldDefinition().name(&quot;zookeeper&quot;).description(&quot;The zookeeper&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L73">                .field(newFieldDefinition().name(&quot;topics&quot;).description(&quot;The topics inside kafka&quot;).type(new GraphQLList(topicFields.getTopicType()))</span>
+<span class="pc" id="L74">                        .dataFetcher(environment -&gt; kafkaDataFetcher.getTopics((Kafka) environment.getSource()))</span>
+<span class="fc" id="L75">                        .build())</span>
+<span class="fc" id="L76">                .build();</span>
 
-<span class="fc" id="L76">        addKafkaInputType = newInputObject().name(&quot;addKafkaInput&quot;)</span>
-<span class="fc" id="L77">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
-<span class="fc" id="L78">                .field(newInputObjectField().name(&quot;broker&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L79">                .field(newInputObjectField().name(&quot;zookeeper&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L80">                .build();</span>
+<span class="fc" id="L78">        addKafkaInputType = newInputObject().name(&quot;addKafkaInput&quot;)</span>
+<span class="fc" id="L79">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L80">                .field(newInputObjectField().name(&quot;broker&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L81">                .field(newInputObjectField().name(&quot;zookeeper&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L82">                .build();</span>
 
-<span class="fc" id="L82">        updateKafkaInputType = newInputObject().name(&quot;updateKafkaInput&quot;)</span>
-<span class="fc" id="L83">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
-<span class="fc" id="L84">                .field(newInputObjectField().name(&quot;broker&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L85">                .field(newInputObjectField().name(&quot;zookeeper&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L86">                .build();</span>
+<span class="fc" id="L84">        addKafkaTopicInputType = newInputObject().name(&quot;addKafkaTopicInput&quot;)</span>
+<span class="fc" id="L85">                .field(newInputObjectField().name(&quot;kafka_id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L86">                .field(newInputObjectField().name(&quot;topic_id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L87">                .field(newInputObjectField().name(&quot;topic_name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L88">                .build();</span>
 
-<span class="fc" id="L88">        deleteKafkaInputType = newInputObject().name(&quot;deleteKafkaInput&quot;)</span>
-<span class="fc" id="L89">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
-<span class="fc" id="L90">                .build();</span>
-
-<span class="fc" id="L92">        filterKafkaInputType = newInputObject().name(&quot;filterKafkaInput&quot;)</span>
-<span class="fc" id="L93">                .field(newInputObjectField().name(&quot;id&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L90">        updateKafkaInputType = newInputObject().name(&quot;updateKafkaInput&quot;)</span>
+<span class="fc" id="L91">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L92">                .field(newInputObjectField().name(&quot;broker&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L93">                .field(newInputObjectField().name(&quot;zookeeper&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
 <span class="fc" id="L94">                .build();</span>
-<span class="fc" id="L95">    }</span>
+
+<span class="fc" id="L96">        deleteKafkaInputType = newInputObject().name(&quot;deleteKafkaInput&quot;)</span>
+<span class="fc" id="L97">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L98">                .build();</span>
+
+<span class="fc" id="L100">        filterKafkaInputType = newInputObject().name(&quot;filterKafkaInput&quot;)</span>
+<span class="fc" id="L101">                .field(newInputObjectField().name(&quot;id&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L102">                .build();</span>
+<span class="fc" id="L103">    }</span>
 
     private void createFields() {
-<span class="fc" id="L98">        log.info(&quot;createFields&quot;);</span>
-<span class="fc" id="L99">        kafkasField = newFieldDefinition()</span>
-<span class="fc" id="L100">                .name(&quot;kafka&quot;).description(&quot;Provide an overview of all kafka connection&quot;)</span>
-<span class="fc" id="L101">                .type(new GraphQLList(kafkaType))</span>
-<span class="fc" id="L102">                .argument(newArgument().name(FILTER).type(filterKafkaInputType).build())</span>
-<span class="pc" id="L103">                .dataFetcher(environment -&gt; kafkaDataFetcher.getKafkasByFilter(getFilterMap(environment)))</span>
-<span class="fc" id="L104">                .build();</span>
+<span class="fc" id="L106">        log.info(&quot;createFields&quot;);</span>
+<span class="fc" id="L107">        kafkasField = newFieldDefinition()</span>
+<span class="fc" id="L108">                .name(&quot;kafka&quot;).description(&quot;Provide an overview of all kafka connection&quot;)</span>
+<span class="fc" id="L109">                .type(new GraphQLList(kafkaType))</span>
+<span class="fc" id="L110">                .argument(newArgument().name(FILTER).type(filterKafkaInputType).build())</span>
+<span class="pc" id="L111">                .dataFetcher(environment -&gt; kafkaDataFetcher.getKafkasByFilter(getFilterMap(environment)))</span>
+<span class="fc" id="L112">                .build();</span>
 
-<span class="fc" id="L106">        addKafkaField = newFieldDefinition()</span>
-<span class="fc" id="L107">                .name(&quot;addKafka&quot;).description(&quot;Add new kafka&quot;)</span>
-<span class="fc" id="L108">                .type(kafkaType)</span>
-<span class="fc" id="L109">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addKafkaInputType)).build())</span>
-<span class="pc" id="L110">                .dataFetcher(environment -&gt; kafkaDataFetcher.addKafka(getInputMap(environment)))</span>
-<span class="fc" id="L111">                .build();</span>
+<span class="fc" id="L114">        addKafkaField = newFieldDefinition()</span>
+<span class="fc" id="L115">                .name(&quot;addKafka&quot;).description(&quot;Add new kafka&quot;)</span>
+<span class="fc" id="L116">                .type(kafkaType)</span>
+<span class="fc" id="L117">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addKafkaInputType)).build())</span>
+<span class="pc" id="L118">                .dataFetcher(environment -&gt; kafkaDataFetcher.addKafka(getInputMap(environment)))</span>
+<span class="fc" id="L119">                .build();</span>
 
-<span class="fc" id="L113">        updateKafkaField = newFieldDefinition()</span>
-<span class="fc" id="L114">                .name(&quot;updateKafka&quot;).description(&quot;Update existing kafka&quot;)</span>
-<span class="fc" id="L115">                .type(kafkaType)</span>
-<span class="fc" id="L116">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateKafkaInputType)).build())</span>
-<span class="pc" id="L117">                .dataFetcher(environment -&gt; kafkaDataFetcher.updateKafka(getInputMap(environment)))</span>
-<span class="fc" id="L118">                .build();</span>
+<span class="fc" id="L121">        addKafkaTopicField = newFieldDefinition()</span>
+<span class="fc" id="L122">                .name(&quot;addKafkaTopic&quot;).description(&quot;Add new topic&quot;)</span>
+<span class="fc" id="L123">                .type(kafkaType)</span>
+<span class="fc" id="L124">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addKafkaTopicInputType)).build())</span>
+<span class="pc" id="L125">                .dataFetcher(environment -&gt; kafkaDataFetcher.addKafkaTopicField(getInputMap(environment)))</span>
+<span class="fc" id="L126">                .build();</span>
 
-<span class="fc" id="L120">        deleteKafkaField = newFieldDefinition()</span>
-<span class="fc" id="L121">                .name(&quot;deleteKafka&quot;).description(&quot;Delete existing kafka&quot;)</span>
-<span class="fc" id="L122">                .type(kafkaType)</span>
-<span class="fc" id="L123">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteKafkaInputType)).build())</span>
-<span class="pc" id="L124">                .dataFetcher(environment -&gt; kafkaDataFetcher.deleteKafka(getInputMap(environment)))</span>
-<span class="fc" id="L125">                .build();</span>
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L128">        updateKafkaField = newFieldDefinition()</span>
+<span class="fc" id="L129">                .name(&quot;updateKafka&quot;).description(&quot;Update existing kafka&quot;)</span>
+<span class="fc" id="L130">                .type(kafkaType)</span>
+<span class="fc" id="L131">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateKafkaInputType)).build())</span>
+<span class="pc" id="L132">                .dataFetcher(environment -&gt; kafkaDataFetcher.updateKafka(getInputMap(environment)))</span>
+<span class="fc" id="L133">                .build();</span>
+
+<span class="fc" id="L135">        deleteKafkaField = newFieldDefinition()</span>
+<span class="fc" id="L136">                .name(&quot;deleteKafka&quot;).description(&quot;Delete existing kafka&quot;)</span>
+<span class="fc" id="L137">                .type(kafkaType)</span>
+<span class="fc" id="L138">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteKafkaInputType)).build())</span>
+<span class="pc" id="L139">                .dataFetcher(environment -&gt; kafkaDataFetcher.deleteKafka(getInputMap(environment)))</span>
+<span class="fc" id="L140">                .build();</span>
+<span class="fc" id="L141">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

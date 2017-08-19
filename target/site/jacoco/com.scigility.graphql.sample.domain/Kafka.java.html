@@ -7,24 +7,34 @@ import lombok.Setter;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-<span class="nc" id="L10">@AllArgsConstructor</span>
-<span class="nc" id="L11">@NoArgsConstructor</span>
+import java.util.ArrayList;
+import java.util.Collections;
+<span class="nc" id="L12">@AllArgsConstructor</span>
+<span class="nc" id="L13">@NoArgsConstructor</span>
 public class Kafka {
-<span class="nc" id="L13">  @Getter</span>
-<span class="nc" id="L14">  @Setter</span>
+<span class="nc" id="L15">  @Getter</span>
+<span class="nc" id="L16">  @Setter</span>
   private Integer id;
 
-<span class="nc" id="L17">  @Getter</span>
-<span class="nc" id="L18">  @Setter</span>
+<span class="nc" id="L19">  @Getter</span>
+<span class="nc" id="L20">  @Setter</span>
   private String broker;
 
-<span class="nc" id="L21">  @Getter</span>
-<span class="nc" id="L22">  @Setter</span>
+<span class="nc" id="L23">  @Getter</span>
+<span class="nc" id="L24">  @Setter</span>
   private String zookeeper;
 
-  private List&lt;Topic&gt; topics;
+<span class="nc" id="L27">  private List&lt;Topic&gt; topics = new ArrayList&lt;&gt;();</span>
 
-  //rivate List&lt;Consumer&gt; consumers;
+  public List&lt;Topic&gt; getTopics(){
+<span class="nc" id="L30">      return Collections.unmodifiableList(this.topics);</span>
+  }
+
+  public void addToTopics(final Topic topic){
+<span class="nc" id="L34">      this.topics.add(topic);</span>
+<span class="nc" id="L35">  }</span>
+
+  //private List&lt;Consumer&gt; consumers;
 
   //private List&lt;Producer&gt; producers;
 

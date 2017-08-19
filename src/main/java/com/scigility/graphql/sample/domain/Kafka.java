@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.Collections;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Kafka {
@@ -22,9 +24,17 @@ public class Kafka {
   @Setter
   private String zookeeper;
 
-  private List<Topic> topics;
+  private List<Topic> topics = new ArrayList<>();
 
-  //rivate List<Consumer> consumers;
+  public List<Topic> getTopics(){
+      return Collections.unmodifiableList(this.topics);
+  }
+
+  public void addToTopics(final Topic topic){
+      this.topics.add(topic);
+  }
+
+  //private List<Consumer> consumers;
 
   //private List<Producer> producers;
 

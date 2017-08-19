@@ -38,12 +38,14 @@ public class KafkaFields implements GraphQlFields {
     private GraphQLObjectType kafkaType;
 
     private GraphQLInputObjectType addKafkaInputType;
+    private GraphQLInputObjectType addKafkaTopicInputType;
     private GraphQLInputObjectType updateKafkaInputType;
     private GraphQLInputObjectType deleteKafkaInputType;
 
     private GraphQLInputObjectType filterKafkaInputType;
 
     private GraphQLFieldDefinition kafkasField;
+    private GraphQLFieldDefinition addKafkaTopicField;
     private GraphQLFieldDefinition addKafkaField;
     private GraphQLFieldDefinition updateKafkaField;
     private GraphQLFieldDefinition deleteKafkaField;
@@ -59,7 +61,7 @@ public class KafkaFields implements GraphQlFields {
         createTypes();
         createFields();
         queryFields = Collections.singletonList(kafkasField);
-        mutationFields = Arrays.asList(addKafkaField, updateKafkaField, deleteKafkaField);
+        mutationFields = Arrays.asList(addKafkaTopicField,addKafkaField, updateKafkaField, deleteKafkaField);
     }
 
     private void createTypes() {
@@ -77,6 +79,12 @@ public class KafkaFields implements GraphQlFields {
                 .field(newInputObjectField().name("id").type(new GraphQLNonNull(GraphQLInt)).build())
                 .field(newInputObjectField().name("broker").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .field(newInputObjectField().name("zookeeper").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .build();
+
+        addKafkaTopicInputType = newInputObject().name("addKafkaTopicInput")
+                .field(newInputObjectField().name("kafka_id").type(new GraphQLNonNull(GraphQLInt)).build())
+                .field(newInputObjectField().name("topic_id").type(new GraphQLNonNull(GraphQLInt)).build())
+                .field(newInputObjectField().name("topic_name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .build();
 
         updateKafkaInputType = newInputObject().name("updateKafkaInput")
@@ -108,6 +116,13 @@ public class KafkaFields implements GraphQlFields {
                 .type(kafkaType)
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addKafkaInputType)).build())
                 .dataFetcher(environment -> kafkaDataFetcher.addKafka(getInputMap(environment)))
+                .build();
+
+        addKafkaTopicField = newFieldDefinition()
+                .name("addKafkaTopic").description("Add new topic")
+                .type(kafkaType)
+                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addKafkaTopicInputType)).build())
+                .dataFetcher(environment -> kafkaDataFetcher.addKafkaTopicField(getInputMap(environment)))
                 .build();
 
         updateKafkaField = newFieldDefinition()
