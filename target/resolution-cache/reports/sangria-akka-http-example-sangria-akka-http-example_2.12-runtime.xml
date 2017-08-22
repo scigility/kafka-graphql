@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="sangria-akka-http-example"
+		module="sangria-akka-http-example_2.12"
+		revision="0.1.0-SNAPSHOT"
+		conf="runtime"
+		confs="universal, universal-docs, universal-src, windows, docker, compile, runtime, test, provided, optional, linux, rpm, debian, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
+		date="20170822142807"/>
+	<dependencies>
+		<module organisation="org.scala-lang" name="scala-compiler">
+			<revision name="2.12.2" status="release" pubdate="20170413102020" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="22">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="3089" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang/scala-compiler/ivy-2.12.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.12.2/scala-compiler-2.12.2.pom"/>
+				<caller organisation="sangria-akka-http-example" name="sangria-akka-http-example_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="0.1.0-SNAPSHOT"/>
+				<artifacts>
+					<artifact name="scala-compiler" type="jar" ext="jar" status="no" details="" size="9645748" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.12.2.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.12.2/scala-compiler-2.12.2.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang.modules" name="scala-xml_2.12">
+			<revision name="1.0.6" status="release" pubdate="20161101152105" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="23">
+				<license name="BSD 3-clause" url="http://opensource.org/licenses/BSD-3-Clause"/>
+				<metadata-artifact status="no" details="" size="3137" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang.modules/scala-xml_2.12/ivy-1.0.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/modules/scala-xml_2.12/1.0.6/scala-xml_2.12-1.0.6.pom"/>
+				<caller organisation="org.scala-lang" name="scala-compiler" conf="default, compile, runtime, master" rev="1.0.6" rev-constraint-default="1.0.6" rev-constraint-dynamic="1.0.6" callerrev="2.12.2"/>
+				<artifacts>
+					<artifact name="scala-xml_2.12" type="bundle" ext="jar" status="no" details="" size="547860" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang.modules/scala-xml_2.12/bundles/scala-xml_2.12-1.0.6.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/modules/scala-xml_2.12/1.0.6/scala-xml_2.12-1.0.6.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe.akka" name="akka-http-spray-json_2.12">
+			<revision name="10.0.9" status="release" pubdate="20170626171428" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://akka.io" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="21">
+				<license name="Apache-2.0" url="https://opensource.org/licenses/Apache-2.0"/>
+				<metadata-artifact status="no" details="" size="3084" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-http-spray-json_2.12/ivy-10.0.9.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-http-spray-json_2.12/10.0.9/akka-http-spray-json_2.12-10.0.9.pom"/>
+				<caller organisation="sangria-akka-http-example" name="sangria-akka-http-example_2.12" conf="compile, runtime" rev="10.0.9" rev-constraint-default="10.0.9" rev-constraint-dynamic="10.0.9" callerrev="0.1.0-SNAPSHOT"/>
+				<artifacts>
+					<artifact name="akka-http-spray-json_2.12" type="jar" ext="jar" status="no" details="" size="17724" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-http-spray-json_2.12/jars/akka-http-spray-json_2.12-10.0.9.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-http-spray-json_2.12/10.0.9/akka-http-spray-json_2.12-10.0.9.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe.akka" name="akka-http_2.12">
+			<revision name="10.0.9" status="release" pubdate="20170626171633" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://akka.io" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="11">
+				<license name="Apache-2.0" url="https://opensource.org/licenses/Apache-2.0"/>
+				<metadata-artifact status="no" details="" size="2791" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-http_2.12/ivy-10.0.9.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-http_2.12/10.0.9/akka-http_2.12-10.0.9.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-http-spray-json_2.12" conf="default, compile, runtime, master" rev="10.0.9" rev-constraint-default="10.0.9" rev-constraint-dynamic="10.0.9" callerrev="10.0.9"/>
+				<caller organisation="sangria-akka-http-example" name="sangria-akka-http-example_2.12" conf="compile, runtime" rev="10.0.9" rev-constraint-default="10.0.9" rev-constraint-dynamic="10.0.9" callerrev="0.1.0-SNAPSHOT"/>
+				<artifacts>
+					<artifact name="akka-http_2.12" type="jar" ext="jar" status="no" details="" size="1680090" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-http_2.12/jars/akka-http_2.12-10.0.9.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-http_2.12/10.0.9/akka-http_2.12-10.0.9.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe.akka" name="akka-http-core_2.12">
+			<revision name="10.0.9" status="release" pubdate="20170626171619" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://akka.io" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="12">
+				<license name="Apache-2.0" url="https://opensource.org/licenses/Apache-2.0"/>
+				<metadata-artifact status="no" details="" size="3568" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-http-core_2.12/ivy-10.0.9.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-http-core_2.12/10.0.9/akka-http-core_2.12-10.0.9.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-http_2.12" conf="default, compile, runtime, master" rev="10.0.9" rev-constraint-default="10.0.9" rev-constraint-dynamic="10.0.9" callerrev="10.0.9"/>
+				<artifacts>
+					<artifact name="akka-http-core_2.12" type="jar" ext="jar" status="no" details="" size="3155246" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-http-core_2.12/jars/akka-http-core_2.12-10.0.9.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-http-core_2.12/10.0.9/akka-http-core_2.12-10.0.9.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe.akka" name="akka-stream_2.12">
+			<revision name="2.4.19" status="release" pubdate="20170612144701" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://akka.io/" extra-info.apiURL="http://doc.akka.io/api/akka/2.4.19" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="17">
+				<license name="Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3506" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-stream_2.12/ivy-2.4.19.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-stream_2.12/2.4.19/akka-stream_2.12-2.4.19.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-http-core_2.12" conf="compile, runtime" rev="2.4.19" rev-constraint-default="2.4.19" rev-constraint-dynamic="2.4.19" callerrev="10.0.9"/>
+				<artifacts>
+					<artifact name="akka-stream_2.12" type="jar" ext="jar" status="no" details="" size="3557750" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-stream_2.12/jars/akka-stream_2.12-2.4.19.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-stream_2.12/2.4.19/akka-stream_2.12-2.4.19.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe" name="ssl-config-core_2.12">
+			<revision name="0.2.1" status="release" pubdate="20161102143833" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/typesafehub/ssl-config" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="19">
+				<license name="Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3613" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe/ssl-config-core_2.12/ivy-0.2.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/ssl-config-core_2.12/0.2.1/ssl-config-core_2.12-0.2.1.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-stream_2.12" conf="compile, runtime" rev="0.2.1" rev-constraint-default="0.2.1" rev-constraint-dynamic="0.2.1" callerrev="2.4.19"/>
+				<artifacts>
+					<artifact name="ssl-config-core_2.12" type="bundle" ext="jar" status="no" details="" size="243527" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe/ssl-config-core_2.12/bundles/ssl-config-core_2.12-0.2.1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/ssl-config-core_2.12/0.2.1/ssl-config-core_2.12-0.2.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang.modules" name="scala-parser-combinators_2.12">
+			<revision name="1.0.4" status="release" pubdate="20161029011045" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="20">
+				<license name="BSD 3-clause" url="http://opensource.org/licenses/BSD-3-Clause"/>
+				<metadata-artifact status="no" details="" size="2929" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.12/ivy-1.0.4.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.12/1.0.4/scala-parser-combinators_2.12-1.0.4.pom"/>
+				<caller organisation="com.typesafe" name="ssl-config-core_2.12" conf="compile, runtime" rev="1.0.4" rev-constraint-default="1.0.4" rev-constraint-dynamic="1.0.4" callerrev="0.2.1"/>
+				<artifacts>
+					<artifact name="scala-parser-combinators_2.12" type="bundle" ext="jar" status="no" details="" size="204313" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.12/bundles/scala-parser-combinators_2.12-1.0.4.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.12/1.0.4/scala-parser-combinators_2.12-1.0.4.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.reactivestreams" name="reactive-streams">
+			<revision name="1.0.0" status="release" pubdate="20150429181454" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.reactive-streams.org/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="18">
+				<license name="CC0" url="http://creativecommons.org/publicdomain/zero/1.0/"/>
+				<metadata-artifact status="no" details="" size="2523" time="0" location="/Users/thbas/.ivy2/cache/org.reactivestreams/reactive-streams/ivy-1.0.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.0/reactive-streams-1.0.0.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-stream_2.12" conf="compile, runtime" rev="1.0.0" rev-constraint-default="1.0.0" rev-constraint-dynamic="1.0.0" callerrev="2.4.19"/>
+				<artifacts>
+					<artifact name="reactive-streams" type="jar" ext="jar" status="no" details="" size="2042" time="0" location="/Users/thbas/.ivy2/cache/org.reactivestreams/reactive-streams/jars/reactive-streams-1.0.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.0/reactive-streams-1.0.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe.akka" name="akka-parsing_2.12">
+			<revision name="10.0.9" status="release" pubdate="20170626171606" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://akka.io" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="13">
+				<license name="Apache-2.0" url="https://opensource.org/licenses/Apache-2.0"/>
+				<metadata-artifact status="no" details="" size="2947" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-parsing_2.12/ivy-10.0.9.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-parsing_2.12/10.0.9/akka-parsing_2.12-10.0.9.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-http-core_2.12" conf="compile, runtime" rev="10.0.9" rev-constraint-default="10.0.9" rev-constraint-dynamic="10.0.9" callerrev="10.0.9"/>
+				<artifacts>
+					<artifact name="akka-parsing_2.12" type="jar" ext="jar" status="no" details="" size="969064" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-parsing_2.12/jars/akka-parsing_2.12-10.0.9.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-parsing_2.12/10.0.9/akka-parsing_2.12-10.0.9.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe.akka" name="akka-actor_2.12">
+			<revision name="2.4.19" status="release" pubdate="20170612144409" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://akka.io/" extra-info.apiURL="http://doc.akka.io/api/akka/2.4.19" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="14">
+				<license name="Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3102" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-actor_2.12/ivy-2.4.19.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.12/2.4.19/akka-actor_2.12-2.4.19.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-parsing_2.12" conf="compile, runtime" rev="2.4.19" rev-constraint-default="2.4.19" rev-constraint-dynamic="2.4.19" callerrev="10.0.9"/>
+				<caller organisation="com.typesafe.akka" name="akka-stream_2.12" conf="compile, runtime" rev="2.4.19" rev-constraint-default="2.4.19" rev-constraint-dynamic="2.4.19" callerrev="2.4.19"/>
+				<artifacts>
+					<artifact name="akka-actor_2.12" type="jar" ext="jar" status="no" details="" size="3002746" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe.akka/akka-actor_2.12/jars/akka-actor_2.12-2.4.19.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.12/2.4.19/akka-actor_2.12-2.4.19.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang.modules" name="scala-java8-compat_2.12">
+			<revision name="0.8.0" status="release" pubdate="20161030001227" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="16">
+				<license name="BSD 3-clause" url="http://opensource.org/licenses/BSD-3-Clause"/>
+				<metadata-artifact status="no" details="" size="3036" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang.modules/scala-java8-compat_2.12/ivy-0.8.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/modules/scala-java8-compat_2.12/0.8.0/scala-java8-compat_2.12-0.8.0.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-actor_2.12" conf="compile, runtime" rev="0.8.0" rev-constraint-default="0.8.0" rev-constraint-dynamic="0.8.0" callerrev="2.4.19"/>
+				<artifacts>
+					<artifact name="scala-java8-compat_2.12" type="bundle" ext="jar" status="no" details="" size="1165728" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang.modules/scala-java8-compat_2.12/bundles/scala-java8-compat_2.12-0.8.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/modules/scala-java8-compat_2.12/0.8.0/scala-java8-compat_2.12-0.8.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.typesafe" name="config">
+			<revision name="1.3.0" status="release" pubdate="20150508174611" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/typesafehub/config" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="15">
+				<license name="Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2875" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe/config/ivy-1.3.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/config/1.3.0/config-1.3.0.pom"/>
+				<caller organisation="com.typesafe" name="ssl-config-core_2.12" conf="compile, runtime" rev="1.2.0" rev-constraint-default="1.2.0" rev-constraint-dynamic="1.2.0" callerrev="0.2.1"/>
+				<caller organisation="com.typesafe.akka" name="akka-actor_2.12" conf="compile, runtime" rev="1.3.0" rev-constraint-default="1.3.0" rev-constraint-dynamic="1.3.0" callerrev="2.4.19"/>
+				<artifacts>
+					<artifact name="config" type="bundle" ext="jar" status="no" details="" size="277782" time="0" location="/Users/thbas/.ivy2/cache/com.typesafe/config/bundles/config-1.3.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/config/1.3.0/config-1.3.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+			<revision name="1.2.0" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
+				<evicted-by rev="1.3.0"/>
+				<caller organisation="com.typesafe" name="ssl-config-core_2.12" conf="compile, runtime" rev="1.2.0" rev-constraint-default="1.2.0" rev-constraint-dynamic="1.2.0" callerrev="0.2.1"/>
+				<artifacts>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.sangria-graphql" name="sangria_2.12">
+			<revision name="1.2.2" status="release" pubdate="20170617222433" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://sangria-graphql.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="1">
+				<license name="Apache License, ASL Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="4785" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria_2.12/ivy-1.2.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria_2.12/1.2.2/sangria_2.12-1.2.2.pom"/>
+				<caller organisation="sangria-akka-http-example" name="sangria-akka-http-example_2.12" conf="compile, runtime" rev="1.2.2" rev-constraint-default="1.2.2" rev-constraint-dynamic="1.2.2" callerrev="0.1.0-SNAPSHOT"/>
+				<artifacts>
+					<artifact name="sangria_2.12" type="jar" ext="jar" status="no" details="" size="3252318" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria_2.12/jars/sangria_2.12-1.2.2.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria_2.12/1.2.2/sangria_2.12-1.2.2.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.sangria-graphql" name="sangria-spray-json_2.12">
+			<revision name="1.0.0" status="release" pubdate="20170116235327" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://sangria-graphql.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="9">
+				<license name="Apache License, ASL Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3286" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria-spray-json_2.12/ivy-1.0.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria-spray-json_2.12/1.0.0/sangria-spray-json_2.12-1.0.0.pom"/>
+				<caller organisation="sangria-akka-http-example" name="sangria-akka-http-example_2.12" conf="compile, runtime" rev="1.0.0" rev-constraint-default="1.0.0" rev-constraint-dynamic="1.0.0" callerrev="0.1.0-SNAPSHOT"/>
+				<artifacts>
+					<artifact name="sangria-spray-json_2.12" type="jar" ext="jar" status="no" details="" size="18228" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria-spray-json_2.12/jars/sangria-spray-json_2.12-1.0.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria-spray-json_2.12/1.0.0/sangria-spray-json_2.12-1.0.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="io.spray" name="spray-json_2.12">
+			<revision name="1.3.3" status="release" pubdate="20161229110833" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/spray/spray-json" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="10">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3081" time="0" location="/Users/thbas/.ivy2/cache/io.spray/spray-json_2.12/ivy-1.3.3.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/io/spray/spray-json_2.12/1.3.3/spray-json_2.12-1.3.3.pom"/>
+				<caller organisation="com.typesafe.akka" name="akka-http-spray-json_2.12" conf="default, compile, runtime, master" rev="1.3.3" rev-constraint-default="1.3.3" rev-constraint-dynamic="1.3.3" callerrev="10.0.9"/>
+				<caller organisation="org.sangria-graphql" name="sangria-spray-json_2.12" conf="default, compile, runtime, master" rev="1.3.3" rev-constraint-default="1.3.3" rev-constraint-dynamic="1.3.3" callerrev="1.0.0"/>
+				<artifacts>
+					<artifact name="spray-json_2.12" type="bundle" ext="jar" status="no" details="" size="278425" time="0" location="/Users/thbas/.ivy2/cache/io.spray/spray-json_2.12/bundles/spray-json_2.12-1.3.3.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/io/spray/spray-json_2.12/1.3.3/spray-json_2.12-1.3.3.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.sangria-graphql" name="sangria-streaming-api_2.12">
+			<revision name="1.0.0" status="release" pubdate="20170116223940" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://sangria-graphql.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="8">
+				<license name="Apache License, ASL Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2705" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria-streaming-api_2.12/ivy-1.0.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria-streaming-api_2.12/1.0.0/sangria-streaming-api_2.12-1.0.0.pom"/>
+				<caller organisation="org.sangria-graphql" name="sangria_2.12" conf="default, compile, runtime, master" rev="1.0.0" rev-constraint-default="1.0.0" rev-constraint-dynamic="1.0.0" callerrev="1.2.2"/>
+				<artifacts>
+					<artifact name="sangria-streaming-api_2.12" type="jar" ext="jar" status="no" details="" size="17685" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria-streaming-api_2.12/jars/sangria-streaming-api_2.12-1.0.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria-streaming-api_2.12/1.0.0/sangria-streaming-api_2.12-1.0.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.sangria-graphql" name="sangria-marshalling-api_2.12">
+			<revision name="1.0.0" status="release" pubdate="20170116223332" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://sangria-graphql.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="7">
+				<license name="Apache License, ASL Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2711" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria-marshalling-api_2.12/ivy-1.0.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria-marshalling-api_2.12/1.0.0/sangria-marshalling-api_2.12-1.0.0.pom"/>
+				<caller organisation="org.sangria-graphql" name="sangria-spray-json_2.12" conf="default, compile, runtime, master" rev="1.0.0" rev-constraint-default="1.0.0" rev-constraint-dynamic="1.0.0" callerrev="1.0.0"/>
+				<caller organisation="org.sangria-graphql" name="sangria_2.12" conf="default, compile, runtime, master" rev="1.0.0" rev-constraint-default="1.0.0" rev-constraint-dynamic="1.0.0" callerrev="1.2.2"/>
+				<artifacts>
+					<artifact name="sangria-marshalling-api_2.12" type="jar" ext="jar" status="no" details="" size="60431" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/sangria-marshalling-api_2.12/jars/sangria-marshalling-api_2.12-1.0.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/sangria-graphql/sangria-marshalling-api_2.12/1.0.0/sangria-marshalling-api_2.12-1.0.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-reflect">
+			<revision name="2.12.2" status="release" pubdate="20170413101812" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.2/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="6">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="2825" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.12.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.12.2/scala-reflect-2.12.2.pom"/>
+				<caller organisation="org.scala-lang" name="scala-compiler" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.12.2"/>
+				<caller organisation="org.sangria-graphql" name="macro-visit_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="0.1.1"/>
+				<caller organisation="org.sangria-graphql" name="sangria_2.12" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.2.2"/>
+				<artifacts>
+					<artifact name="scala-reflect" type="jar" ext="jar" status="no" details="" size="3553181" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.2.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.12.2/scala-reflect-2.12.2.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.sangria-graphql" name="macro-visit_2.12">
+			<revision name="0.1.1" status="release" pubdate="20170311144455" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://sangria-graphql.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="5">
+				<license name="Apache License, ASL Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3098" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/macro-visit_2.12/ivy-0.1.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/sangria-graphql/macro-visit_2.12/0.1.1/macro-visit_2.12-0.1.1.pom"/>
+				<caller organisation="org.sangria-graphql" name="sangria_2.12" conf="default, compile, runtime, master" rev="0.1.1" rev-constraint-default="0.1.1" rev-constraint-dynamic="0.1.1" callerrev="1.2.2"/>
+				<artifacts>
+					<artifact name="macro-visit_2.12" type="jar" ext="jar" status="no" details="" size="91898" time="0" location="/Users/thbas/.ivy2/cache/org.sangria-graphql/macro-visit_2.12/jars/macro-visit_2.12-0.1.1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/sangria-graphql/macro-visit_2.12/0.1.1/macro-visit_2.12-0.1.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.parboiled" name="parboiled_2.12">
+			<revision name="2.1.4" status="release" pubdate="20170124102346" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://parboiled.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="2">
+				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3122" time="0" location="/Users/thbas/.ivy2/cache/org.parboiled/parboiled_2.12/ivy-2.1.4.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/parboiled/parboiled_2.12/2.1.4/parboiled_2.12-2.1.4.pom"/>
+				<caller organisation="org.sangria-graphql" name="sangria_2.12" conf="default, compile, runtime, master" rev="2.1.4" rev-constraint-default="2.1.4" rev-constraint-dynamic="2.1.4" callerrev="1.2.2"/>
+				<artifacts>
+					<artifact name="parboiled_2.12" type="jar" ext="jar" status="no" details="" size="930362" time="0" location="/Users/thbas/.ivy2/cache/org.parboiled/parboiled_2.12/jars/parboiled_2.12-2.1.4.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/parboiled/parboiled_2.12/2.1.4/parboiled_2.12-2.1.4.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.chuusai" name="shapeless_2.12">
+			<revision name="2.3.2" status="release" pubdate="20161102105049" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/milessabin/shapeless" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="3">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3226" time="0" location="/Users/thbas/.ivy2/cache/com.chuusai/shapeless_2.12/ivy-2.3.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/chuusai/shapeless_2.12/2.3.2/shapeless_2.12-2.3.2.pom"/>
+				<caller organisation="org.parboiled" name="parboiled_2.12" conf="compile, runtime" rev="2.3.2" rev-constraint-default="2.3.2" rev-constraint-dynamic="2.3.2" callerrev="2.1.4"/>
+				<artifacts>
+					<artifact name="shapeless_2.12" type="bundle" ext="jar" status="no" details="" size="2829843" time="0" location="/Users/thbas/.ivy2/cache/com.chuusai/shapeless_2.12/bundles/shapeless_2.12-2.3.2.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/chuusai/shapeless_2.12/2.3.2/shapeless_2.12-2.3.2.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.typelevel" name="macro-compat_2.12">
+			<revision name="1.1.1" status="release" pubdate="20161102094258" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/milessabin/macro-compat" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="4">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="2964" time="0" location="/Users/thbas/.ivy2/cache/org.typelevel/macro-compat_2.12/ivy-1.1.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/typelevel/macro-compat_2.12/1.1.1/macro-compat_2.12-1.1.1.pom"/>
+				<caller organisation="com.chuusai" name="shapeless_2.12" conf="compile, runtime" rev="1.1.1" rev-constraint-default="1.1.1" rev-constraint-dynamic="1.1.1" callerrev="2.3.2"/>
+				<artifacts>
+					<artifact name="macro-compat_2.12" type="jar" ext="jar" status="no" details="" size="3180" time="0" location="/Users/thbas/.ivy2/cache/org.typelevel/macro-compat_2.12/jars/macro-compat_2.12-1.1.1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/typelevel/macro-compat_2.12/1.1.1/macro-compat_2.12-1.1.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-library">
+			<revision name="2.12.2" status="release" pubdate="20170413101911" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.2/" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="0">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="2653" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang/scala-library/ivy-2.12.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.2/scala-library-2.12.2.pom"/>
+				<caller organisation="com.chuusai" name="shapeless_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.3.2"/>
+				<caller organisation="com.typesafe.akka" name="akka-parsing_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="10.0.9"/>
+				<caller organisation="com.typesafe.akka" name="akka-http-spray-json_2.12" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="10.0.9"/>
+				<caller organisation="com.typesafe" name="ssl-config-core_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="0.2.1"/>
+				<caller organisation="org.sangria-graphql" name="sangria-streaming-api_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.0.0"/>
+				<caller organisation="org.sangria-graphql" name="sangria-spray-json_2.12" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.0.0"/>
+				<caller organisation="sangria-akka-http-example" name="sangria-akka-http-example_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="0.1.0-SNAPSHOT"/>
+				<caller organisation="org.scala-lang.modules" name="scala-java8-compat_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="0.8.0"/>
+				<caller organisation="org.sangria-graphql" name="macro-visit_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="0.1.1"/>
+				<caller organisation="com.typesafe.akka" name="akka-http_2.12" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="10.0.9"/>
+				<caller organisation="org.sangria-graphql" name="sangria_2.12" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.2.2"/>
+				<caller organisation="org.sangria-graphql" name="sangria-marshalling-api_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.0.0"/>
+				<caller organisation="org.scala-lang.modules" name="scala-xml_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.0.6"/>
+				<caller organisation="com.typesafe.akka" name="akka-http-core_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="10.0.9"/>
+				<caller organisation="com.typesafe.akka" name="akka-stream_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.4.19"/>
+				<caller organisation="org.scala-lang" name="scala-reflect" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.12.2"/>
+				<caller organisation="com.typesafe.akka" name="akka-actor_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.4.19"/>
+				<caller organisation="org.scala-lang.modules" name="scala-parser-combinators_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.0.4"/>
+				<caller organisation="org.parboiled" name="parboiled_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.1.4"/>
+				<caller organisation="org.scala-lang" name="scala-compiler" conf="default, compile, runtime, master" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="2.12.2"/>
+				<caller organisation="io.spray" name="spray-json_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.3.3"/>
+				<caller organisation="org.typelevel" name="macro-compat_2.12" conf="compile, runtime" rev="2.12.2" rev-constraint-default="2.12.2" rev-constraint-dynamic="2.12.2" callerrev="1.1.1"/>
+				<artifacts>
+					<artifact name="scala-library" type="jar" ext="jar" status="no" details="" size="5278660" time="0" location="/Users/thbas/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.2.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.2/scala-library-2.12.2.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>

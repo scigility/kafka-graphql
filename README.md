@@ -1,142 +1,43 @@
-# Kafka-graphQL framework
+## Sangria akka-http Example
 
-This sample demonstrates some of the features of Kafka System through the GraphQL.
+An example [GraphQL](http://facebook.github.io/graphql/) server written with [akka-http](https://github.com/akka/akka-http) and [sangria](https://github.com/OlegIlyenko/sangria).
 
-The purpose of this readme is to get you started quickly.
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-The endpoint can be found at `http://localhost:8080/v1/graphql`
+After starting the server with
 
-## Graphql clients
-One example of a rest client with graphql support is [insomnia](https://insomnia.rest), [graphiql](https://github.com/graphql/graphiql) and [curl](https://curl.haxx.se/) can also be used.
+    sbt run
 
-## Examples
+you can run queries interactively using [GraphiQL](https://github.com/graphql/graphiql) by opening http://localhost:8080 in a browser or query the `/graphql` endpoint. It accepts following properties in the JSON body (this follows [relay](https://facebook.github.io/relay) convention):
 
-Each example starts with a graphql request, a curl command and shows the expected outcome.
+* `query` - String - GraphQL query as a string
+* `variables` - Object or String containing a JSON object that defines variables for your query _(optional)_
+* `operationName` - String - the name of the operation, in case you defined several of them in the query _(optional)_
 
-### Example Hello world
-
-Request:
-
-```graphql
-{
-  hello
-}
-```
+Here are some examples of the queries you can make:
 
 ```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"{hello}","variables":"{}"}'     
+$ curl -X POST localhost:8080/graphql \
+    -H "Content-Type:application/json" \
+    -d '{"query": "{hero {name, friends {name}}}"}'
 ```
 
-Expected response:
+this gives back the hero of StarWars Saga together with the list of his friends, which is of course R2-D2:
 
-```json
+```javascript
 {
   "data": {
-    "hello": "world"
-  }
-}
-```
-
-### Example query roles
-
-Request:
-
-```graphql
-query {
-  roles {
-    id
-    name
-  }
-}
-```
-
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"query {roles {id name}}","variables":"{}"}'
-```
-
-Expected response:
-
-```json
-{
-  "data": {
-    "roles": []
-  }
-}
-```
-
-### Example add a role
-
-Request:
-
-```graphql
-mutation addRoleMutation {
-  addRole(input: {
-    id: 1
-    name: "root"		
-  }) {
-    id
-  }
-}
-```
-
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"mutation addRoleMutation {addRole(input: {id: 1 name: \"root\"}) {id}}","variables":"{}"}'
-```
-
-Expected response:
-
-```json
-{
-  "data": {
-    "addRole": {
-      "id": 1
-    }
-  }
-}
-```
-
-### Example add a user
-
-Request:
-
-```graphql
-mutation addUserMutation {
-  addUser(input: {
-    id: 1234
-    name: "New user"
-  }) {
-    roles {
-      name
-    }
-  }
-}
-```
-
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"mutation addUserMutation {addUser(input: {id: 1234 name: \"New user\"}) {roles{name}}}","variables":"{}"}'
-```
-
-Expected response:
-
-```json
-{
-  "data": {
-    "addUser": {
-      "roles": [
+    "hero": {
+      "name": "R2-D2",
+      "friends": [
         {
-          "name": "Admin"
+          "name": "Luke Skywalker"
+        },
+        {
+          "name": "Han Solo"
+        },
+        {
+          "name": "Leia Organa"
         }
       ]
     }
@@ -144,4 +45,37 @@ Expected response:
 }
 ```
 
-:heavy_exclamation_mark: The response will be Admin in the roles because the sample is set-up in that way. When getting a user the role will always be Admin. Please consult the source code for all implementation details of this sample.
+Here is another example, which uses variables:
+
+```bash
+$ curl -X POST localhost:8080/graphql \
+    -H "Content-Type:application/json" \
+    -d '{"query": "query Test($humanId: String!){human(id: $humanId) {name, homePlanet, friends {name}}}", "variables": {"humanId": "1000"}}'
+```
+
+The result should be something like this:
+
+```javascript
+{
+  "data": {
+    "human": {
+      "name": "Luke Skywalker",
+      "homePlanet": "Tatooine",
+      "friends": [
+        {
+          "name": "Han Solo"
+        },
+        {
+          "name": "Leia Organa"
+        },
+        {
+          "name": "C-3PO"
+        },
+        {
+          "name": "R2-D2"
+        }
+      ]
+    }
+  }
+}
+```
