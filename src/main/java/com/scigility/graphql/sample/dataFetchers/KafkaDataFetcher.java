@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Properties;
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
-import kafka.admin.RackAwareMode.Enforced$;
 import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
@@ -100,21 +99,39 @@ public class KafkaDataFetcher {
     private void createTopic(String zookeeperHosts,String topicName){ // If multiple zookeeper then -> String zookeeperHosts = "192.168.20.1:2181,192.168.20.2:2181";
       ZkClient zkClient = null;
       ZkUtils zkUtils = null;
+    //   String zookeeperConnect = "zkserver1:2181,zkserver2:2181";
+    // int sessionTimeoutMs = 10 * 1000;
+    // int connectionTimeoutMs = 8 * 1000;
+    //
+    // String topic = "my-topic";
+    // int partitions = 2;
+    // int replication = 3;
         try {
             log.info("zookeeperHosts="+zookeeperHosts);
             //String zookeeperHosts = "192.168.20.1:2181";
             int sessionTimeOutInMs = 15 * 1000; // 15 secs
             int connectionTimeOutInMs = 10 * 1000; // 10 secs
 
-            zkClient = new ZkClient(zookeeperHosts, sessionTimeOutInMs, connectionTimeOutInMs, ZKStringSerializer$.MODULE$);
-            zkUtils = new ZkUtils(zkClient, new ZkConnection(zookeeperHosts), false);
+            //zkClient = new ZkClient(zookeeperHosts, sessionTimeOutInMs, connectionTimeOutInMs, ZKStringSerializer$.MODULE$);
+
+            zkClient = new ZkClient(
+                    zookeeperHosts,
+                    sessionTimeOutInMs,
+                    connectionTimeOutInMs,
+                    ZKStringSerializer$.MODULE$);
+
+            // Security for Kafka was added in Kafka 0.9.0.0
+            boolean isSecureKafkaCluster = false;
+
+            zkUtils = new ZkUtils(zkClient, new ZkConnection(zookeeperHosts), isSecureKafkaCluster);
             log.info("topicName="+topicName);
             //String topicName = "testTopic";
             int noOfPartitions = 1;
             int noOfReplication = 1;
             Properties topicConfiguration = new Properties();
             log.info("AdminUtils.createTopic");
-            AdminUtils.createTopic(zkUtils, topicName, noOfPartitions, noOfReplication, topicConfiguration,Enforced$.MODULE$);
+            //required: kafka.utils.ZkUtils,java.lang.String,int,int,java.util.Properties,kafka.admin.RackAwareMode
+            AdminUtils.createTopic(zkUtils, topicName, noOfPartitions, noOfReplication, topicConfiguration,null);
 
         } catch (Exception ex) {
             ex.printStackTrace();

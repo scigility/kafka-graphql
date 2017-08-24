@@ -72,74 +72,92 @@
     <dependency>
       <groupId>com.101tec</groupId>
       <artifactId>zkclient</artifactId>
-      <version>0.2</version>
-
+      <version>0.9</version> <!--  must be 0.10 -->
     </dependency>
+
     <dependency>
       <groupId>com.gruchalski</groupId>
       <artifactId>kafka-cluster-tools</artifactId>
       <version>1.3.4</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>net.sf.jopt-simple</groupId>
       <artifactId>jopt-simple</artifactId>
       <version>6.0-alpha-2</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>graphql-spring-boot-starter</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
 
     <!-- External -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <exclusions>
+    </dependency>
+
+    <!-- Test -->
+    <dependency>
+    <groupId>org.scala-lang</groupId>
+    <artifactId>scala-parser-combinators</artifactId>
+    <version>2.11.0-M4</version>
+    </dependency>
+
+    <dependency>
+    <groupId>org.scala-lang</groupId>
+    <artifactId>scala-library</artifactId>
+    <version>2.13.0-M2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jslsolucoes</groupId>
+      <artifactId>ojdbc6</artifactId>
+      <version>11.2.0.1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.8.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>1.8.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_2.12</artifactId>
+      <version>0.11.0.0</version>
+      <exclusions> <!-- THIS MUST HAVE THE EXCULE TO BE EXECUTED -->
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
@@ -151,294 +169,89 @@
       </exclusions>
     </dependency>
 
-
-    <!-- Test -->
-    <dependency>
-    <groupId>org.scala-lang</groupId>
-    <artifactId>scala-parser-combinators</artifactId>
-    <version>2.11.0-M4</version>
-</dependency>
-    <dependency>
-    <groupId>org.scala-lang</groupId>
-    <artifactId>scala-library</artifactId>
-    <version>2.13.0-M2</version>
-</dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.jslsolucoes</groupId>
-      <artifactId>ojdbc6</artifactId>
-      <version>11.2.0.1.0</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.8.1</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro</artifactId>
-      <version>1.8.2</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.12</artifactId>
-      <version>0.11.0.0</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
-    </dependency>
     <dependency>
       <groupId>com.google.jimfs</groupId>
       <artifactId>jimfs</artifactId>
       <version>1.1</version>
       <scope>test</scope>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>connect-transforms</artifactId>
       <version>0.11.0.0</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-streams</artifactId>
       <version>0.11.0.0</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.keedio.openx.data</groupId>
       <artifactId>json-serde</artifactId>
       <version>1.3.7.3</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.21</version>
     </dependency>
+
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
       <version>0.11.0.0</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.8.1</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.7.8</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>2.7.8</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>19.0</version>
-      <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
     </dependency>
+
     <dependency>
       <groupId>io.confluent</groupId>
       <artifactId>kafka-avro-serializer</artifactId>
       <version>3.3.0</version>
       <exclusions>
-  <exclusion>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-  </exclusion>
-  <exclusion>
-    <groupId>log4j</groupId>
-    <artifactId>log4j</artifactId>
-  </exclusion>
-</exclusions>
+    <exclusion>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </exclusion>
+  </exclusions>
     </dependency>
+
   </dependencies>
 
   <build>
