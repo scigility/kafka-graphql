@@ -1,0 +1,24 @@
+description = 'A trivial Gradle build'
+version = '1.0'
+
+task buildDocker(type:Exec) {
+  description 'Build the docker image.'
+  commandLine "docker", "build", "-t",  "kafka-graphql:v1",  "."
+
+  doLast {
+    exec {
+      commandLine "docker", "images", "kafka-graphql"
+    }
+  }
+}
+
+task runDocker(type:Exec) {
+  description 'run the docker image.'
+  commandLine "docker", "run", "-d", "-p", "8080:8080", "--name=kafka-graphql", "kafka-graphql:v1"
+
+  doLast {
+    exec {
+      commandLine "docker", "ps", "-a", "-f", "name=kafka-graphql"
+    }
+  }
+}
