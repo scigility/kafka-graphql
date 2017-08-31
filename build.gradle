@@ -2,35 +2,63 @@ description = 'A trivial Gradle build'
 version = '1.0'
 
 task buildNRun() {
-  description 'Build the docker image.'
+  description 'Build and run the docker graphql image with kafka enviroment.'
   buildDocker()
   showBuildedImage()
   runDocker()
   showRunnigContainer()
+  dockerCompe()
+}
+
+def dockerCompe() {
+  description 'Build and Run Kafka environment.'
+  try {
+    exec {
+      commandLine "docker-compose", "up", "-d"
+    }
+  } catch (GradleException e) {
+    println 'buildDocker:Error:' + e
+  }
 }
 
 def buildDocker() {
   description 'Build the docker image.'
-  exec {
-    commandLine "docker", "build", "-t",  "kafka-graphql:v1",  "."
+  try {
+    exec {
+      commandLine "docker", "build", "-t",  "kafka-graphql:v1",  "."
+    }
+  } catch (GradleException e) {
+    println 'buildDocker:Error:' + e
   }
 }
 
 def showBuildedImage() {
-  exec {
-    commandLine "docker", "images", "kafka-graphql"
+  try {
+    exec {
+      commandLine "docker", "images", "kafka-graphql"
+    }
+  } catch (GradleException e) {
+    println 'showBuildedImage:Error:' + e
   }
 }
 
 def runDocker() {
   description 'run the docker image.'
-  exec {
-    commandLine "docker", "run", "-d", "-p", "8080:8080", "--name=kafka-graphql", "kafka-graphql:v1"
+  try {
+    exec {
+      commandLine "docker", "run", "-d", "-p", "8080:8080", "--name=kafka-graphql", "kafka-graphql:v1"
+    }
+  } catch (GradleException e) {
+    println 'runDocker:Error:' + e
   }
 }
 
 def showRunnigContainer(){
-  exec {
-    commandLine "docker", "ps", "-a", "-f", "name=kafka-graphql"
+  try {
+    exec {
+      commandLine "docker", "ps", "-a", "-f", "name=kafka-graphql"
+    }
+  } catch (GradleException e) {
+      println 'showRunnigContainer:Error:' + e
   }
 }
