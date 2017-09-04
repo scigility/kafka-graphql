@@ -12,11 +12,7 @@ import org.apache.commons.logging.LogFactory;
 public class Topic {
     @Getter
     @Setter
-    private Integer id;
-
-    @Getter
-    @Setter
     private String name;
 
-    //private List<TopicMessage> topicMessages;
+    private List<TopicMessage> topicMessages;
 }

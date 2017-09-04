@@ -37,18 +37,14 @@ public class KafkaFields implements GraphQlFields {
 
     private GraphQLObjectType kafkaType;
 
-    private GraphQLInputObjectType addKafkaInputType;
     private GraphQLInputObjectType addKafkaTopicInputType;
     private GraphQLInputObjectType updateKafkaInputType;
-    private GraphQLInputObjectType deleteKafkaInputType;
 
     private GraphQLInputObjectType filterKafkaInputType;
 
     private GraphQLFieldDefinition kafkasField;
     private GraphQLFieldDefinition addKafkaTopicField;
-    private GraphQLFieldDefinition addKafkaField;
     private GraphQLFieldDefinition updateKafkaField;
-    private GraphQLFieldDefinition deleteKafkaField;
 
     @Getter
     private List<GraphQLFieldDefinition> queryFields;
@@ -61,13 +57,13 @@ public class KafkaFields implements GraphQlFields {
         createTypes();
         createFields();
         queryFields = Collections.singletonList(kafkasField);
-        mutationFields = Arrays.asList(addKafkaTopicField,addKafkaField, updateKafkaField, deleteKafkaField);
+        mutationFields = Arrays.asList(addKafkaTopicField, updateKafkaField);
     }
 
     private void createTypes() {
         log.info("createTypes");
         kafkaType = newObject().name("kafka").description("A kafka connection")
-                .field(newFieldDefinition().name("id").description("The id kafka connection").type(GraphQLInt).build())
+
                 .field(newFieldDefinition().name("broker").description("The broker").type(GraphQLString).build())
                 .field(newFieldDefinition().name("zookeeper").description("The zookeeper").type(GraphQLString).build())
                 .field(newFieldDefinition().name("topics").description("The topics inside kafka").type(new GraphQLList(topicFields.getTopicType()))
@@ -75,30 +71,17 @@ public class KafkaFields implements GraphQlFields {
                         .build())
                 .build();
 
-        addKafkaInputType = newInputObject().name("addKafkaInput")
-                .field(newInputObjectField().name("id").type(new GraphQLNonNull(GraphQLInt)).build())
-                .field(newInputObjectField().name("broker").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
-                .field(newInputObjectField().name("zookeeper").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
-                .build();
-
         addKafkaTopicInputType = newInputObject().name("addKafkaTopicInput")
-                .field(newInputObjectField().name("kafka_id").type(new GraphQLNonNull(GraphQLInt)).build())
-                .field(newInputObjectField().name("topic_id").type(new GraphQLNonNull(GraphQLInt)).build())
                 .field(newInputObjectField().name("topic_name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .build();
 
         updateKafkaInputType = newInputObject().name("updateKafkaInput")
-                .field(newInputObjectField().name("id").type(new GraphQLNonNull(GraphQLInt)).build())
                 .field(newInputObjectField().name("broker").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .field(newInputObjectField().name("zookeeper").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .build();
 
-        deleteKafkaInputType = newInputObject().name("deleteKafkaInput")
-                .field(newInputObjectField().name("id").type(new GraphQLNonNull(GraphQLInt)).build())
-                .build();
-
         filterKafkaInputType = newInputObject().name("filterKafkaInput")
-                .field(newInputObjectField().name("id").type(GraphQLInt).build())
+                .field(newInputObjectField().name("broker").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .build();
     }
 
@@ -106,16 +89,9 @@ public class KafkaFields implements GraphQlFields {
         log.info("createFields");
         kafkasField = newFieldDefinition()
                 .name("kafka").description("Provide an overview of all kafka connection")
-                .type(new GraphQLList(kafkaType))
+                .type(kafkaType)
                 .argument(newArgument().name(FILTER).type(filterKafkaInputType).build())
                 .dataFetcher(environment -> kafkaDataFetcher.getKafkasByFilter(getFilterMap(environment)))
-                .build();
-
-        addKafkaField = newFieldDefinition()
-                .name("addKafka").description("Add new kafka")
-                .type(kafkaType)
-                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addKafkaInputType)).build())
-                .dataFetcher(environment -> kafkaDataFetcher.addKafka(getInputMap(environment)))
                 .build();
 
         addKafkaTopicField = newFieldDefinition()
@@ -130,13 +106,6 @@ public class KafkaFields implements GraphQlFields {
                 .type(kafkaType)
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateKafkaInputType)).build())
                 .dataFetcher(environment -> kafkaDataFetcher.updateKafka(getInputMap(environment)))
-                .build();
-
-        deleteKafkaField = newFieldDefinition()
-                .name("deleteKafka").description("Delete existing kafka")
-                .type(kafkaType)
-                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteKafkaInputType)).build())
-                .dataFetcher(environment -> kafkaDataFetcher.deleteKafka(getInputMap(environment)))
                 .build();
     }
 }

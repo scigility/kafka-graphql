@@ -178,14 +178,17 @@ public class UserFieldsTest {
     }
 
     private String generateRequest(String query, Map variables) {
-        val jsonObject = new JSONObject();
+      val jsonObject = new JSONObject();
 
+      try {
         jsonObject.put("query", query);
 
         if (variables != null) {
             jsonObject.put("variables", Collections.singletonMap("input", variables));
         }
+      }catch(org.json.JSONException e) {
 
-        return jsonObject.toString();
+      }
+      return jsonObject.toString();
     }
 }
