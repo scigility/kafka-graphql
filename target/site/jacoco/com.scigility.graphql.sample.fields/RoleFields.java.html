@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoleFields.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">graphql-spring-boot-starter-sample</a> &gt; <a href="index.source.html" class="el_package">com.scigility.graphql.sample.fields</a> &gt; <span class="el_source">RoleFields.java</span></div><h1>RoleFields.java</h1><pre class="source lang-java linenums">package com.scigility.graphql.sample.fields;
+
+import com.merapar.graphql.GraphQlFields;
+import com.scigility.graphql.sample.dataFetchers.RoleDataFetcher;
+import graphql.Scalars;
+import graphql.schema.*;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.merapar.graphql.base.GraphQlFieldsHelper.*;
+import static graphql.Scalars.GraphQLInt;
+import static graphql.Scalars.GraphQLString;
+import static graphql.schema.GraphQLArgument.newArgument;
+import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
+import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
+import static graphql.schema.GraphQLInputObjectType.newInputObject;
+import static graphql.schema.GraphQLObjectType.newObject;
+
+@Component
+<span class="fc" id="L26">public class RoleFields implements GraphQlFields {</span>
+
+    @Autowired
+    private RoleDataFetcher roleDataFetcher;
+
+<span class="fc" id="L31">    @Getter</span>
+    private GraphQLObjectType roleType;
+
+    private GraphQLInputObjectType addRoleInputType;
+    private GraphQLInputObjectType updateRoleInputType;
+    private GraphQLInputObjectType deleteRoleInputType;
+
+    private GraphQLInputObjectType filterRoleInputType;
+
+    private GraphQLFieldDefinition rolesField;
+    private GraphQLFieldDefinition addRoleField;
+    private GraphQLFieldDefinition updateRoleField;
+    private GraphQLFieldDefinition deleteRoleField;
+
+<span class="fc" id="L45">    @Getter</span>
+    private List&lt;GraphQLFieldDefinition&gt; queryFields;
+
+<span class="fc" id="L48">    @Getter</span>
+    private List&lt;GraphQLFieldDefinition&gt; mutationFields;
+
+    @PostConstruct
+    public void postConstruct() {
+<span class="fc" id="L53">        createTypes();</span>
+<span class="fc" id="L54">        createFields();</span>
+<span class="fc" id="L55">        queryFields = Collections.singletonList(rolesField);</span>
+<span class="fc" id="L56">        mutationFields = Arrays.asList(addRoleField, updateRoleField, deleteRoleField);</span>
+<span class="fc" id="L57">    }</span>
+
+    private void createTypes() {
+<span class="fc" id="L60">        roleType = newObject().name(&quot;role&quot;).description(&quot;A role&quot;)</span>
+<span class="fc" id="L61">                .field(newFieldDefinition().name(&quot;id&quot;).description(&quot;The id&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L62">                .field(newFieldDefinition().name(&quot;name&quot;).description(&quot;The name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L63">                .build();</span>
+
+<span class="fc" id="L65">        addRoleInputType = newInputObject().name(&quot;addRoleInput&quot;)</span>
+<span class="fc" id="L66">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L67">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L68">                .build();</span>
+
+<span class="fc" id="L70">        updateRoleInputType = newInputObject().name(&quot;updateRoleInput&quot;)</span>
+<span class="fc" id="L71">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L72">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L73">                .build();</span>
+
+<span class="fc" id="L75">        deleteRoleInputType = newInputObject().name(&quot;deleteRoleInput&quot;)</span>
+<span class="fc" id="L76">                .field(newInputObjectField().name(&quot;id&quot;).type(new GraphQLNonNull(GraphQLInt)).build())</span>
+<span class="fc" id="L77">                .build();</span>
+
+<span class="fc" id="L79">        filterRoleInputType = newInputObject().name(&quot;filterRoleInput&quot;)</span>
+<span class="fc" id="L80">                .field(newInputObjectField().name(&quot;id&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L81">                .build();</span>
+<span class="fc" id="L82">    }</span>
+
+    private void createFields() {
+<span class="fc" id="L85">        rolesField = newFieldDefinition()</span>
+<span class="fc" id="L86">                .name(&quot;roles&quot;).description(&quot;Provide an overview of all roles&quot;)</span>
+<span class="fc" id="L87">                .type(new GraphQLList(roleType))</span>
+<span class="fc" id="L88">                .argument(newArgument().name(FILTER).type(filterRoleInputType).build())</span>
+<span class="fc" id="L89">                .dataFetcher(environment -&gt; roleDataFetcher.getRolesByFilter(getFilterMap(environment)))</span>
+<span class="fc" id="L90">                .build();</span>
+
+<span class="fc" id="L92">        addRoleField = newFieldDefinition()</span>
+<span class="fc" id="L93">                .name(&quot;addRole&quot;).description(&quot;Add new role&quot;)</span>
+<span class="fc" id="L94">                .type(roleType)</span>
+<span class="fc" id="L95">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addRoleInputType)).build())</span>
+<span class="fc" id="L96">                .dataFetcher(environment -&gt; roleDataFetcher.addRole(getInputMap(environment)))</span>
+<span class="fc" id="L97">                .build();</span>
+
+<span class="fc" id="L99">        updateRoleField = newFieldDefinition()</span>
+<span class="fc" id="L100">                .name(&quot;updateRole&quot;).description(&quot;Update existing role&quot;)</span>
+<span class="fc" id="L101">                .type(roleType)</span>
+<span class="fc" id="L102">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateRoleInputType)).build())</span>
+<span class="fc" id="L103">                .dataFetcher(environment -&gt; roleDataFetcher.updateRole(getInputMap(environment)))</span>
+<span class="fc" id="L104">                .build();</span>
+
+<span class="fc" id="L106">        deleteRoleField = newFieldDefinition()</span>
+<span class="fc" id="L107">                .name(&quot;deleteRole&quot;).description(&quot;Delete existing role&quot;)</span>
+<span class="fc" id="L108">                .type(roleType)</span>
+<span class="fc" id="L109">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteRoleInputType)).build())</span>
+<span class="fc" id="L110">                .dataFetcher(environment -&gt; roleDataFetcher.deleteRole(getInputMap(environment)))</span>
+<span class="fc" id="L111">                .build();</span>
+<span class="fc" id="L112">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

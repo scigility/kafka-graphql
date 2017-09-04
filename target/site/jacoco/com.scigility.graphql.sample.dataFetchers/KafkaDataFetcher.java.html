@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KafkaDataFetcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">graphql-spring-boot-starter-sample</a> &gt; <a href="index.source.html" class="el_package">com.scigility.graphql.sample.dataFetchers</a> &gt; <span class="el_source">KafkaDataFetcher.java</span></div><h1>KafkaDataFetcher.java</h1><pre class="source lang-java linenums">package com.scigility.graphql.sample.dataFetchers;
+
+
+import com.scigility.graphql.sample.domain.Role;
+import com.scigility.graphql.sample.domain.Kafka;
+import com.scigility.graphql.sample.domain.Topic;
+
+import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import kafka.admin.AdminUtils;
+import kafka.utils.ZKStringSerializer$;
+import kafka.admin.RackAwareMode;
+import kafka.utils.ZkUtils;
+
+import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.ZkConnection;
+
+import org.apache.zookeeper.ZooKeeper;
+
+import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.merapar.graphql.base.TypedValueMap;
+
+import lombok.val;
+
+@Component
+<span class="fc" id="L31">public class KafkaDataFetcher {</span>
+
+<span class="fc" id="L33">    private Log log = LogFactory.getLog(KafkaDataFetcher.class);</span>
+
+    //zookeeper
+    //zkserver start
+    //kafka
+    //kafka-server-start.sh /usr/local/etc/kafka/server.properties
+    public Kafka getKafkasByFilter(TypedValueMap arguments) {
+<span class="nc" id="L40">      log.info(&quot;getKafkasByFilter&quot;);</span>
+
+<span class="nc" id="L42">      val kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L44">      return kafka;</span>
+    }
+
+    public Kafka addKafkaTopicField(TypedValueMap arguments) {
+<span class="nc" id="L48">        log.info(&quot;addKafkaTopicField&quot;);</span>
+
+<span class="nc" id="L50">        val kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L52">        val topic = new Topic();</span>
+
+<span class="nc" id="L54">        topic.setName(arguments.get(&quot;topic_name&quot;));</span>
+
+<span class="nc" id="L56">        log.info(topic);</span>
+
+<span class="nc" id="L58">        createTopic(kafka,topic);</span>
+        
+<span class="nc" id="L60">        return kafka;</span>
+    }
+
+    public Kafka addKafkaTopicMessageField(TypedValueMap arguments) {
+<span class="nc" id="L64">        log.info(&quot;addKafkaTopicMessageField&quot;);</span>
+<span class="nc" id="L65">        val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L66">        log.info(kafka);</span>
+
+        //createTopic(kafka.getZookeeper(),topic.getName());
+
+        //kafka.addToTopics(topic);
+
+<span class="nc" id="L72">        return kafka;</span>
+    }
+
+    public Kafka updateKafka(TypedValueMap arguments) {
+<span class="nc" id="L76">        log.info(&quot;updateKafka&quot;);</span>
+<span class="nc" id="L77">        val kafka = Kafka.getInstance();</span>
+
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (arguments.containsKey(&quot;broker&quot;)) {</span>
+<span class="nc" id="L80">            kafka.setBroker(arguments.get(&quot;broker&quot;));</span>
+        }
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (arguments.containsKey(&quot;zookeeper&quot;)) {</span>
+<span class="nc" id="L84">            kafka.setZookeeper(arguments.get(&quot;zookeeper&quot;));</span>
+        }
+<span class="nc" id="L86">        return kafka;</span>
+    }
+
+    public List&lt;Topic&gt; getTopics(Kafka kafka) {
+<span class="nc" id="L90">        log.info(&quot;getTopics&quot;);</span>
+<span class="nc" id="L91">        ZkClient zkClient = null;</span>
+<span class="nc" id="L92">        ZkUtils zkUtils = null;</span>
+<span class="nc" id="L93">        int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
+<span class="nc" id="L94">        int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
+<span class="nc" id="L95">        boolean isSecureKafkaCluster = false;</span>
+
+<span class="nc" id="L97">        List&lt;Topic&gt; topics = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="nc" id="L99">          ZooKeeper zk = new ZooKeeper(</span>
+<span class="nc" id="L100">            kafka.getZookeeper(), sessionTimeOutInMs, null);</span>
+
+<span class="nc" id="L102">          List&lt;String&gt; _topics = zk.getChildren(</span>
+            &quot;/brokers/topics&quot;, false);
+
+          try{
+<span class="nc" id="L106">            TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
+<span class="nc" id="L107">          } catch (java.lang.InterruptedException e){}</span>
+
+<span class="nc" id="L109">          log.info(&quot;List of Topics&quot;);</span>
+<span class="nc" id="L110">          int index = 0;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">          for (String topicName : _topics) {</span>
+<span class="nc" id="L112">              log.info(topicName);</span>
+<span class="nc" id="L113">              val topic = new Topic();</span>
+<span class="nc" id="L114">              topic.setName(topicName);</span>
+<span class="nc" id="L115">              topics.add(topic);</span>
+<span class="nc" id="L116">          }</span>
+<span class="nc" id="L117">        } catch (Exception ex) {</span>
+<span class="nc" id="L118">            ex.printStackTrace();</span>
+        } finally {
+<span class="nc bnc" id="L120" title="All 6 branches missed.">            if (zkClient != null) {</span>
+<span class="nc" id="L121">                zkClient.close();</span>
+            }
+        }
+
+<span class="nc" id="L125">        return topics;</span>
+    }
+    //String zookeeperHosts,String topicName
+    //kafka.getZookeeper(),topic.getName()
+    private void createTopic(Kafka kafka, Topic topic){ // If multiple zookeeper then -&gt; String zookeeperHosts = &quot;192.168.20.1:2181,192.168.20.2:2181&quot;;
+<span class="nc" id="L130">      ZkClient zkClient = null;</span>
+<span class="nc" id="L131">      ZkUtils zkUtils = null;</span>
+<span class="nc" id="L132">      int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
+<span class="nc" id="L133">      int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
+<span class="nc" id="L134">      boolean isSecureKafkaCluster = false;</span>
+
+      try {
+<span class="nc" id="L137">        log.info(&quot;zookeeperHosts=&quot;+kafka.getZookeeper());</span>
+<span class="nc" id="L138">        zkClient = new ZkClient(</span>
+<span class="nc" id="L139">                kafka.getZookeeper(),</span>
+                sessionTimeOutInMs,
+                connectionTimeOutInMs,
+                ZKStringSerializer$.MODULE$);
+
+        // Security for Kafka was added in Kafka 0.9.0.0
+
+<span class="nc" id="L146">        zkUtils = new ZkUtils(zkClient, new ZkConnection(</span>
+<span class="nc" id="L147">          kafka.getZookeeper()), isSecureKafkaCluster);</span>
+<span class="nc" id="L148">        log.info(&quot;topicName=&quot;+topic.getName());</span>
+
+        //String topicName = &quot;testTopic&quot;;
+<span class="nc" id="L151">        int noOfPartitions = 1;</span>
+<span class="nc" id="L152">        int noOfReplication = 1;</span>
+<span class="nc" id="L153">        Properties topicConfiguration = new Properties();</span>
+<span class="nc" id="L154">        log.info(&quot;AdminUtils.createTopic&quot;);</span>
+        //required: kafka.utils.ZkUtils,java.lang.String,int,int,java.util.Properties,kafka.admin.RackAwareMode
+<span class="nc" id="L156">        AdminUtils.createTopic(zkUtils,</span>
+<span class="nc" id="L157">          topic.getName(), noOfPartitions, noOfReplication, topicConfiguration,</span>
+          RackAwareMode.Enforced$.MODULE$);
+
+        try{
+<span class="nc" id="L161">          TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
+<span class="nc" id="L162">        } catch (java.lang.InterruptedException e){}</span>
+
+        // Runtime rt = Runtime.getRuntime();
+        // Process pr = rt.exec(&quot;kafka-topics --create --zookeeper &quot;+ zookeeperHosts +
+        //   &quot; --replication-factor &quot;+noOfReplication+
+        //   &quot; --partitions &quot;+noOfPartitions+
+        //   &quot; --topic &quot;+topicName
+        //   );
+<span class="nc" id="L170">      } catch (Exception ex) {</span>
+<span class="nc" id="L171">          ex.printStackTrace();</span>
+      } finally {
+<span class="nc bnc" id="L173" title="All 6 branches missed.">          if (zkClient != null) {</span>
+<span class="nc" id="L174">              zkClient.close();</span>
+          }
+      }
+<span class="nc" id="L177">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -51,7 +51,6 @@ public class TopicDataFetcher {
         if (length > 0) {
             for (int i = 0; i < length; i++) {
               Topic topic = new Topic();
-              topic.setId(i);
               topic.setName(temp.getString(i));
               topicsList.add(topic);
             }
@@ -113,11 +112,12 @@ public class TopicDataFetcher {
         return topic;
     }
 
+    //TODO
     public Topic deleteTopic(TypedValueMap arguments) {
       log.info("deleteTopic");
         val topic = topics.get(arguments.get("id"));
 
-        topics.remove(topic.getId());
+        //topics.remove(topic.getId());
 
         return topic;
     }

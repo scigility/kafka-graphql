@@ -56,8 +56,7 @@ public class KafkaDataFetcher {
         log.info(topic);
 
         createTopic(kafka,topic);
-
-        kafka.addToTopics(topic);
+        
         return kafka;
     }
 

@@ -49,34 +49,6 @@ public class Kafka {
   @Setter
   private String zookeeper;
 
-  private List<Topic> topics = new ArrayList<>();
-
-  public List<Topic> getTopics(){
-    HttpClient client = new DefaultHttpClient();
-    HttpGet request = new HttpGet("http://localhost:8082/topics");
-    try{
-      HttpResponse response = client.execute(request);
-      BufferedReader rd = new BufferedReader (new InputStreamReader(response.getEntity().getContent()));
-      String line = rd.readLine();
-      JSONArray temp = JSONArray.fromObject(line);
-      this.topics = new ArrayList<>();
-      int length = temp.size();
-      if (length > 0) {
-          for (int i = 0; i < length; i++) {
-            Topic topic = new Topic();
-            topic.setId(i);
-            topic.setName(temp.getString(i));
-            this.topics.add(topic);
-          }
-      }
-    } catch (java.io.IOException e){}
-    return Collections.unmodifiableList(this.topics);
-  }
-
-  public void addToTopics(final Topic topic){
-      this.topics.add(topic);
-  }
-
   //private List<Consumer> consumers;
 
   //private List<Producer> producers;
