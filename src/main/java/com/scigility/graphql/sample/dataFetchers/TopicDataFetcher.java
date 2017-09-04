@@ -1,24 +1,34 @@
 package com.scigility.graphql.sample.dataFetchers;
 
-import com.merapar.graphql.base.TypedValueMap;
+
 import com.scigility.graphql.sample.domain.Topic;
-import lombok.val;
-import org.springframework.stereotype.Component;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.*;
+import com.scigility.graphql.sample.domain.Kafka;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
+import lombok.val;
+
+import com.merapar.graphql.base.TypedValueMap;
+
+import org.springframework.stereotype.Component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -26,6 +36,27 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+import java.util.Properties;
+import java.util.Arrays;
+
+import kafka.admin.AdminUtils;
+import kafka.utils.ZKStringSerializer$;
+import kafka.admin.RackAwareMode;
+import kafka.utils.ZkUtils;
+
+import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.ZkConnection;
+
+import org.apache.zookeeper.ZooKeeper;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 @Component
@@ -35,28 +66,45 @@ public class TopicDataFetcher {
     public Map<Integer, Topic> topics = new HashMap<>();
 
     public List<Topic> getTopicsByFilter(TypedValueMap arguments) {
+      val kafka = Kafka.getInstance();
+
       log.info("getTopicsByFilter");
 
-      Integer id = arguments.get("id");
+      ZkClient zkClient = null;
+      ZkUtils zkUtils = null;
+      int sessionTimeOutInMs = 20 * 1000; // 15 secs
+      int connectionTimeOutInMs = 20 * 1000; // 10 secs
+      boolean isSecureKafkaCluster = false;
 
-      HttpClient client = new DefaultHttpClient();
-      HttpGet request = new HttpGet("http://localhost:8082/topics");
-      ArrayList<Topic> topicsList = new ArrayList<>();
-      try{
-        HttpResponse response = client.execute(request);
-        BufferedReader rd = new BufferedReader (new InputStreamReader(response.getEntity().getContent()));
-        String line = rd.readLine();
-        JSONArray temp = JSONArray.fromObject(line);
-        int length = temp.size();
-        if (length > 0) {
-            for (int i = 0; i < length; i++) {
-              Topic topic = new Topic();
-              topic.setName(temp.getString(i));
-              topicsList.add(topic);
-            }
+      List<Topic> topics = new ArrayList<>();
+      try {
+        ZooKeeper zk = new ZooKeeper(
+          kafka.getZookeeper(), sessionTimeOutInMs, null);
+
+        List<String> _topics = zk.getChildren(
+          "/brokers/topics", false);
+
+        try{
+          TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));
+        } catch (java.lang.InterruptedException e){}
+
+        log.info("List of Topics");
+        int index = 0;
+        for (String topicName : _topics) {
+            log.info(topicName);
+            val topic = new Topic();
+            topic.setName(topicName);
+            topics.add(topic);
         }
-      } catch (java.io.IOException e){}
-      return Collections.unmodifiableList(topicsList);
+      } catch (Exception ex) {
+          ex.printStackTrace();
+      } finally {
+          if (zkClient != null) {
+              zkClient.close();
+          }
+      }
+
+      return topics;
     }
 
     public Topic addTopic(TypedValueMap arguments) {
@@ -72,44 +120,75 @@ public class TopicDataFetcher {
       return null;
     }
 
-    public Topic addTopicMessage(TypedValueMap arguments) {
-      log.info("addTopicMessage");
-
+    public Topic produceTopicRecord(TypedValueMap arguments) {
+      log.info("produceTopicRecord");
+      val kafka = Kafka.getInstance();
       String name = arguments.get("name");
       String message = arguments.get("message");
 
-      HttpClient client = new DefaultHttpClient();
-      HttpPost post = new HttpPost("http://localhost:8082/topics/"+name);
+      log.info("name:"+name+",message:"+message);
+      Properties props = new Properties();
+       props.put("bootstrap.servers", kafka.getBroker());
+       props.put("acks", "all");
+       props.put("retries", 2);
+       props.put("batch.size", 16384);
+       props.put("linger.ms", 1);
+       props.put("buffer.memory", 33554432);
+       props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+       props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-      // curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" \
-      //           --data '{"records":[{"value":{"name": "testUser"}}]}' \
-      //           "http://localhost:8082/topics/jsontest"
+      Producer<String, String> producer = new KafkaProducer<>(props);
+      producer.send(new ProducerRecord<String, String>(name, "key",message));
 
-      //HttpGet request = new HttpGet("http://localhost:8082/topics/"+name);
-      ArrayList<Topic> topicsList = new ArrayList<>();
-      try{
-        StringEntity input = new StringEntity(message);
-        input.setContentType("application/vnd.kafka.binary.v2+json");
-        post.setEntity(input);
-        HttpResponse response = client.execute(post);
-        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        String line = "";
-        while ((line = rd.readLine()) != null) {
-         System.out.println(line);
-        }
-      }catch (Exception e){}
+      producer.close();
+      return null;
+    }
+
+    public Topic consumeTopicRecord(TypedValueMap arguments) {
+      log.info("consumeTopicRecord");
+      val kafka = Kafka.getInstance();
+      String name = arguments.get("name");
+      //String message = arguments.get("message");
+
+      log.info("name:"+name);
+      Properties props = new Properties();
+       props.put("bootstrap.servers", kafka.getBroker());
+       props.put("zookeeper.connect", kafka.getZookeeper());
+       props.put("session.timeout.ms", "30000");
+       props.put("group.id", name);
+       props.put("acks", "all");
+       //props.put("enable.auto.commit", "true");
+       //props.put("auto.commit.interval.ms", "1000");
+       props.put("auto.offset.reset","earliest");
+       props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+       props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+      KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+      //consumer.subscribe(Arrays.asList("foo", "bar"));
+      consumer.subscribe(Collections.singletonList(name));
+      ConsumerRecords<String, String> records = consumer.poll(500);
+      for (ConsumerRecord<String, String> record : records){
+        log.info("offset = "+record.offset()+
+          ", key = "+record.key()+
+          ", value = "+record.value());
+        //System.out.printf( "Received Message topic =" + record.topic() +
+        //  ", partition =" + record.partition() +
+        //  ", offset = " + record.offset() +
+        //  ", key = " + deserialize(record.key()) +
+        //  ", value = " + deserialize(record.value()) );
+      }
+      //consumer.commitSync();
       return null;
     }
 
     public Topic updateTopic(TypedValueMap arguments) {
       log.info("updateTopic");
-        val topic = topics.get(arguments.get("id"));
+      val topic = topics.get(arguments.get("id"));
 
-        if (arguments.containsKey("name")) {
-            topic.setName(arguments.get("name"));
-        }
+      if (arguments.containsKey("name")) {
+          topic.setName(arguments.get("name"));
+      }
 
-        return topic;
+      return topic;
     }
 
     //TODO
