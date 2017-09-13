@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.merapar:graphql-spring-boot-starter:1.0.3-alpha">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/merapar/graphql-spring-boot-starter/1.0.3-alpha/graphql-spring-boot-starter-1.0.3-alpha.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/merapar/graphql-spring-boot-starter/1.0.3-alpha/graphql-spring-boot-starter-1.0.3-alpha-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/merapar/graphql-spring-boot-starter/1.0.3-alpha/graphql-spring-boot-starter-1.0.3-alpha-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

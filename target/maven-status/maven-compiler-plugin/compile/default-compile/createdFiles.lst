@@ -10,11 +10,14 @@ com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.class
 com/scigility/graphql/sample/CustomGraphQlExecutorImpl.class
 com/scigility/graphql/sample/fields/UserFields.class
 com/scigility/graphql/sample/domain/KTable.class
+com/scigility/graphql/sample/fields/DocumentFields.class
 com/scigility/graphql/sample/fields/HelloWorldFields.class
+com/scigility/graphql/sample/dataFetchers/DocumentFetcher.class
 com/scigility/graphql/sample/domain/Consumer.class
 com/scigility/graphql/sample/domain/KStream.class
+com/scigility/graphql/sample/domain/Document.class
 com/scigility/graphql/sample/domain/Kafka.class
+com/scigility/graphql/sample/domain/TopicRecord.class
 com/scigility/graphql/sample/Application.class
 com/scigility/graphql/sample/domain/User.class
-com/scigility/graphql/sample/domain/TopicMessage.class
 com/scigility/graphql/sample/fields/KafkaFields.class

@@ -63,7 +63,6 @@ public class KafkaFields implements GraphQlFields {
     private void createTypes() {
         log.info("createTypes");
         kafkaType = newObject().name("kafka").description("A kafka connection")
-
                 .field(newFieldDefinition().name("broker").description("The broker").type(GraphQLString).build())
                 .field(newFieldDefinition().name("zookeeper").description("The zookeeper").type(GraphQLString).build())
                 .field(newFieldDefinition().name("topics").description("The topics inside kafka").type(new GraphQLList(topicFields.getTopicType()))

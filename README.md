@@ -1,147 +1,129 @@
-# Kafka-graphQL framework
+# GraphKL framework - GraphQL Kafka Language
 
-This sample demonstrates some of the features of Kafka System through the GraphQL.
+Powerfull and simple streaming framework into a intuitive Graphql enviroment for Apache Kafka out-of-the-box applications. 
 
-The purpose of this readme is to get you started quickly.
+GraphKL goes beyond GraphQl and beyond Apache Kafka, providing simple solution to read, write, and process streaming data in real-time, at scale, using the powerfull GraphQL-like semantics, with dynamic query, mutations, subcriptions, and fragmented queries.
 
-The endpoint can be found at `http://localhost:8080/v1/graphql`
+It offers an easy way to express stream processing transformations as an alternative to writing an application in a programming language such as Java or Python.
 
-## Graphql clients
-One example of a rest client with graphql support is [insomnia](https://insomnia.rest), [graphiql](https://github.com/graphql/graphiql) and [curl](https://curl.haxx.se/) can also be used.
+Currently available as a developer preview, GraphKL provides powerful stream processing capabilities such as joins, aggregations, event-time windowing, and more!
 
-## Examples
+## Quickstart
 
-Each example starts with a graphql request, a curl command and shows the expected outcome.
+Download the repo:
+$ git clone https://github.com/scigility/kafka-graphql.git
 
-### Example Hello world
+Edit the docker-compose.yml file to set your ip into kafka advertiser properties in the Docker:
+KAFKA_ADVERTISED_HOST_NAME
+KAFKA_ADVERTISED_LISTENERS
 
-Request:
+Then run the kafka and zookeeper:
+docker-compose up
 
-```graphql
-{
-  hello
+After this, build the application:
+mvn clean package
+
+Now you a ready to run the application:
+java -jar target/graphql-spring-boot-starter-sample-1.0.3-alpha.jar
+
+
+You have access to the graphql interface via http://localhost:8080/v1/graphql
+
+mutation updateKafkaMutation {
+  updateKafka(input: {
+		broker: "192.168.171.135:9092"
+		zookeeper: "192.168.171.135:2181"
+	}) {broker,zookeeper topics{name}}
 }
-```
 
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"{hello}","variables":"{}"}'     
-```
-
-Expected response:
-
-```json
-{
-  "data": {
-    "hello": "world"
-  }
-}
-```
-
-### Example query roles
-
-Request:
-
-```graphql
 query {
-  roles {
-    id
-    name
+	 kafka{broker,zookeeper, topics{name}}
+}
+
+mutation addKafkaTopicMutation {
+  addKafkaTopic(input: {
+		topic_name: "test"
+	})
+
+	{topics{name}}
+}
+
+query {
+	topics{
+		name
+	}
+}
+
+mutation produceRecord {
+  produceTopicRecord(input: {name: "test", message: "howdy graphql"}) {
+    key
+    value
+    offset
+    partition
   }
 }
-```
 
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"query {roles {id name}}","variables":"{}"}'
-```
 
-Expected response:
-
-```json
-{
-  "data": {
-    "roles": []
+mutation consumeRecord {
+  consumeTopicRecord(input: {name: "test"}) {
+    key
+    value
+    offset
+    partition
   }
 }
-```
 
-### Example add a role
-
-Request:
-
-```graphql
-mutation addRoleMutation {
-  addRole(input: {
-    id: 1
-    name: "root"		
-  }) {
-    id
+mutation startStream {
+  streamStart(input: {input:"in" output:"out"}) {
+		key
+		value
   }
 }
-```
 
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"mutation addRoleMutation {addRole(input: {id: 1 name: \"root\"}) {id}}","variables":"{}"}'
-```
-
-Expected response:
-
-```json
-{
-  "data": {
-    "addRole": {
-      "id": 1
-    }
-  }
+query {
+	stream{
+		key value
+	}
 }
-```
 
-### Example add a user
+## Ask for what you need, get exactly that
 
-Request:
+## Get many resources in a single request
 
-```graphql
-mutation addUserMutation {
-  addUser(input: {
-    id: 1234
-    name: "New user"
-  }) {
-    roles {
-      name
-    }
-  }
-}
-```
+## Move faster with powerful developer tools
 
-```bash
-curl --request POST \
-  --url http://localhost:8080/v1/graphql \
-  --header 'content-type: application/json' \
-  --data '{"query":"mutation addUserMutation {addUser(input: {id: 1234 name: \"New user\"}) {roles{name}}}","variables":"{}"}'
-```
+## Evolve your API without versions
 
-Expected response:
+## Bring your own data and code
 
-```json
-{
-  "data": {
-    "addUser": {
-      "roles": [
-        {
-          "name": "Admin"
-        }
-      ]
-    }
-  }
-}
-```
+## Who’s using GraphKL?
 
-:heavy_exclamation_mark: The response will be Admin in the roles because the sample is set-up in that way. When getting a user the role will always be Admin. Please consult the source code for all implementation details of this sample.
+## Get Started
+
+If you are ready to see the power of GraphKL, try out these:
+
+GraphKL Quick Start: Demonstrates a simple workflow using GraphKL to write streaming queries against data in Kafka.
+Clickstream Analysis Demo: Shows how to build an application that performs real-time user analytics.
+
+## Learn More
+
+You can find the GraphKL documentation here.
+
+## Join the Community
+
+Whether you need help, want to contribute, or are just looking for the latest news, you can find out how to connect with your fellow Confluent community members here.
+
+Ask a question in the #GraphKL channel in our public Confluent Community Slack. Account registration is free and self-service.
+Join the Confluent Google group.
+
+## Contributing
+
+Contributions to the code, examples, documentation, etc, are very much appreciated. For more information, see the contribution guidelines.
+
+Report issues and bugs directly in this GitHub project.
+
+##License
+
+The project is licensed under the Apache License, version 2.0.
+
+Apache, Apache Kafka, Kafka, and associated open source project names are trademarks of the Apache Software Foundation.

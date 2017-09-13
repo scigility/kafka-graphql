@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.scigility.graphql.sample.ApplicationTest" time="0.056" tests="1" errors="0" skipped="0" failures="0">
+<testsuite name="com.scigility.graphql.sample.ApplicationTest" time="0.064" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib"/>
@@ -64,5 +64,5 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase name="testApplicationContext" classname="com.scigility.graphql.sample.ApplicationTest" time="0.056"/>
+  <testcase name="testApplicationContext" classname="com.scigility.graphql.sample.ApplicationTest" time="0.064"/>
 </testsuite>

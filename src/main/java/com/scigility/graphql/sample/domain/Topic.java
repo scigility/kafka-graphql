@@ -14,5 +14,4 @@ public class Topic {
     @Setter
     private String name;
 
-    private List<TopicMessage> topicMessages;
 }

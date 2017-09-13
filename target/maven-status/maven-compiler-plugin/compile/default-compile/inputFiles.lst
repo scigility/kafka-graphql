@@ -4,13 +4,16 @@
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/KTable.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/Role.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.java
+/Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/TopicRecord.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/HelloWorldFields.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/Consumer.java
-/Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/TopicMessage.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/User.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/KafkaFields.java
+/Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/Document.java
+/Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/DocumentFetcher.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/RoleFields.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java
+/Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/DocumentFields.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/Application.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/KStream.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/RoleDataFetcher.java

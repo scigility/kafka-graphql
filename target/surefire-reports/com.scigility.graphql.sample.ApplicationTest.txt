@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.scigility.graphql.sample.ApplicationTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.665 sec - in com.scigility.graphql.sample.ApplicationTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.642 sec - in com.scigility.graphql.sample.ApplicationTest

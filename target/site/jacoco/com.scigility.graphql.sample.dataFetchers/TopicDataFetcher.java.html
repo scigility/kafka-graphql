@@ -2,6 +2,7 @@
 
 
 import com.scigility.graphql.sample.domain.Topic;
+import com.scigility.graphql.sample.domain.TopicRecord;
 import com.scigility.graphql.sample.domain.Kafka;
 
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.Properties;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
@@ -60,139 +62,167 @@ import org.apache.zookeeper.ZooKeeper;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 @Component
-<span class="fc" id="L63">public class TopicDataFetcher {</span>
-<span class="fc" id="L64">    private Log log = LogFactory.getLog(TopicDataFetcher.class);</span>
+<span class="fc" id="L65">public class TopicDataFetcher {</span>
+<span class="fc" id="L66">    private Log log = LogFactory.getLog(TopicDataFetcher.class);</span>
 
-<span class="fc" id="L66">    public Map&lt;Integer, Topic&gt; topics = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L68">    public Map&lt;Integer, Topic&gt; topics = new HashMap&lt;&gt;();</span>
 
     public List&lt;Topic&gt; getTopicsByFilter(TypedValueMap arguments) {
-<span class="nc" id="L69">      val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L71">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L71">      log.info(&quot;getTopicsByFilter&quot;);</span>
+<span class="nc" id="L73">        log.info(&quot;getTopicsByFilter&quot;);</span>
 
-<span class="nc" id="L73">      ZkClient zkClient = null;</span>
-<span class="nc" id="L74">      ZkUtils zkUtils = null;</span>
-<span class="nc" id="L75">      int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
-<span class="nc" id="L76">      int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
-<span class="nc" id="L77">      boolean isSecureKafkaCluster = false;</span>
+<span class="nc" id="L75">        ZkClient zkClient = null;</span>
+<span class="nc" id="L76">        ZkUtils zkUtils = null;</span>
+<span class="nc" id="L77">        int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
+<span class="nc" id="L78">        int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
+<span class="nc" id="L79">        boolean isSecureKafkaCluster = false;</span>
 
-<span class="nc" id="L79">      List&lt;Topic&gt; topics = new ArrayList&lt;&gt;();</span>
-      try {
-<span class="nc" id="L81">        ZooKeeper zk = new ZooKeeper(</span>
-<span class="nc" id="L82">          kafka.getZookeeper(), sessionTimeOutInMs, null);</span>
+<span class="nc" id="L81">        List&lt;Topic&gt; topics = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="nc" id="L83">            ZooKeeper zk = new ZooKeeper(</span>
+<span class="nc" id="L84">                    kafka.getZookeeper(), sessionTimeOutInMs, null);</span>
 
-<span class="nc" id="L84">        List&lt;String&gt; _topics = zk.getChildren(</span>
-          &quot;/brokers/topics&quot;, false);
+<span class="nc" id="L86">            List&lt;String&gt; _topics = zk.getChildren(</span>
+                    &quot;/brokers/topics&quot;, false);
 
-        try{
-<span class="nc" id="L88">          TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
-<span class="nc" id="L89">        } catch (java.lang.InterruptedException e){}</span>
+            try{
+<span class="nc" id="L90">                TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
+<span class="nc" id="L91">            } catch (java.lang.InterruptedException e){}</span>
 
-<span class="nc" id="L91">        log.info(&quot;List of Topics&quot;);</span>
-<span class="nc" id="L92">        int index = 0;</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">        for (String topicName : _topics) {</span>
-<span class="nc" id="L94">            log.info(topicName);</span>
-<span class="nc" id="L95">            val topic = new Topic();</span>
-<span class="nc" id="L96">            topic.setName(topicName);</span>
-<span class="nc" id="L97">            topics.add(topic);</span>
-<span class="nc" id="L98">        }</span>
-<span class="nc" id="L99">      } catch (Exception ex) {</span>
-<span class="nc" id="L100">          ex.printStackTrace();</span>
-      } finally {
-<span class="nc bnc" id="L102" title="All 6 branches missed.">          if (zkClient != null) {</span>
-<span class="nc" id="L103">              zkClient.close();</span>
-          }
-      }
+<span class="nc" id="L93">            log.info(&quot;List of Topics&quot;);</span>
+<span class="nc" id="L94">            int index = 0;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">            for (String topicName : _topics) {</span>
+<span class="nc" id="L96">                log.info(topicName);</span>
+<span class="nc" id="L97">                val topic = new Topic();</span>
+<span class="nc" id="L98">                topic.setName(topicName);</span>
+<span class="nc" id="L99">                topics.add(topic);</span>
+<span class="nc" id="L100">            }</span>
+<span class="nc" id="L101">        } catch (Exception ex) {</span>
+<span class="nc" id="L102">            ex.printStackTrace();</span>
+        } finally {
+<span class="nc bnc" id="L104" title="All 6 branches missed.">            if (zkClient != null) {</span>
+<span class="nc" id="L105">                zkClient.close();</span>
+            }
+        }
 
-<span class="nc" id="L107">      return topics;</span>
+<span class="nc" id="L109">        return topics;</span>
     }
 
     public Topic addTopic(TypedValueMap arguments) {
-<span class="nc" id="L111">      log.info(&quot;addTopic&quot;);</span>
+<span class="nc" id="L113">        log.info(&quot;addTopic&quot;);</span>
 
-      // Integer id = arguments.get(&quot;name&quot;);
-      //
-      // Process pr = rt.exec(&quot;kafka-topics --create --zookeeper &quot;+ zookeeperHosts +
-      //   &quot; --replication-factor &quot;+noOfReplication+
-      //   &quot; --partitions &quot;+noOfPartitions+
-      //   &quot; --topic &quot;+topicName
-      //   );
-<span class="nc" id="L120">      return null;</span>
+        // Integer id = arguments.get(&quot;name&quot;);
+        //
+        // Process pr = rt.exec(&quot;kafka-topics --create --zookeeper &quot;+ zookeeperHosts +
+        //   &quot; --replication-factor &quot;+noOfReplication+
+        //   &quot; --partitions &quot;+noOfPartitions+
+        //   &quot; --topic &quot;+topicName
+        //   );
+<span class="nc" id="L122">        return null;</span>
     }
 
     public Topic produceTopicRecord(TypedValueMap arguments) {
-<span class="nc" id="L124">      log.info(&quot;produceTopicRecord&quot;);</span>
-<span class="nc" id="L125">      val kafka = Kafka.getInstance();</span>
-<span class="nc" id="L126">      String name = arguments.get(&quot;name&quot;);</span>
-<span class="nc" id="L127">      String message = arguments.get(&quot;message&quot;);</span>
+<span class="nc" id="L126">        log.info(&quot;produceTopicRecord&quot;);</span>
+<span class="nc" id="L127">        log.info(arguments);</span>
+<span class="nc" id="L128">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L129">      log.info(&quot;name:&quot;+name+&quot;,message:&quot;+message);</span>
-<span class="nc" id="L130">      Properties props = new Properties();</span>
-<span class="nc" id="L131">       props.put(&quot;bootstrap.servers&quot;, kafka.getBroker());</span>
-<span class="nc" id="L132">       props.put(&quot;acks&quot;, &quot;all&quot;);</span>
-<span class="nc" id="L133">       props.put(&quot;retries&quot;, 2);</span>
-<span class="nc" id="L134">       props.put(&quot;batch.size&quot;, 16384);</span>
-<span class="nc" id="L135">       props.put(&quot;linger.ms&quot;, 1);</span>
-<span class="nc" id="L136">       props.put(&quot;buffer.memory&quot;, 33554432);</span>
-<span class="nc" id="L137">       props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span>
-<span class="nc" id="L138">       props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span>
+<span class="nc" id="L130">        String name = arguments.get(&quot;name&quot;);</span>
+<span class="nc" id="L131">        String message = arguments.get(&quot;message&quot;);</span>
+        //log.info(arguments.get(&quot;schema&quot;));
+        //LinkedHashMap schema = arguments.get(&quot;schema&quot;);
 
-<span class="nc" id="L140">      Producer&lt;String, String&gt; producer = new KafkaProducer&lt;&gt;(props);</span>
-<span class="nc" id="L141">      producer.send(new ProducerRecord&lt;String, String&gt;(name, &quot;key&quot;,message));</span>
+        //log.info(&quot;name:&quot;+name+&quot;,message:&quot;+message+&quot;,schema.type:&quot;+schema.get(&quot;type&quot;));
+<span class="nc" id="L136">        log.info(&quot;name:&quot;+name+&quot;,message:&quot;+message);</span>
+<span class="nc" id="L137">        Properties props = new Properties();</span>
+<span class="nc" id="L138">        props.put(&quot;bootstrap.servers&quot;, kafka.getBroker());</span>
+<span class="nc" id="L139">        props.put(&quot;acks&quot;, &quot;all&quot;);</span>
+<span class="nc" id="L140">        props.put(&quot;retries&quot;, 2);</span>
+<span class="nc" id="L141">        props.put(&quot;batch.size&quot;, 16384);</span>
+<span class="nc" id="L142">        props.put(&quot;linger.ms&quot;, 1);</span>
+<span class="nc" id="L143">        props.put(&quot;buffer.memory&quot;, 33554432);</span>
+<span class="nc" id="L144">        props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span>
+<span class="nc" id="L145">        props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span>
+<span class="nc" id="L146">        Producer&lt;String, String&gt; producer = null;</span>
+        try {
+<span class="nc" id="L148">            producer = new KafkaProducer&lt;&gt;(props);</span>
+<span class="nc" id="L149">            producer.send(new ProducerRecord&lt;String, String&gt;(name, &quot;key&quot;,message));</span>
+<span class="nc" id="L150">        } catch (Exception ex) {</span>
+<span class="nc" id="L151">            log.error(&quot;produceTopicRecord:Exception&quot;);</span>
+<span class="nc" id="L152">            ex.printStackTrace();</span>
+        } finally {
+<span class="nc bnc" id="L154" title="All 6 branches missed.">            if (producer != null) {</span>
+<span class="nc" id="L155">                producer.close();</span>
+            }
+        }
 
-<span class="nc" id="L143">      producer.close();</span>
-<span class="nc" id="L144">      return null;</span>
+<span class="nc" id="L159">        return null;</span>
     }
 
-    public Topic consumeTopicRecord(TypedValueMap arguments) {
-<span class="nc" id="L148">      log.info(&quot;produceTopicRecord&quot;);</span>
-<span class="nc" id="L149">      val kafka = Kafka.getInstance();</span>
-<span class="nc" id="L150">      String name = arguments.get(&quot;name&quot;);</span>
-      //String message = arguments.get(&quot;message&quot;);
+    public List&lt;TopicRecord&gt; consumeTopicRecord(TypedValueMap arguments) {
+<span class="nc" id="L163">        log.info(&quot;consumeTopicRecord&quot;);</span>
+<span class="nc" id="L164">        log.info(arguments);</span>
+<span class="nc" id="L165">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L153">      log.info(&quot;name:&quot;+name);</span>
-<span class="nc" id="L154">      Properties props = new Properties();</span>
-<span class="nc" id="L155">       props.put(&quot;bootstrap.servers&quot;, kafka.getBroker());</span>
-<span class="nc" id="L156">       props.put(&quot;zookeeper.connect&quot;, kafka.getZookeeper());</span>
-<span class="nc" id="L157">       props.put(&quot;session.timeout.ms&quot;, &quot;30000&quot;);</span>
-<span class="nc" id="L158">       props.put(&quot;group.id&quot;, name);</span>
-<span class="nc" id="L159">       props.put(&quot;acks&quot;, &quot;all&quot;);</span>
-       //props.put(&quot;enable.auto.commit&quot;, &quot;true&quot;);
-       //props.put(&quot;auto.commit.interval.ms&quot;, &quot;1000&quot;);
-<span class="nc" id="L162">       props.put(&quot;auto.offset.reset&quot;,&quot;earliest&quot;);</span>
-<span class="nc" id="L163">       props.put(&quot;key.deserializer&quot;, &quot;org.apache.kafka.common.serialization.StringDeserializer&quot;);</span>
-<span class="nc" id="L164">       props.put(&quot;value.deserializer&quot;, &quot;org.apache.kafka.common.serialization.StringDeserializer&quot;);</span>
-<span class="nc" id="L165">      KafkaConsumer&lt;String, String&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span>
-      //consumer.subscribe(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;));
-<span class="nc" id="L167">      consumer.subscribe(Collections.singletonList(name));</span>
-<span class="nc" id="L168">      ConsumerRecords&lt;String, String&gt; records = consumer.poll(500);</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">      for (ConsumerRecord&lt;String, String&gt; record : records){</span>
-<span class="nc" id="L170">        log.info(&quot;offset = &quot;+record.offset()+&quot;, key = &quot;+record.key()+&quot;, value = &quot;+record.value());</span>
-        //System.out.printf(&quot;Received Message topic =%s, partition =%s, offset = %d, key = %s, value = %s\n&quot;, record.topic(), record.partition(), record.offset(), deserialize(record.key()), deserialize(record.value()));
-<span class="nc" id="L172">      }</span>
-      //consumer.commitSync();
-<span class="nc" id="L174">      return null;</span>
+<span class="nc" id="L167">        String name = arguments.get(&quot;name&quot;);</span>
+        //LinkedHashMap schema = arguments.get(&quot;schema&quot;);
+        //String schemaType = schema.get(&quot;type&quot;);
+
+<span class="nc" id="L171">        List&lt;TopicRecord&gt; topicRecords = new ArrayList&lt;&gt;();</span>
+        //String message = arguments.get(&quot;message&quot;);
+<span class="nc" id="L173">        log.info(&quot;name:&quot;+name);</span>
+        //log.info(&quot;name:&quot;+name+&quot;,schema.type:&quot;+schemaType);
+<span class="nc" id="L175">        Properties props = new Properties();</span>
+<span class="nc" id="L176">        props.put(&quot;bootstrap.servers&quot;, kafka.getBroker());</span>
+<span class="nc" id="L177">        props.put(&quot;zookeeper.connect&quot;, kafka.getZookeeper());</span>
+<span class="nc" id="L178">        props.put(&quot;session.timeout.ms&quot;, &quot;30000&quot;);</span>
+<span class="nc" id="L179">        props.put(&quot;group.id&quot;, name);</span>
+<span class="nc" id="L180">        props.put(&quot;acks&quot;, &quot;all&quot;);</span>
+<span class="nc" id="L181">        props.put(&quot;retries&quot;, 5);</span>
+<span class="nc" id="L182">        props.put(&quot;enable.auto.commit&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L183">        props.put(&quot;auto.commit.interval.ms&quot;, &quot;1000&quot;);</span>
+<span class="nc" id="L184">        props.put(&quot;auto.offset.reset&quot;,&quot;earliest&quot;);</span>
+<span class="nc" id="L185">        props.put(&quot;key.deserializer&quot;, &quot;org.apache.kafka.common.serialization.StringDeserializer&quot;);</span>
+<span class="nc" id="L186">        props.put(&quot;value.deserializer&quot;, &quot;org.apache.kafka.common.serialization.StringDeserializer&quot;);</span>
+//      props.put(&quot;key.deserializer&quot;, &quot;io.confluent.kafka.serializers.KafkaAvroSerializer&quot;);
+//      props.put(&quot;value.deserializer&quot;, &quot;io.confluent.kafka.serializers.KafkaAvroSerializer&quot;);
+<span class="nc" id="L189">        KafkaConsumer&lt;String, String&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span>
+        //consumer.subscribe(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;));
+<span class="nc" id="L191">        consumer.subscribe(Collections.singletonList(name));</span>
+<span class="nc" id="L192">        ConsumerRecords&lt;String, String&gt; records = consumer.poll(500);</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        for (ConsumerRecord&lt;String, String&gt; record : records){</span>
+<span class="nc" id="L194">            log.info( &quot;offset = &quot; + record.offset() +</span>
+<span class="nc" id="L195">                    &quot;, key = &quot; + record.key() +</span>
+<span class="nc" id="L196">                    &quot;, value = &quot; + record.value() );</span>
+
+<span class="nc" id="L198">            TopicRecord topicRecord = new TopicRecord(</span>
+<span class="nc" id="L199">                    record.key(), record.value(), record.offset(), record.partition()</span>
+            );
+<span class="nc" id="L201">            topicRecords.add(topicRecord);</span>
+<span class="nc" id="L202">        }</span>
+        //consumer.commitSync();
+<span class="nc" id="L204">        return topicRecords;</span>
     }
 
     public Topic updateTopic(TypedValueMap arguments) {
-<span class="nc" id="L178">      log.info(&quot;updateTopic&quot;);</span>
-<span class="nc" id="L179">      val topic = topics.get(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L208">        log.info(&quot;updateTopic&quot;);</span>
+<span class="nc" id="L209">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
 
-<span class="nc bnc" id="L181" title="All 2 branches missed.">      if (arguments.containsKey(&quot;name&quot;)) {</span>
-<span class="nc" id="L182">          topic.setName(arguments.get(&quot;name&quot;));</span>
-      }
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (arguments.containsKey(&quot;name&quot;)) {</span>
+<span class="nc" id="L212">            topic.setName(arguments.get(&quot;name&quot;));</span>
+        }
 
-<span class="nc" id="L185">      return topic;</span>
+<span class="nc" id="L215">        return topic;</span>
     }
 
     //TODO
     public Topic deleteTopic(TypedValueMap arguments) {
-<span class="nc" id="L190">      log.info(&quot;deleteTopic&quot;);</span>
-<span class="nc" id="L191">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L220">        log.info(&quot;deleteTopic&quot;);</span>
+<span class="nc" id="L221">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
 
         //topics.remove(topic.getId());
 
-<span class="nc" id="L195">        return topic;</span>
+<span class="nc" id="L225">        return topic;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

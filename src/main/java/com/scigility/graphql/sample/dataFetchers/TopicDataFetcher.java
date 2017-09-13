@@ -2,6 +2,7 @@ package com.scigility.graphql.sample.dataFetchers;
 
 
 import com.scigility.graphql.sample.domain.Topic;
+import com.scigility.graphql.sample.domain.TopicRecord;
 import com.scigility.graphql.sample.domain.Kafka;
 
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.Properties;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
@@ -66,134 +68,156 @@ public class TopicDataFetcher {
     public Map<Integer, Topic> topics = new HashMap<>();
 
     public List<Topic> getTopicsByFilter(TypedValueMap arguments) {
-      val kafka = Kafka.getInstance();
+        val kafka = Kafka.getInstance();
 
-      log.info("getTopicsByFilter");
+        log.info("getTopicsByFilter");
 
-      ZkClient zkClient = null;
-      ZkUtils zkUtils = null;
-      int sessionTimeOutInMs = 20 * 1000; // 15 secs
-      int connectionTimeOutInMs = 20 * 1000; // 10 secs
-      boolean isSecureKafkaCluster = false;
+        ZkClient zkClient = null;
+        ZkUtils zkUtils = null;
+        int sessionTimeOutInMs = 20 * 1000; // 15 secs
+        int connectionTimeOutInMs = 20 * 1000; // 10 secs
+        boolean isSecureKafkaCluster = false;
 
-      List<Topic> topics = new ArrayList<>();
-      try {
-        ZooKeeper zk = new ZooKeeper(
-          kafka.getZookeeper(), sessionTimeOutInMs, null);
+        List<Topic> topics = new ArrayList<>();
+        try {
+            ZooKeeper zk = new ZooKeeper(
+                    kafka.getZookeeper(), sessionTimeOutInMs, null);
 
-        List<String> _topics = zk.getChildren(
-          "/brokers/topics", false);
+            List<String> _topics = zk.getChildren(
+                    "/brokers/topics", false);
 
-        try{
-          TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));
-        } catch (java.lang.InterruptedException e){}
+            try{
+                TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));
+            } catch (java.lang.InterruptedException e){}
 
-        log.info("List of Topics");
-        int index = 0;
-        for (String topicName : _topics) {
-            log.info(topicName);
-            val topic = new Topic();
-            topic.setName(topicName);
-            topics.add(topic);
+            log.info("List of Topics");
+            int index = 0;
+            for (String topicName : _topics) {
+                log.info(topicName);
+                val topic = new Topic();
+                topic.setName(topicName);
+                topics.add(topic);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            if (zkClient != null) {
+                zkClient.close();
+            }
         }
-      } catch (Exception ex) {
-          ex.printStackTrace();
-      } finally {
-          if (zkClient != null) {
-              zkClient.close();
-          }
-      }
 
-      return topics;
+        return topics;
     }
 
     public Topic addTopic(TypedValueMap arguments) {
-      log.info("addTopic");
+        log.info("addTopic");
 
-      // Integer id = arguments.get("name");
-      //
-      // Process pr = rt.exec("kafka-topics --create --zookeeper "+ zookeeperHosts +
-      //   " --replication-factor "+noOfReplication+
-      //   " --partitions "+noOfPartitions+
-      //   " --topic "+topicName
-      //   );
-      return null;
+        // Integer id = arguments.get("name");
+        //
+        // Process pr = rt.exec("kafka-topics --create --zookeeper "+ zookeeperHosts +
+        //   " --replication-factor "+noOfReplication+
+        //   " --partitions "+noOfPartitions+
+        //   " --topic "+topicName
+        //   );
+        return null;
     }
 
     public Topic produceTopicRecord(TypedValueMap arguments) {
-      log.info("produceTopicRecord");
-      val kafka = Kafka.getInstance();
-      String name = arguments.get("name");
-      String message = arguments.get("message");
+        log.info("produceTopicRecord");
+        log.info(arguments);
+        val kafka = Kafka.getInstance();
 
-      log.info("name:"+name+",message:"+message);
-      Properties props = new Properties();
-       props.put("bootstrap.servers", kafka.getBroker());
-       props.put("acks", "all");
-       props.put("retries", 2);
-       props.put("batch.size", 16384);
-       props.put("linger.ms", 1);
-       props.put("buffer.memory", 33554432);
-       props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-       props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        String name = arguments.get("name");
+        String message = arguments.get("message");
+        //log.info(arguments.get("schema"));
+        //LinkedHashMap schema = arguments.get("schema");
 
-      Producer<String, String> producer = new KafkaProducer<>(props);
-      producer.send(new ProducerRecord<String, String>(name, "key",message));
+        //log.info("name:"+name+",message:"+message+",schema.type:"+schema.get("type"));
+        log.info("name:"+name+",message:"+message);
+        Properties props = new Properties();
+        props.put("bootstrap.servers", kafka.getBroker());
+        props.put("acks", "all");
+        props.put("retries", 2);
+        props.put("batch.size", 16384);
+        props.put("linger.ms", 1);
+        props.put("buffer.memory", 33554432);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        Producer<String, String> producer = null;
+        try {
+            producer = new KafkaProducer<>(props);
+            producer.send(new ProducerRecord<String, String>(name, "key",message));
+        } catch (Exception ex) {
+            log.error("produceTopicRecord:Exception");
+            ex.printStackTrace();
+        } finally {
+            if (producer != null) {
+                producer.close();
+            }
+        }
 
-      producer.close();
-      return null;
+        return null;
     }
 
-    public Topic consumeTopicRecord(TypedValueMap arguments) {
-      log.info("consumeTopicRecord");
-      val kafka = Kafka.getInstance();
-      String name = arguments.get("name");
-      //String message = arguments.get("message");
+    public List<TopicRecord> consumeTopicRecord(TypedValueMap arguments) {
+        log.info("consumeTopicRecord");
+        log.info(arguments);
+        val kafka = Kafka.getInstance();
 
-      log.info("name:"+name);
-      Properties props = new Properties();
-       props.put("bootstrap.servers", kafka.getBroker());
-       props.put("zookeeper.connect", kafka.getZookeeper());
-       props.put("session.timeout.ms", "30000");
-       props.put("group.id", name);
-       props.put("acks", "all");
-       //props.put("enable.auto.commit", "true");
-       //props.put("auto.commit.interval.ms", "1000");
-       props.put("auto.offset.reset","earliest");
-       props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-       props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-      KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-      //consumer.subscribe(Arrays.asList("foo", "bar"));
-      consumer.subscribe(Collections.singletonList(name));
-      ConsumerRecords<String, String> records = consumer.poll(500);
-      for (ConsumerRecord<String, String> record : records){
-        log.info("offset = "+record.offset()+
-          ", key = "+record.key()+
-          ", value = "+record.value());
-        //System.out.printf( "Received Message topic =" + record.topic() +
-        //  ", partition =" + record.partition() +
-        //  ", offset = " + record.offset() +
-        //  ", key = " + deserialize(record.key()) +
-        //  ", value = " + deserialize(record.value()) );
-      }
-      //consumer.commitSync();
-      return null;
+        String name = arguments.get("name");
+        //LinkedHashMap schema = arguments.get("schema");
+        //String schemaType = schema.get("type");
+
+        List<TopicRecord> topicRecords = new ArrayList<>();
+        //String message = arguments.get("message");
+        log.info("name:"+name);
+        //log.info("name:"+name+",schema.type:"+schemaType);
+        Properties props = new Properties();
+        props.put("bootstrap.servers", kafka.getBroker());
+        props.put("zookeeper.connect", kafka.getZookeeper());
+        props.put("session.timeout.ms", "30000");
+        props.put("group.id", name);
+        props.put("acks", "all");
+        props.put("retries", 5);
+        props.put("enable.auto.commit", "true");
+        props.put("auto.commit.interval.ms", "1000");
+        props.put("auto.offset.reset","earliest");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+//      props.put("key.deserializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
+//      props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        //consumer.subscribe(Arrays.asList("foo", "bar"));
+        consumer.subscribe(Collections.singletonList(name));
+        ConsumerRecords<String, String> records = consumer.poll(500);
+        for (ConsumerRecord<String, String> record : records){
+            log.info( "offset = " + record.offset() +
+                    ", key = " + record.key() +
+                    ", value = " + record.value() );
+
+            TopicRecord topicRecord = new TopicRecord(
+                    record.key(), record.value(), record.offset(), record.partition()
+            );
+            topicRecords.add(topicRecord);
+        }
+        //consumer.commitSync();
+        return topicRecords;
     }
 
     public Topic updateTopic(TypedValueMap arguments) {
-      log.info("updateTopic");
-      val topic = topics.get(arguments.get("id"));
+        log.info("updateTopic");
+        val topic = topics.get(arguments.get("id"));
 
-      if (arguments.containsKey("name")) {
-          topic.setName(arguments.get("name"));
-      }
+        if (arguments.containsKey("name")) {
+            topic.setName(arguments.get("name"));
+        }
 
-      return topic;
+        return topic;
     }
 
     //TODO
     public Topic deleteTopic(TypedValueMap arguments) {
-      log.info("deleteTopic");
+        log.info("deleteTopic");
         val topic = topics.get(arguments.get("id"));
 
         //topics.remove(topic.getId());

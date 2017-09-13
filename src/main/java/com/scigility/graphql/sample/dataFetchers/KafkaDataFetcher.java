@@ -1,6 +1,5 @@
 package com.scigility.graphql.sample.dataFetchers;
 
-
 import com.scigility.graphql.sample.domain.Role;
 import com.scigility.graphql.sample.domain.Kafka;
 import com.scigility.graphql.sample.domain.Topic;
@@ -24,7 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.merapar.graphql.base.TypedValueMap;
-
+import java.net.ConnectException;
+import org.apache.zookeeper.KeeperException;
 import lombok.val;
 
 @Component
@@ -102,10 +102,6 @@ public class KafkaDataFetcher {
           List<String> _topics = zk.getChildren(
             "/brokers/topics", false);
 
-          try{
-            TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));
-          } catch (java.lang.InterruptedException e){}
-
           log.info("List of Topics");
           int index = 0;
           for (String topicName : _topics) {
@@ -114,7 +110,18 @@ public class KafkaDataFetcher {
               topic.setName(topicName);
               topics.add(topic);
           }
+          
+        } catch (KeeperException ex) {
+            log.error("getTopics:KeeperException");
+            ex.printStackTrace();
+        } catch (ConnectException ex) {
+            log.error("getTopics:ConnectException");
+            ex.printStackTrace();
+        } catch (NullPointerException ex) {
+            log.error("getTopics:NullPointerException");
+            ex.printStackTrace();
         } catch (Exception ex) {
+            log.error("getTopics:Exception");
             ex.printStackTrace();
         } finally {
             if (zkClient != null) {
@@ -168,11 +175,12 @@ public class KafkaDataFetcher {
         //   " --topic "+topicName
         //   );
       } catch (Exception ex) {
-          ex.printStackTrace();
+        log.error("getTopics");
+        ex.printStackTrace();
       } finally {
-          if (zkClient != null) {
-              zkClient.close();
-          }
+        if (zkClient != null) {
+            zkClient.close();
+        }
       }
     }
 }

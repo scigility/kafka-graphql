@@ -53,7 +53,7 @@ public class Kafka {
 
   //private List<Producer> producers;
 
-  //private List<KStream> KStreams;
+  //private List<Stream> KStreams;
 
   //private List<KTable> KTables;
 }
