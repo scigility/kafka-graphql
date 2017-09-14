@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StreamDataFetcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">graphql-spring-boot-starter-sample</a> &gt; <a href="index.source.html" class="el_package">com.scigility.graphql.sample.dataFetchers</a> &gt; <span class="el_source">StreamDataFetcher.java</span></div><h1>StreamDataFetcher.java</h1><pre class="source lang-java linenums">package com.scigility.graphql.sample.dataFetchers;
+
+import com.merapar.graphql.base.TypedValueMap;
+import com.scigility.graphql.sample.domain.Kafka;
+import com.scigility.graphql.sample.domain.Topic;
+import com.scigility.graphql.sample.domain.TopicRecord;
+import kafka.utils.ZkUtils;
+import lombok.val;
+import org.I0Itec.zkclient.ZkClient;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.zookeeper.ZooKeeper;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+@Component
+<span class="fc" id="L25">public class StreamDataFetcher {</span>
+<span class="fc" id="L26">    private Log log = LogFactory.getLog(StreamDataFetcher.class);</span>
+
+<span class="fc" id="L28">    public Map&lt;Integer, Topic&gt; table = new HashMap&lt;&gt;();</span>
+
+    public List&lt;Topic&gt; getStreamByFilter(TypedValueMap arguments) {
+<span class="nc" id="L31">        log.info(&quot;getStreamByFilter&quot;);</span>
+<span class="nc" id="L32">        Kafka kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L34">        return null;</span>
+    }
+
+    public Topic streamStart(TypedValueMap arguments) {
+<span class="nc" id="L38">        log.info(&quot;streamStart&quot;);</span>
+<span class="nc" id="L39">        Kafka kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L41">        return null;</span>
+    }
+
+    public Topic streamStop(TypedValueMap arguments) {
+<span class="nc" id="L45">        log.info(&quot;streamStop&quot;);</span>
+<span class="nc" id="L46">        Kafka kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L48">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

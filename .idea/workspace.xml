@@ -2,48 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1eb5be0-d2c0-4732-ae92-8a6d35de44d9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/docker-compose.yml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/graphql-spring-boot-starter-sample.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/myapplication.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/myapplication.log.1" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/TopicMessage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/domain/TopicMessage.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/TopicMessage.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/TopicMessage.java.html" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/KStream.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Stream.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.class" afterPath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.class" afterPath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/domain/Topic.class" afterPath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/domain/Topic.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/fields/KafkaFields.class" afterPath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/fields/KafkaFields.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/fields/TopicFields.class" afterPath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/fields/TopicFields.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/StreamDataFetcher.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/com/scigility/graphql/sample/domain/KStream.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/KStream.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/KStream.java.html" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/graphql-spring-boot-starter-sample-1.0.3-alpha.jar" afterPath="$PROJECT_DIR$/target/graphql-spring-boot-starter-sample-1.0.3-alpha.jar" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/graphql-spring-boot-starter-sample-1.0.3-alpha.jar.original" afterPath="$PROJECT_DIR$/target/graphql-spring-boot-starter-sample-1.0.3-alpha.jar.original" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/jacoco.exec" afterPath="$PROJECT_DIR$/target/jacoco.exec" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Kafka.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Kafka.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Topic.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Topic.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/KafkaFields.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/KafkaFields.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/TopicFields.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/TopicFields.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docker-compose.yml" afterPath="$PROJECT_DIR$/docker-compose.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myapplication.log" afterPath="$PROJECT_DIR$/myapplication.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java" afterPath="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/KafkaDataFetcher.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/KafkaDataFetcher.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/KafkaDataFetcher.java.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/KafkaDataFetcher.java.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/TopicDataFetcher.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/TopicDataFetcher.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/TopicDataFetcher.java.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/TopicDataFetcher.java.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/index.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/index.source.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.dataFetchers/index.source.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/Topic.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/Topic.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/Topic.java.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/Topic.java.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/Kafka.java.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/Kafka.java.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/index.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/index.source.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.domain/index.source.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/KafkaFields.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/KafkaFields.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/KafkaFields.java.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/KafkaFields.java.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/TopicFields.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/TopicFields.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/TopicFields.java.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/TopicFields.java.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/index.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/index.source.html" afterPath="$PROJECT_DIR$/target/site/jacoco/com.scigility.graphql.sample.fields/index.source.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/site/jacoco/index.html" afterPath="$PROJECT_DIR$/target/site/jacoco/index.html" />
@@ -66,102 +43,110 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="Document.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Document.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="KafkaDataFetcher.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="55" column="24" lean-forward="false" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DocumentFetcher.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/DocumentFetcher.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="66" column="42" lean-forward="false" selection-start-line="66" selection-start-column="23" selection-end-line="66" selection-end-column="42" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TopicDataFetcher.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="479">
-              <caret line="148" column="46" lean-forward="false" selection-start-line="148" selection-start-column="46" selection-end-line="148" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Stream.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Stream.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StreamFields.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="57" column="0" lean-forward="true" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DocumentFields.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/DocumentFields.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="57" column="10" lean-forward="false" selection-start-line="57" selection-start-column="10" selection-end-line="61" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TopicFields.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/TopicFields.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="50" column="49" lean-forward="false" selection-start-line="50" selection-start-column="49" selection-end-line="50" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="docker-compose.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/docker-compose.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="16" lean-forward="false" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5491857">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="Document.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Document.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="345">
+                  <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="KafkaDataFetcher.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/KafkaDataFetcher.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="424">
+                  <caret line="55" column="24" lean-forward="false" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="DocumentFetcher.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/DocumentFetcher.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="175">
+                  <caret line="66" column="42" lean-forward="false" selection-start-line="66" selection-start-column="23" selection-end-line="66" selection-end-column="42" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="TopicDataFetcher.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="479">
+                  <caret line="148" column="46" lean-forward="false" selection-start-line="148" selection-start-column="46" selection-end-line="148" selection-end-column="46" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="StreamFields.java" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="438">
+                  <caret line="78" column="40" lean-forward="true" selection-start-line="78" selection-start-column="40" selection-end-line="78" selection-end-column="40" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="DocumentFields.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/DocumentFields.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="227">
+                  <caret line="57" column="10" lean-forward="false" selection-start-line="57" selection-start-column="10" selection-end-line="61" selection-end-column="50" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="TopicFields.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/TopicFields.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-452">
+                  <caret line="47" column="56" lean-forward="false" selection-start-line="47" selection-start-column="56" selection-end-line="47" selection-end-column="56" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="RoleFields.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/RoleFields.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="210">
+                  <caret line="34" column="21" lean-forward="false" selection-start-line="34" selection-start-column="21" selection-end-line="34" selection-end-column="21" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="StreamDataFetcher.java" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/StreamDataFetcher.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="300">
+                  <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -180,13 +165,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/docker-compose.yml" />
         <option value="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/DocumentFetcher.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/DocumentFields.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java" />
         <option value="$PROJECT_DIR$/price.html" />
         <option value="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Stream.java" />
+        <option value="$PROJECT_DIR$/docker-compose.yml" />
         <option value="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/StreamDataFetcher.java" />
       </list>
     </option>
   </component>
@@ -295,6 +281,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.scigility.graphql.sample.dataFetchers" />
       <recent name="com.scigility.graphql.sample.fields" />
     </key>
   </component>
@@ -478,7 +465,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24227902" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14430244" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32969216" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286991" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -536,14 +523,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/docker-compose.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="16" lean-forward="false" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/DocumentFetcher.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="175">
@@ -551,22 +530,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/DocumentFields.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="57" column="10" lean-forward="false" selection-start-line="57" selection-start-column="10" selection-end-line="61" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/TopicFields.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="50" column="49" lean-forward="false" selection-start-line="50" selection-start-column="49" selection-end-line="50" selection-end-column="49" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -586,18 +549,66 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/docker-compose.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/RoleFields.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="34" column="21" lean-forward="false" selection-start-line="34" selection-start-column="21" selection-end-line="34" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/DocumentFields.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="57" column="10" lean-forward="false" selection-start-line="57" selection-start-column="10" selection-end-line="61" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Stream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state relative-caret-position="225">
+          <caret line="18" column="9" lean-forward="true" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/TopicFields.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-452">
+          <caret line="47" column="56" lean-forward="false" selection-start-line="47" selection-start-column="56" selection-end-line="47" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/domain/Kafka.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="36" column="22" lean-forward="false" selection-start-line="36" selection-start-column="22" selection-end-line="36" selection-end-column="22" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/fields/StreamFields.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="57" column="0" lean-forward="true" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+        <state relative-caret-position="438">
+          <caret line="78" column="40" lean-forward="true" selection-start-line="78" selection-start-column="40" selection-end-line="78" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/scigility/graphql/sample/dataFetchers/StreamDataFetcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding />
         </state>
       </provider>
