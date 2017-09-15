@@ -13,15 +13,13 @@ import lombok.val;
 
 import com.merapar.graphql.base.TypedValueMap;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Serdes;
 import org.springframework.stereotype.Component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import java.io.BufferedReader;
@@ -36,7 +34,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -44,10 +41,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
-import java.util.Properties;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
@@ -173,19 +168,15 @@ public class TopicDataFetcher {
         log.info("name:"+name);
         //log.info("name:"+name+",schema.type:"+schemaType);
         Properties props = new Properties();
-        props.put("bootstrap.servers", kafka.getBroker());
-        props.put("zookeeper.connect", kafka.getZookeeper());
-        props.put("session.timeout.ms", "30000");
-        props.put("group.id", name);
-        props.put("acks", "all");
-        props.put("retries", 5);
-        props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", "1000");
-        props.put("auto.offset.reset","earliest");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//      props.put("key.deserializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
-//      props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");//latest, earliest, none
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());
+//        props.put("retries", 5);
+//        props.put("enable.auto.commit", "true");
+//        props.put("auto.commit.interval.ms", "1000");
+//        props.put("auto.offset.reset",);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         //consumer.subscribe(Arrays.asList("foo", "bar"));
         consumer.subscribe(Collections.singletonList(name));

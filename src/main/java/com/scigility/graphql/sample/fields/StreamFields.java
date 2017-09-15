@@ -91,16 +91,16 @@ public class StreamFields implements GraphQlFields {
                 .build();
 
         streamStartField = newFieldDefinition()
-                .name("streamStart").description("Add new topic")
+                .name("streamStart").description("Start the stream")
                 .type(streamType)
-                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(filterStreamInputType)).build())
+                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStartInputType)).build())
                 .dataFetcher(environment -> streamDataFetcher.streamStart(getInputMap(environment)))
                 .build();
 
         streamStopField = newFieldDefinition()
-                .name("streamStop").description("Produce a record into a topic")
+                .name("streamStop").description("Stop the stream")
                 .type(streamType)
-                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(filterStreamInputType)).build())
+                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStopInputType)).build())
                 .dataFetcher(environment -> streamDataFetcher.streamStop(getInputMap(environment)))
                 .build();
     }
