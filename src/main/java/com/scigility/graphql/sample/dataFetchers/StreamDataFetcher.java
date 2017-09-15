@@ -3,15 +3,12 @@ package com.scigility.graphql.sample.dataFetchers;
 import com.merapar.graphql.base.TypedValueMap;
 import com.scigility.graphql.sample.domain.Kafka;
 import com.scigility.graphql.sample.domain.Topic;
-import com.scigility.graphql.sample.domain.TopicRecord;
-import kafka.utils.ZkUtils;
-import lombok.val;
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
@@ -19,10 +16,16 @@ import org.apache.kafka.streams.kstream.KTable;
 
 import java.util.Arrays;
 import java.util.Properties;
+
+import org.apache.kafka.streams.kstream.ValueMapper;
+import org.apache.kafka.streams.processor.TopologyBuilder;
+import org.apache.kafka.streams.state.KeyValueIterator;
+import org.apache.kafka.streams.state.QueryableStoreTypes;
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.apache.kafka.streams.state.StreamsMetadata;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class StreamDataFetcher {
@@ -51,26 +54,67 @@ public class StreamDataFetcher {
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");//latest, earliest, none
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        config.put(StreamsConfig.STATE_DIR_CONFIG,"streams-pipe");
 
         KStreamBuilder builder = new KStreamBuilder();
 
         KStream<String, String> textLines = builder.stream(topicIn);
 
         KTable<String, Long> wordCounts = textLines.
-                mapValues( textLine -> textLine.toLowerCase())
+                mapValues(
+                        textLine -> textLine.toLowerCase())
+                .peek((key, value) -> log.info("mapValues:{"+key+":"+value+"}"))
                 .flatMapValues(
                         lowerCasedTextLine -> Arrays.asList(
-                                lowerCasedTextLine.split(" "))
-                )
+                                lowerCasedTextLine.split(" ")))
+                .peek((key, value) -> log.info("flatMapValues:{"+key+":"+value+"}"))
                 .selectKey((ignoredKey, word) -> word)
+                .peek((key, value) -> log.info("selectKey:{"+key+":"+value+"}"))
                 .groupByKey()
                 .count("Counts");
 
+        textLines.peek((key, value) -> log.info("stream:{:"+key+":"+value+"}"));
+
+        wordCounts.filter((key, value) -> {log.info("table:{"+key+":"+value+"}");return true;});
         wordCounts.to(Serdes.String(), Serdes.Long(), topicOut);
 
         KafkaStreams streams = new KafkaStreams(builder, config);
 
+        //print topology
+        log.info(streams.toString());
+
+        //get queryableStoreName
+        String queryableStoreName = wordCounts.queryableStoreName(); // returns null if KTable is not queryable
+
+        log.info(queryableStoreName);
+
+//        KTable<String, Long> query = builder.table(
+//                TopologyBuilder.AutoOffsetReset.EARLIEST,
+//                Serdes.String(),
+//                Serdes.Long(),
+//                topicOut
+//        );
+//
+//        query.filter((key, value) -> {log.info("table:{"+key+":"+value+"}");return true;});
+//        query.mapValues((value) -> log.info("query.table:key:"+key+":value:"+value));
+
         streams.start();
+
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ReadOnlyKeyValueStore<String,Long> view = streams.store(
+                "Counts", QueryableStoreTypes.<String, Long>keyValueStore());
+
+        KeyValueIterator<String, Long> range = view.all();
+
+        while (range.hasNext()) {
+            KeyValue<String, Long> next = range.next();
+            log.info("table{" + next.key + ":" + next.value+"}");
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 

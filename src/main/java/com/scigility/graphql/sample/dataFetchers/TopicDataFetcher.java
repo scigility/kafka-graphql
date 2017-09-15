@@ -14,6 +14,7 @@ import lombok.val;
 import com.merapar.graphql.base.TypedValueMap;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.springframework.stereotype.Component;
 import org.apache.commons.logging.Log;
@@ -160,34 +161,37 @@ public class TopicDataFetcher {
         val kafka = Kafka.getInstance();
 
         String name = arguments.get("name");
-        //LinkedHashMap schema = arguments.get("schema");
-        //String schemaType = schema.get("type");
+        LinkedHashMap<String,String> schema = arguments.get("schema");
+        String serdeKey = schema.get("serdeKey");
+        String serdeValue = schema.get("serdeValue");
 
         List<TopicRecord> topicRecords = new ArrayList<>();
         //String message = arguments.get("message");
         log.info("name:"+name);
+        log.info("serdeKey:"+serdeKey);
+        log.info("serdeValue:"+serdeValue);
         //log.info("name:"+name+",schema.type:"+schemaType);
         Properties props = new Properties();
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");//latest, earliest, none
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());
 //        props.put("retries", 5);
 //        props.put("enable.auto.commit", "true");
 //        props.put("auto.commit.interval.ms", "1000");
 //        props.put("auto.offset.reset",);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        KafkaConsumer<String, Long> consumer = new KafkaConsumer<>(props);
         //consumer.subscribe(Arrays.asList("foo", "bar"));
         consumer.subscribe(Collections.singletonList(name));
-        ConsumerRecords<String, String> records = consumer.poll(500);
-        for (ConsumerRecord<String, String> record : records){
+        ConsumerRecords<String, Long> records = consumer.poll(500);
+        for (ConsumerRecord<String, Long> record : records){
             log.info( "offset = " + record.offset() +
                     ", key = " + record.key() +
                     ", value = " + record.value() );
 
             TopicRecord topicRecord = new TopicRecord(
-                    record.key(), record.value(), record.offset(), record.partition()
+                    record.key(), Long.toString(record.value()), record.offset(), record.partition()
             );
             topicRecords.add(topicRecord);
         }

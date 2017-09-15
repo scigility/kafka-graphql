@@ -3,15 +3,12 @@
 import com.merapar.graphql.base.TypedValueMap;
 import com.scigility.graphql.sample.domain.Kafka;
 import com.scigility.graphql.sample.domain.Topic;
-import com.scigility.graphql.sample.domain.TopicRecord;
-import kafka.utils.ZkUtils;
-import lombok.val;
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
@@ -19,69 +16,116 @@ import org.apache.kafka.streams.kstream.KTable;
 
 import java.util.Arrays;
 import java.util.Properties;
+
+import org.apache.kafka.streams.kstream.ValueMapper;
+import org.apache.kafka.streams.processor.TopologyBuilder;
+import org.apache.kafka.streams.state.KeyValueIterator;
+import org.apache.kafka.streams.state.QueryableStoreTypes;
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.apache.kafka.streams.state.StreamsMetadata;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Component
-<span class="fc" id="L28">public class StreamDataFetcher {</span>
-<span class="fc" id="L29">    private Log log = LogFactory.getLog(StreamDataFetcher.class);</span>
+<span class="fc" id="L31">public class StreamDataFetcher {</span>
+<span class="fc" id="L32">    private Log log = LogFactory.getLog(StreamDataFetcher.class);</span>
 
-<span class="fc" id="L31">    public Map&lt;Integer, Topic&gt; table = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L34">    public Map&lt;Integer, Topic&gt; table = new HashMap&lt;&gt;();</span>
 
     public List&lt;Topic&gt; getStreamByFilter(TypedValueMap arguments) {
-<span class="nc" id="L34">        log.info(&quot;getStreamByFilter&quot;);</span>
-<span class="nc" id="L35">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L37">        log.info(&quot;getStreamByFilter&quot;);</span>
+<span class="nc" id="L38">        Kafka kafka = Kafka.getInstance();</span>
 
 
 
-<span class="nc" id="L39">        return null;</span>
+<span class="nc" id="L42">        return null;</span>
     }
 
     public Topic streamStart(TypedValueMap arguments) {
-<span class="nc" id="L43">        log.info(&quot;streamStart&quot;);</span>
-<span class="nc" id="L44">        Kafka kafka = Kafka.getInstance();</span>
-<span class="nc" id="L45">        String topicIn = arguments.get(&quot;in&quot;);</span>
-<span class="nc" id="L46">        String topicOut = arguments.get(&quot;out&quot;);</span>
+<span class="nc" id="L46">        log.info(&quot;streamStart&quot;);</span>
+<span class="nc" id="L47">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L48">        String topicIn = arguments.get(&quot;in&quot;);</span>
+<span class="nc" id="L49">        String topicOut = arguments.get(&quot;out&quot;);</span>
 
-<span class="nc" id="L48">        Properties config = new Properties();</span>
-<span class="nc" id="L49">        config.put(StreamsConfig.APPLICATION_ID_CONFIG, &quot;app&quot;);</span>
-<span class="nc" id="L50">        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
-<span class="nc" id="L51">        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,&quot;earliest&quot;);//latest, earliest, none</span>
-<span class="nc" id="L52">        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());</span>
-<span class="nc" id="L53">        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());</span>
+<span class="nc" id="L51">        Properties config = new Properties();</span>
+<span class="nc" id="L52">        config.put(StreamsConfig.APPLICATION_ID_CONFIG, &quot;app&quot;);</span>
+<span class="nc" id="L53">        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
+<span class="nc" id="L54">        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,&quot;earliest&quot;);//latest, earliest, none</span>
+<span class="nc" id="L55">        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());</span>
+<span class="nc" id="L56">        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());</span>
+<span class="nc" id="L57">        config.put(StreamsConfig.STATE_DIR_CONFIG,&quot;streams-pipe&quot;);</span>
 
-<span class="nc" id="L55">        KStreamBuilder builder = new KStreamBuilder();</span>
+<span class="nc" id="L59">        KStreamBuilder builder = new KStreamBuilder();</span>
 
-<span class="nc" id="L57">        KStream&lt;String, String&gt; textLines = builder.stream(topicIn);</span>
+<span class="nc" id="L61">        KStream&lt;String, String&gt; textLines = builder.stream(topicIn);</span>
 
-<span class="nc" id="L59">        KTable&lt;String, Long&gt; wordCounts = textLines.</span>
-<span class="nc" id="L60">                mapValues( textLine -&gt; textLine.toLowerCase())</span>
-<span class="nc" id="L61">                .flatMapValues(</span>
-<span class="nc" id="L62">                        lowerCasedTextLine -&gt; Arrays.asList(</span>
-<span class="nc" id="L63">                                lowerCasedTextLine.split(&quot; &quot;))</span>
-                )
-<span class="nc" id="L65">                .selectKey((ignoredKey, word) -&gt; word)</span>
-<span class="nc" id="L66">                .groupByKey()</span>
-<span class="nc" id="L67">                .count(&quot;Counts&quot;);</span>
+<span class="nc" id="L63">        KTable&lt;String, Long&gt; wordCounts = textLines.</span>
+<span class="nc" id="L64">                mapValues(</span>
+<span class="nc" id="L65">                        textLine -&gt; textLine.toLowerCase())</span>
+<span class="nc" id="L66">                .peek((key, value) -&gt; log.info(&quot;mapValues:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;))</span>
+<span class="nc" id="L67">                .flatMapValues(</span>
+<span class="nc" id="L68">                        lowerCasedTextLine -&gt; Arrays.asList(</span>
+<span class="nc" id="L69">                                lowerCasedTextLine.split(&quot; &quot;)))</span>
+<span class="nc" id="L70">                .peek((key, value) -&gt; log.info(&quot;flatMapValues:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;))</span>
+<span class="nc" id="L71">                .selectKey((ignoredKey, word) -&gt; word)</span>
+<span class="nc" id="L72">                .peek((key, value) -&gt; log.info(&quot;selectKey:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;))</span>
+<span class="nc" id="L73">                .groupByKey()</span>
+<span class="nc" id="L74">                .count(&quot;Counts&quot;);</span>
 
-<span class="nc" id="L69">        wordCounts.to(Serdes.String(), Serdes.Long(), topicOut);</span>
+<span class="nc" id="L76">        textLines.peek((key, value) -&gt; log.info(&quot;stream:{:&quot;+key+&quot;:&quot;+value+&quot;}&quot;));</span>
 
-<span class="nc" id="L71">        KafkaStreams streams = new KafkaStreams(builder, config);</span>
+<span class="nc" id="L78">        wordCounts.filter((key, value) -&gt; {log.info(&quot;table:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;);return true;});</span>
+<span class="nc" id="L79">        wordCounts.to(Serdes.String(), Serdes.Long(), topicOut);</span>
 
-<span class="nc" id="L73">        streams.start();</span>
+<span class="nc" id="L81">        KafkaStreams streams = new KafkaStreams(builder, config);</span>
 
-<span class="nc" id="L75">        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));</span>
+        //print topology
+<span class="nc" id="L84">        log.info(streams.toString());</span>
 
-<span class="nc" id="L77">        return null;</span>
+        //get queryableStoreName
+<span class="nc" id="L87">        String queryableStoreName = wordCounts.queryableStoreName(); // returns null if KTable is not queryable</span>
+
+<span class="nc" id="L89">        log.info(queryableStoreName);</span>
+
+//        KTable&lt;String, Long&gt; query = builder.table(
+//                TopologyBuilder.AutoOffsetReset.EARLIEST,
+//                Serdes.String(),
+//                Serdes.Long(),
+//                topicOut
+//        );
+//
+//        query.filter((key, value) -&gt; {log.info(&quot;table:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;);return true;});
+//        query.mapValues((value) -&gt; log.info(&quot;query.table:key:&quot;+key+&quot;:value:&quot;+value));
+
+<span class="nc" id="L101">        streams.start();</span>
+
+        try {
+<span class="nc" id="L104">            Thread.sleep(1000L);</span>
+<span class="nc" id="L105">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L106">            e.printStackTrace();</span>
+<span class="nc" id="L107">        }</span>
+
+<span class="nc" id="L109">        ReadOnlyKeyValueStore&lt;String,Long&gt; view = streams.store(</span>
+<span class="nc" id="L110">                &quot;Counts&quot;, QueryableStoreTypes.&lt;String, Long&gt;keyValueStore());</span>
+
+<span class="nc" id="L112">        KeyValueIterator&lt;String, Long&gt; range = view.all();</span>
+
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        while (range.hasNext()) {</span>
+<span class="nc" id="L115">            KeyValue&lt;String, Long&gt; next = range.next();</span>
+<span class="nc" id="L116">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
+<span class="nc" id="L117">        }</span>
+
+<span class="nc" id="L119">        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));</span>
+
+<span class="nc" id="L121">        return null;</span>
     }
 
     public Topic streamStop(TypedValueMap arguments) {
-<span class="nc" id="L81">        log.info(&quot;streamStop&quot;);</span>
-<span class="nc" id="L82">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L125">        log.info(&quot;streamStop&quot;);</span>
+<span class="nc" id="L126">        Kafka kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L84">        return null;</span>
+<span class="nc" id="L128">        return null;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

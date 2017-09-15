@@ -92,76 +92,80 @@ import org.apache.commons.logging.LogFactory;
 <span class="fc" id="L92">                .build();</span>
 
 <span class="fc" id="L94">        schemaInputType = newInputObject().name(&quot;schema&quot;).description(&quot;A schema&quot;)</span>
-<span class="fc" id="L95">                .field(newInputObjectField().name(&quot;type&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L96">                .field(newInputObjectField().name(&quot;fields&quot;).type(new GraphQLList(fieldsInputType)).build())</span>
-<span class="fc" id="L97">                .build();</span>
+<span class="fc" id="L95">                .field(newInputObjectField().name(&quot;type&quot;).type(Scalars.GraphQLString).build())</span>
+<span class="fc" id="L96">                .field(newInputObjectField().name(&quot;serdeKey&quot;).type(Scalars.GraphQLString).build())</span>
+<span class="fc" id="L97">                .field(newInputObjectField().name(&quot;serdeValue&quot;).type(Scalars.GraphQLString).build())</span>
+<span class="fc" id="L98">                .field(newInputObjectField().name(&quot;fields&quot;).</span>
+<span class="fc" id="L99">                        type(new GraphQLList(fieldsInputType))</span>
+<span class="fc" id="L100">                        .build())</span>
+<span class="fc" id="L101">                .build();</span>
 
-<span class="fc" id="L99">        produceTopicRecordInputType = newInputObject().name(&quot;produceTopicRecordInput&quot;)</span>
-<span class="fc" id="L100">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L101">                .field(newInputObjectField().name(&quot;message&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L102">                .field(newInputObjectField().name(&quot;schema&quot;).type(schemaInputType).build())</span>
-<span class="fc" id="L103">                .build();</span>
+<span class="fc" id="L103">        produceTopicRecordInputType = newInputObject().name(&quot;produceTopicRecordInput&quot;)</span>
+<span class="fc" id="L104">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L105">                .field(newInputObjectField().name(&quot;message&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L106">                .field(newInputObjectField().name(&quot;schema&quot;).type(schemaInputType).build())</span>
+<span class="fc" id="L107">                .build();</span>
 
-<span class="fc" id="L105">        consumeTopicRecordInputType = newInputObject().name(&quot;consumeTopicRecordInput&quot;)</span>
-<span class="fc" id="L106">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L107">                .field(newInputObjectField().name(&quot;schema&quot;).type(schemaInputType).build())</span>
-<span class="fc" id="L108">                .build();</span>
-
-<span class="fc" id="L110">        updateTopicInputType = newInputObject().name(&quot;updateTopicInput&quot;)</span>
-<span class="fc" id="L111">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L109">        consumeTopicRecordInputType = newInputObject().name(&quot;consumeTopicRecordInput&quot;)</span>
+<span class="fc" id="L110">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L111">                .field(newInputObjectField().name(&quot;schema&quot;).type(schemaInputType).build())</span>
 <span class="fc" id="L112">                .build();</span>
 
-<span class="fc" id="L114">        deleteTopicInputType = newInputObject().name(&quot;deleteTopicInput&quot;)</span>
-<span class="fc" id="L115">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L114">        updateTopicInputType = newInputObject().name(&quot;updateTopicInput&quot;)</span>
+<span class="fc" id="L115">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLString).build())</span>
 <span class="fc" id="L116">                .build();</span>
 
-<span class="fc" id="L118">        filterTopicInputType = newInputObject().name(&quot;filterTopicInput&quot;)</span>
-<span class="fc" id="L119">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L118">        deleteTopicInputType = newInputObject().name(&quot;deleteTopicInput&quot;)</span>
+<span class="fc" id="L119">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
 <span class="fc" id="L120">                .build();</span>
-<span class="fc" id="L121">    }</span>
+
+<span class="fc" id="L122">        filterTopicInputType = newInputObject().name(&quot;filterTopicInput&quot;)</span>
+<span class="fc" id="L123">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L124">                .build();</span>
+<span class="fc" id="L125">    }</span>
 
     private void createFields() {
-<span class="fc" id="L124">        topicsField = newFieldDefinition()</span>
-<span class="fc" id="L125">                .name(&quot;topics&quot;).description(&quot;Provide an overview of all topics&quot;)</span>
-<span class="fc" id="L126">                .type(new GraphQLList(topicType))</span>
-<span class="fc" id="L127">                .argument(newArgument().name(FILTER).type(filterTopicInputType).build())</span>
-<span class="pc" id="L128">                .dataFetcher(environment -&gt; topicDataFetcher.getTopicsByFilter(getFilterMap(environment)))</span>
-<span class="fc" id="L129">                .build();</span>
+<span class="fc" id="L128">        topicsField = newFieldDefinition()</span>
+<span class="fc" id="L129">                .name(&quot;topics&quot;).description(&quot;Provide an overview of all topics&quot;)</span>
+<span class="fc" id="L130">                .type(new GraphQLList(topicType))</span>
+<span class="fc" id="L131">                .argument(newArgument().name(FILTER).type(filterTopicInputType).build())</span>
+<span class="pc" id="L132">                .dataFetcher(environment -&gt; topicDataFetcher.getTopicsByFilter(getFilterMap(environment)))</span>
+<span class="fc" id="L133">                .build();</span>
 
-<span class="fc" id="L131">        addTopicField = newFieldDefinition()</span>
-<span class="fc" id="L132">                .name(&quot;addTopic&quot;).description(&quot;Add new topic&quot;)</span>
-<span class="fc" id="L133">                .type(topicType)</span>
-<span class="fc" id="L134">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addTopicInputType)).build())</span>
-<span class="pc" id="L135">                .dataFetcher(environment -&gt; topicDataFetcher.addTopic(getInputMap(environment)))</span>
-<span class="fc" id="L136">                .build();</span>
+<span class="fc" id="L135">        addTopicField = newFieldDefinition()</span>
+<span class="fc" id="L136">                .name(&quot;addTopic&quot;).description(&quot;Add new topic&quot;)</span>
+<span class="fc" id="L137">                .type(topicType)</span>
+<span class="fc" id="L138">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addTopicInputType)).build())</span>
+<span class="pc" id="L139">                .dataFetcher(environment -&gt; topicDataFetcher.addTopic(getInputMap(environment)))</span>
+<span class="fc" id="L140">                .build();</span>
 
-<span class="fc" id="L138">        produceTopicRecordField = newFieldDefinition()</span>
-<span class="fc" id="L139">                .name(&quot;produceTopicRecord&quot;).description(&quot;Produce a record into a topic&quot;)</span>
-<span class="fc" id="L140">                .type(topicType)</span>
-<span class="fc" id="L141">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(produceTopicRecordInputType)).build())</span>
-<span class="pc" id="L142">                .dataFetcher(environment -&gt; topicDataFetcher.produceTopicRecord(getInputMap(environment)))</span>
-<span class="fc" id="L143">                .build();</span>
+<span class="fc" id="L142">        produceTopicRecordField = newFieldDefinition()</span>
+<span class="fc" id="L143">                .name(&quot;produceTopicRecord&quot;).description(&quot;Produce a record into a topic&quot;)</span>
+<span class="fc" id="L144">                .type(topicType)</span>
+<span class="fc" id="L145">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(produceTopicRecordInputType)).build())</span>
+<span class="pc" id="L146">                .dataFetcher(environment -&gt; topicDataFetcher.produceTopicRecord(getInputMap(environment)))</span>
+<span class="fc" id="L147">                .build();</span>
 
-<span class="fc" id="L145">        consumeTopicRecordField = newFieldDefinition()</span>
-<span class="fc" id="L146">                .name(&quot;consumeTopicRecord&quot;).description(&quot;Consume a records from a topic&quot;)</span>
-<span class="fc" id="L147">                .type(new GraphQLList(topicRecordType))</span>
-<span class="fc" id="L148">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(consumeTopicRecordInputType)).build())</span>
-<span class="pc" id="L149">                .dataFetcher(environment -&gt; topicDataFetcher.consumeTopicRecord(getInputMap(environment)))</span>
-<span class="fc" id="L150">                .build();</span>
+<span class="fc" id="L149">        consumeTopicRecordField = newFieldDefinition()</span>
+<span class="fc" id="L150">                .name(&quot;consumeTopicRecord&quot;).description(&quot;Consume a records from a topic&quot;)</span>
+<span class="fc" id="L151">                .type(new GraphQLList(topicRecordType))</span>
+<span class="fc" id="L152">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(consumeTopicRecordInputType)).build())</span>
+<span class="pc" id="L153">                .dataFetcher(environment -&gt; topicDataFetcher.consumeTopicRecord(getInputMap(environment)))</span>
+<span class="fc" id="L154">                .build();</span>
 
-<span class="fc" id="L152">        updateTopicField = newFieldDefinition()</span>
-<span class="fc" id="L153">                .name(&quot;updateTopic&quot;).description(&quot;Update existing topic&quot;)</span>
-<span class="fc" id="L154">                .type(topicType)</span>
-<span class="fc" id="L155">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateTopicInputType)).build())</span>
-<span class="pc" id="L156">                .dataFetcher(environment -&gt; topicDataFetcher.updateTopic(getInputMap(environment)))</span>
-<span class="fc" id="L157">                .build();</span>
+<span class="fc" id="L156">        updateTopicField = newFieldDefinition()</span>
+<span class="fc" id="L157">                .name(&quot;updateTopic&quot;).description(&quot;Update existing topic&quot;)</span>
+<span class="fc" id="L158">                .type(topicType)</span>
+<span class="fc" id="L159">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateTopicInputType)).build())</span>
+<span class="pc" id="L160">                .dataFetcher(environment -&gt; topicDataFetcher.updateTopic(getInputMap(environment)))</span>
+<span class="fc" id="L161">                .build();</span>
 
-<span class="fc" id="L159">        deleteTopicField = newFieldDefinition()</span>
-<span class="fc" id="L160">                .name(&quot;deleteTopic&quot;).description(&quot;Delete existing topic&quot;)</span>
-<span class="fc" id="L161">                .type(topicType)</span>
-<span class="fc" id="L162">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteTopicInputType)).build())</span>
-<span class="pc" id="L163">                .dataFetcher(environment -&gt; topicDataFetcher.deleteTopic(getInputMap(environment)))</span>
-<span class="fc" id="L164">                .build();</span>
-<span class="fc" id="L165">    }</span>
+<span class="fc" id="L163">        deleteTopicField = newFieldDefinition()</span>
+<span class="fc" id="L164">                .name(&quot;deleteTopic&quot;).description(&quot;Delete existing topic&quot;)</span>
+<span class="fc" id="L165">                .type(topicType)</span>
+<span class="fc" id="L166">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteTopicInputType)).build())</span>
+<span class="pc" id="L167">                .dataFetcher(environment -&gt; topicDataFetcher.deleteTopic(getInputMap(environment)))</span>
+<span class="fc" id="L168">                .build();</span>
+<span class="fc" id="L169">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -92,8 +92,12 @@ public class TopicFields implements GraphQlFields {
                 .build();
 
         schemaInputType = newInputObject().name("schema").description("A schema")
-                .field(newInputObjectField().name("type").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
-                .field(newInputObjectField().name("fields").type(new GraphQLList(fieldsInputType)).build())
+                .field(newInputObjectField().name("type").type(Scalars.GraphQLString).build())
+                .field(newInputObjectField().name("serdeKey").type(Scalars.GraphQLString).build())
+                .field(newInputObjectField().name("serdeValue").type(Scalars.GraphQLString).build())
+                .field(newInputObjectField().name("fields").
+                        type(new GraphQLList(fieldsInputType))
+                        .build())
                 .build();
 
         produceTopicRecordInputType = newInputObject().name("produceTopicRecordInput")
