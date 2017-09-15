@@ -7,6 +7,7 @@
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/fields/RoleFields.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/TopicDataFetcher.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/Application.java
+/Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/TableRecord.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/domain/Producer.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/CustomGraphQlExecutorImpl.java
 /Users/thbas/dev/kafka-graphql/src/main/java/com/scigility/graphql/sample/dataFetchers/StreamDataFetcher.java

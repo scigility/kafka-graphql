@@ -31,6 +31,9 @@ public class StreamFields implements GraphQlFields {
     @Getter
     private GraphQLObjectType streamType;
 
+    @Getter
+    private GraphQLObjectType tableRecordType;
+
     private GraphQLInputObjectType streamStartInputType;
     private GraphQLInputObjectType streamStopInputType;
     private GraphQLInputObjectType filterStreamInputType;
@@ -63,9 +66,10 @@ public class StreamFields implements GraphQlFields {
                 .field(newFieldDefinition().name("table").description("The partition").type(GraphQLInt).build())
                 .build();
 
-//        tableType = newObject().name("topic").description("A topic")
-//                .field(newFieldDefinition().name("name").description("The name").type(GraphQLString).build())
-//                .build();
+        tableRecordType = newObject().name("tableRecord").description("A table Record")
+                .field(newFieldDefinition().name("key").description("key").type(GraphQLString).build())
+                .field(newFieldDefinition().name("value").description("value").type(GraphQLString).build())
+                .build();
 
         streamStartInputType = newInputObject().name("streamStart").description("A fields")
                 .field(newInputObjectField().name("in").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
@@ -85,14 +89,14 @@ public class StreamFields implements GraphQlFields {
     private void createFields() {
         streamField = newFieldDefinition()
                 .name("stream").description("Provide an overview of all topics")
-                .type(new GraphQLList(streamType))
+                .type(new GraphQLList(tableRecordType))
                 .argument(newArgument().name(FILTER).type(filterStreamInputType).build())
                 .dataFetcher(environment -> streamDataFetcher.getStreamByFilter(getFilterMap(environment)))
                 .build();
 
         streamStartField = newFieldDefinition()
                 .name("streamStart").description("Start the stream")
-                .type(streamType)
+                .type(new GraphQLList(tableRecordType))
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStartInputType)).build())
                 .dataFetcher(environment -> streamDataFetcher.streamStart(getInputMap(environment)))
                 .build();

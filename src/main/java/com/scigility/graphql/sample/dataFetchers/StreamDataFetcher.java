@@ -2,6 +2,7 @@ package com.scigility.graphql.sample.dataFetchers;
 
 import com.merapar.graphql.base.TypedValueMap;
 import com.scigility.graphql.sample.domain.Kafka;
+import com.scigility.graphql.sample.domain.TableRecord;
 import com.scigility.graphql.sample.domain.Topic;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,16 +34,31 @@ public class StreamDataFetcher {
 
     public Map<Integer, Topic> table = new HashMap<>();
 
-    public List<Topic> getStreamByFilter(TypedValueMap arguments) {
+    private KafkaStreams streams;
+
+    public List<TableRecord> getStreamByFilter(TypedValueMap arguments) {
         log.info("getStreamByFilter");
         Kafka kafka = Kafka.getInstance();
 
+        ReadOnlyKeyValueStore<String,Long> view = streams.store(
+                "Counts", QueryableStoreTypes.<String, Long>keyValueStore());
 
+        KeyValueIterator<String, Long> range = view.all();
 
-        return null;
+        List<TableRecord> tableRecords = new ArrayList<>();
+        while (range.hasNext()) {
+            KeyValue<String, Long> next = range.next();
+            log.info("table{" + next.key + ":" + next.value+"}");
+            TableRecord record = new TableRecord();
+            record.setKey(next.key);
+            record.setValue(next.value);
+
+            tableRecords.add(record);
+        }
+        return tableRecords;
     }
 
-    public Topic streamStart(TypedValueMap arguments) {
+    public List<TableRecord> streamStart(TypedValueMap arguments) {
         log.info("streamStart");
         Kafka kafka = Kafka.getInstance();
         String topicIn = arguments.get("in");
@@ -78,7 +94,7 @@ public class StreamDataFetcher {
         wordCounts.filter((key, value) -> {log.info("table:{"+key+":"+value+"}");return true;});
         wordCounts.to(Serdes.String(), Serdes.Long(), topicOut);
 
-        KafkaStreams streams = new KafkaStreams(builder, config);
+        streams = new KafkaStreams(builder, config);
 
         //print topology
         log.info(streams.toString());
@@ -111,14 +127,21 @@ public class StreamDataFetcher {
 
         KeyValueIterator<String, Long> range = view.all();
 
+        List<TableRecord> tableRecords = new ArrayList<>();
         while (range.hasNext()) {
             KeyValue<String, Long> next = range.next();
             log.info("table{" + next.key + ":" + next.value+"}");
+            TableRecord record = new TableRecord();
+            record.setKey(next.key);
+            record.setValue(next.value);
+
+            tableRecords.add(record);
         }
+
 
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
-        return null;
+        return tableRecords;
     }
 
     public Topic streamStop(TypedValueMap arguments) {

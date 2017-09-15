@@ -6,6 +6,7 @@ com/scigility/graphql/sample/dataFetchers/UserDataFetcher.class
 com/scigility/graphql/sample/domain/Producer.class
 com/scigility/graphql/sample/dataFetchers/StreamDataFetcher.class
 com/scigility/graphql/sample/domain/KTable.class
+com/scigility/graphql/sample/domain/TableRecord.class
 com/scigility/graphql/sample/domain/Stream.class
 com/scigility/graphql/sample/domain/TopicRecord.class
 com/scigility/graphql/sample/fields/TopicFields.class
