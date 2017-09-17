@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TopicDataFetcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">graphql-spring-boot-starter-sample</a> &gt; <a href="index.source.html" class="el_package">com.scigility.graphql.sample.dataFetchers</a> &gt; <span class="el_source">TopicDataFetcher.java</span></div><h1>TopicDataFetcher.java</h1><pre class="source lang-java linenums">package com.scigility.graphql.sample.dataFetchers;
 
-
+import com.scigility.graphql.sample.domain.TableRecord;
 import com.scigility.graphql.sample.domain.Topic;
 import com.scigility.graphql.sample.domain.TopicRecord;
 import com.scigility.graphql.sample.domain.Kafka;
 import org.apache.avro.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.val;
 
 import com.merapar.graphql.base.TypedValueMap;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KStreamBuilder;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.state.KeyValueIterator;
+import org.apache.kafka.streams.state.QueryableStoreTypes;
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.springframework.stereotype.Component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,19 +33,6 @@ import com.twitter.bijection.avro.GenericAvroCodecs;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.StringEntity;
-
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -47,7 +40,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-
 
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
@@ -59,272 +51,390 @@ import org.I0Itec.zkclient.ZkConnection;
 
 import org.apache.zookeeper.ZooKeeper;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 @Component
-<span class="fc" id="L65">public class TopicDataFetcher {</span>
-<span class="fc" id="L66">    private Log log = LogFactory.getLog(TopicDataFetcher.class);</span>
+<span class="fc" id="L55">public class TopicDataFetcher {</span>
+<span class="fc" id="L56">    private Log log = LogFactory.getLog(TopicDataFetcher.class);</span>
 
-<span class="fc" id="L68">    public Map&lt;Integer, Topic&gt; topics = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L58">    public Map&lt;String,Topic&gt; topics = new HashMap&lt;&gt;();</span>
+
+    private KafkaStreams streams;
 
     public List&lt;Topic&gt; getTopicsByFilter(TypedValueMap arguments) {
-<span class="nc" id="L71">        val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L63">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L73">        log.info(&quot;getTopicsByFilter&quot;);</span>
+<span class="nc" id="L65">        log.info(&quot;getTopicsByFilter&quot;);</span>
 
-<span class="nc" id="L75">        ZkClient zkClient = null;</span>
-<span class="nc" id="L76">        ZkUtils zkUtils = null;</span>
-<span class="nc" id="L77">        int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
-<span class="nc" id="L78">        int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
-<span class="nc" id="L79">        boolean isSecureKafkaCluster = false;</span>
+<span class="nc" id="L67">        ZkClient zkClient = null;</span>
+<span class="nc" id="L68">        ZkUtils zkUtils = null;</span>
+<span class="nc" id="L69">        int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
+<span class="nc" id="L70">        int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
+<span class="nc" id="L71">        boolean isSecureKafkaCluster = false;</span>
 
-<span class="nc" id="L81">        List&lt;Topic&gt; topics = new ArrayList&lt;&gt;();</span>
         try {
-<span class="nc" id="L83">            ZooKeeper zk = new ZooKeeper(</span>
-<span class="nc" id="L84">                    kafka.getZookeeper(), sessionTimeOutInMs, null);</span>
+<span class="nc" id="L74">            ZooKeeper zk = new ZooKeeper(</span>
+<span class="nc" id="L75">                    kafka.getZookeeper(), sessionTimeOutInMs, null);</span>
 
-<span class="nc" id="L86">            List&lt;String&gt; _topics = zk.getChildren(</span>
+<span class="nc" id="L77">            List&lt;String&gt; _topics = zk.getChildren(</span>
                     &quot;/brokers/topics&quot;, false);
 
             try{
-<span class="nc" id="L90">                TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
-<span class="nc" id="L91">            } catch (java.lang.InterruptedException e){}</span>
+<span class="nc" id="L81">                TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
+<span class="nc" id="L82">            } catch (java.lang.InterruptedException e){}</span>
 
-<span class="nc" id="L93">            log.info(&quot;List of Topics&quot;);</span>
-<span class="nc" id="L94">            int index = 0;</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">            for (String topicName : _topics) {</span>
-<span class="nc" id="L96">                log.info(topicName);</span>
-<span class="nc" id="L97">                val topic = new Topic();</span>
-<span class="nc" id="L98">                topic.setName(topicName);</span>
-<span class="nc" id="L99">                topics.add(topic);</span>
-<span class="nc" id="L100">            }</span>
-<span class="nc" id="L101">        } catch (Exception ex) {</span>
-<span class="nc" id="L102">            ex.printStackTrace();</span>
+<span class="nc" id="L84">            log.info(&quot;List of Topics&quot;);</span>
+<span class="nc" id="L85">            int index = 0;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">            for (String topicName : _topics) {</span>
+<span class="nc" id="L87">                log.info(&quot;topicName:&quot;+topicName);</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                if ( !topics.containsKey(topicName) ) {</span>
+<span class="nc" id="L90">                    val topic = new Topic();</span>
+<span class="nc" id="L91">                    topic.setName(topicName);</span>
+<span class="nc" id="L92">                    topics.put(topicName,topic);</span>
+                }
+<span class="nc" id="L94">            }</span>
+<span class="nc" id="L95">        } catch (Exception ex) {</span>
+<span class="nc" id="L96">            ex.printStackTrace();</span>
         } finally {
-<span class="nc bnc" id="L104" title="All 6 branches missed.">            if (zkClient != null) {</span>
-<span class="nc" id="L105">                zkClient.close();</span>
+<span class="nc bnc" id="L98" title="All 6 branches missed.">            if (zkClient != null) {</span>
+<span class="nc" id="L99">                zkClient.close();</span>
             }
         }
 
-<span class="nc" id="L109">        return topics;</span>
+<span class="nc" id="L103">        return new ArrayList&lt;Topic&gt;(topics.values());</span>
     }
 
     public String addTopic(TypedValueMap arguments) {
-<span class="nc" id="L113">        log.info(&quot;addTopic&quot;);</span>
+<span class="nc" id="L107">        log.info(&quot;addTopic&quot;);</span>
+<span class="nc" id="L108">        String result = &quot;&quot;;</span>
+<span class="nc" id="L109">        ZkClient zkClient = null;</span>
+<span class="nc" id="L110">        ZkUtils zkUtils = null;</span>
+<span class="nc" id="L111">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L115">        val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L113">        LinkedHashMap schema = arguments.get(&quot;schema&quot;);</span>
+<span class="nc" id="L114">        log.info(&quot;schema:&quot;+schema.toString());</span>
 
-<span class="nc" id="L117">        String name = arguments.get(&quot;name&quot;);</span>
-<span class="nc" id="L118">        String result = &quot;&quot;;</span>
-
-<span class="nc" id="L120">        ZkClient zkClient = null;</span>
-<span class="nc" id="L121">        ZkUtils zkUtils = null;</span>
-<span class="nc" id="L122">        int sessionTimeOutInMs = 20 * 1000; // 15 secs</span>
-<span class="nc" id="L123">        int connectionTimeOutInMs = 20 * 1000; // 10 secs</span>
-<span class="nc" id="L124">        boolean isSecureKafkaCluster = false;</span>
+<span class="nc" id="L116">        String topicName = arguments.get(&quot;name&quot;);</span>
+<span class="nc" id="L117">        log.info(&quot;topicName=&quot;+topicName);</span>
+<span class="nc" id="L118">        int noOfPartitions = 1;</span>
+<span class="nc" id="L119">        int noOfReplication = 1;</span>
 
         try {
-<span class="nc" id="L127">            log.info(&quot;zookeeperHosts=&quot;+kafka.getZookeeper());</span>
-<span class="nc" id="L128">            zkClient = new ZkClient(</span>
-<span class="nc" id="L129">                    kafka.getZookeeper(),</span>
-                    sessionTimeOutInMs,
-                    connectionTimeOutInMs,
+<span class="nc" id="L122">            log.info(&quot;zookeeperHosts=&quot;+kafka.getZookeeper());</span>
+<span class="nc" id="L123">            zkClient = new ZkClient(</span>
+<span class="nc" id="L124">                    kafka.getZookeeper(),</span>
+                    20 * 1000,
+                    20 * 1000,
                     ZKStringSerializer$.MODULE$);
 
-            // Security for Kafka was added in Kafka 0.9.0.0
+<span class="nc" id="L129">            zkUtils = new ZkUtils(zkClient, new ZkConnection(</span>
+<span class="nc" id="L130">                    kafka.getZookeeper()), false);</span>
 
-<span class="nc" id="L136">            zkUtils = new ZkUtils(zkClient, new ZkConnection(</span>
-<span class="nc" id="L137">                    kafka.getZookeeper()), isSecureKafkaCluster);</span>
-<span class="nc" id="L138">            log.info(&quot;topicName=&quot;+name);</span>
+<span class="nc" id="L132">            Properties topicConfiguration = new Properties();</span>
 
-            //String topicName = &quot;testTopic&quot;;
-<span class="nc" id="L141">            int noOfPartitions = 1;</span>
-<span class="nc" id="L142">            int noOfReplication = 1;</span>
-<span class="nc" id="L143">            Properties topicConfiguration = new Properties();</span>
-<span class="nc" id="L144">            log.info(&quot;AdminUtils.createTopic&quot;);</span>
-            //required: kafka.utils.ZkUtils,java.lang.String,int,int,java.util.Properties,kafka.admin.RackAwareMode
-<span class="nc" id="L146">            AdminUtils.createTopic(zkUtils,</span>
-                    name, noOfPartitions, noOfReplication, topicConfiguration,
-                    RackAwareMode.Enforced$.MODULE$);
+<span class="nc" id="L134">            log.info(&quot;AdminUtils.createTopic&quot;);</span>
+<span class="nc" id="L135">            AdminUtils.createTopic(zkUtils,</span>
+                    topicName, noOfPartitions, noOfReplication, topicConfiguration,
+                    RackAwareMode.Safe$.MODULE$);
 
+<span class="nc" id="L139">            log.info(&quot;AdminUtils.wait the result&quot;);</span>
             try{
-<span class="nc" id="L151">                TimeUnit.MILLISECONDS.sleep((long)(sessionTimeOutInMs*0.1));</span>
-<span class="nc" id="L152">            } catch (java.lang.InterruptedException e){}</span>
+<span class="nc" id="L141">                TimeUnit.MILLISECONDS.sleep((long)(1000));</span>
+<span class="nc" id="L142">            } catch (java.lang.InterruptedException e){}</span>
 
-<span class="nc" id="L154">            result = &quot;topic created&quot;;</span>
-<span class="nc" id="L155">        } catch (Exception ex) {</span>
-<span class="nc" id="L156">            log.error(&quot;getTopics:&quot;+ex.getMessage());</span>
-<span class="nc" id="L157">            result = ex.getMessage();</span>
-<span class="nc" id="L158">            ex.printStackTrace();</span>
+<span class="nc" id="L144">        } catch (Exception ex) {</span>
+<span class="nc" id="L145">            log.error(&quot;error:&quot;+ex.getMessage());</span>
+<span class="nc" id="L146">            result = ex.getMessage();</span>
+<span class="nc" id="L147">            ex.printStackTrace();</span>
         } finally {
-<span class="nc bnc" id="L160" title="All 6 branches missed.">            if (zkClient != null) {</span>
-<span class="nc" id="L161">                zkClient.close();</span>
+<span class="nc bnc" id="L149" title="All 6 branches missed.">            if (zkClient != null) {</span>
+<span class="nc" id="L150">                zkClient.close();</span>
             }
-        }
-<span class="nc" id="L164">        return result;</span>
+<span class="nc bnc" id="L152" title="All 6 branches missed.">            if ( !topics.containsKey(topicName) ) {</span>
+<span class="nc" id="L153">                val topic = new Topic();</span>
+<span class="nc" id="L154">                topic.setName(topicName);</span>
+<span class="nc" id="L155">                topic.setSchema(readSchema(schema));</span>
+<span class="nc" id="L156">                topics.put(topicName,topic);</span>
+<span class="nc" id="L157">                result = &quot;topic &quot;+topicName+&quot; created&quot;;</span>
+<span class="nc" id="L158">            } else {</span>
+<span class="nc" id="L159">                val topic = topics.get(topicName);</span>
+<span class="nc" id="L160">                topic.setSchema(readSchema(schema));</span>
+<span class="nc" id="L161">                topics.put(topicName,topic);</span>
+<span class="nc" id="L162">                result = &quot;topic &quot;+topicName+&quot; updated&quot;;</span>
+<span class="nc" id="L163">            }</span>
+<span class="nc" id="L164">        }</span>
+<span class="nc" id="L165">        return result;</span>
     }
 
     public String produceTopicRecord(TypedValueMap arguments) {
-<span class="nc" id="L168">        log.info(&quot;produceTopicRecord&quot;);</span>
-<span class="nc" id="L169">        log.info(arguments);</span>
-<span class="nc" id="L170">        val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L169">        log.info(&quot;produceTopicRecord&quot;);</span>
+<span class="nc" id="L170">        String result = &quot;&quot;;</span>
+<span class="nc" id="L171">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L172">        String result = &quot;&quot;;</span>
 <span class="nc" id="L173">        String name = arguments.get(&quot;name&quot;);</span>
 <span class="nc" id="L174">        log.info(&quot;name:&quot;+name);</span>
+<span class="nc" id="L175">        val topic = topics.get(name);</span>
 
-<span class="nc" id="L176">        LinkedHashMap record = arguments.get(&quot;record&quot;);</span>
-<span class="nc" id="L177">        String constumer = (String)record.get(&quot;constumer&quot;);</span>
-<span class="nc" id="L178">        Integer income = (Integer)record.get(&quot;income&quot;);</span>
-<span class="nc" id="L179">        Integer expenses = (Integer)record.get(&quot;expenses&quot;);</span>
-<span class="nc" id="L180">        log.info(&quot;constumer:&quot;+constumer+&quot;,income:&quot;+income+&quot;,expenses:&quot;+expenses);</span>
+<span class="nc" id="L177">        LinkedHashMap record = arguments.get(&quot;record&quot;);</span>
+<span class="nc" id="L178">        String customer = (String)record.get(&quot;customer&quot;);</span>
+<span class="nc" id="L179">        Integer income = (Integer)record.get(&quot;income&quot;);</span>
+<span class="nc" id="L180">        Integer expenses = (Integer)record.get(&quot;expenses&quot;);</span>
+<span class="nc" id="L181">        log.info(&quot;constumer:&quot;+customer+&quot;,income:&quot;+income+&quot;,expenses:&quot;+expenses);</span>
 
-<span class="nc" id="L182">        LinkedHashMap schema = arguments.get(&quot;schema&quot;);</span>
-<span class="nc" id="L183">        log.info(&quot;schema:&quot;+schema.toString());</span>
+<span class="nc" id="L183">        Properties props = new Properties();</span>
+<span class="nc" id="L184">        props.put(&quot;bootstrap.servers&quot;, kafka.getBroker());</span>
+<span class="nc" id="L185">        props.put(&quot;acks&quot;, &quot;all&quot;);</span>
+<span class="nc" id="L186">        props.put(&quot;retries&quot;, 2);</span>
+<span class="nc" id="L187">        props.put(&quot;batch.size&quot;, 16384);</span>
+<span class="nc" id="L188">        props.put(&quot;linger.ms&quot;, 1);</span>
+<span class="nc" id="L189">        props.put(&quot;buffer.memory&quot;, 33554432);</span>
+<span class="nc" id="L190">        props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span>
+<span class="nc" id="L191">        props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.ByteArraySerializer&quot;);</span>
 
-        //log.info(arguments.get(&quot;schema&quot;));
-        //LinkedHashMap schema = arguments.get(&quot;schema&quot;);
-
-        //log.info(&quot;name:&quot;+name+&quot;,message:&quot;+message+&quot;,schema.type:&quot;+schema.get(&quot;type&quot;));
-
-<span class="nc" id="L190">        Properties props = new Properties();</span>
-<span class="nc" id="L191">        props.put(&quot;bootstrap.servers&quot;, kafka.getBroker());</span>
-<span class="nc" id="L192">        props.put(&quot;acks&quot;, &quot;all&quot;);</span>
-<span class="nc" id="L193">        props.put(&quot;retries&quot;, 2);</span>
-<span class="nc" id="L194">        props.put(&quot;batch.size&quot;, 16384);</span>
-<span class="nc" id="L195">        props.put(&quot;linger.ms&quot;, 1);</span>
-<span class="nc" id="L196">        props.put(&quot;buffer.memory&quot;, 33554432);</span>
-<span class="nc" id="L197">        props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span>
-<span class="nc" id="L198">        props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.ByteArraySerializer&quot;);</span>
-
-<span class="nc" id="L200">        Producer&lt;String, byte[]&gt; producer = null;</span>
+<span class="nc" id="L193">        Producer&lt;String, byte[]&gt; producer = null;</span>
         try {
-<span class="nc" id="L202">            producer = new KafkaProducer&lt;&gt;(props);</span>
-<span class="nc" id="L203">            Schema.Parser parser = new Schema.Parser();</span>
-<span class="nc" id="L204">            Schema schemaParsed = parser.parse(readSchema(schema));</span>
+<span class="nc" id="L195">            producer = new KafkaProducer&lt;&gt;(props);</span>
+<span class="nc" id="L196">            Schema schemaParsed = new Schema.Parser().parse(topic.getSchema());</span>
 
-<span class="nc" id="L206">            GenericData.Record avroRecord = new GenericData.Record(schemaParsed);</span>
-<span class="nc" id="L207">            avroRecord.put(&quot;constumer&quot;,constumer);</span>
-<span class="nc" id="L208">            avroRecord.put(&quot;income&quot;,income);</span>
-<span class="nc" id="L209">            avroRecord.put(&quot;expenses&quot;,expenses);</span>
+<span class="nc" id="L198">            GenericData.Record avroRecord = new GenericData.Record(schemaParsed);</span>
+<span class="nc" id="L199">            avroRecord.put(&quot;customer&quot;,customer);</span>
+<span class="nc" id="L200">            avroRecord.put(&quot;income&quot;,income);</span>
+<span class="nc" id="L201">            avroRecord.put(&quot;expenses&quot;,expenses);</span>
 
-<span class="nc" id="L211">            Injection&lt;GenericRecord, byte[]&gt; recordInjection = GenericAvroCodecs.toBinary(schemaParsed);</span>
-<span class="nc" id="L212">            byte[] bytes = recordInjection.apply(avroRecord);</span>
+<span class="nc" id="L203">            Injection&lt;GenericRecord, byte[]&gt; recordInjection = GenericAvroCodecs.toBinary(schemaParsed);</span>
+<span class="nc" id="L204">            producer.send(</span>
+                    new ProducerRecord&lt;String, byte[]&gt;(
+                            name,
+                            &quot;key&quot;,
+<span class="nc" id="L208">                            recordInjection.apply(avroRecord)</span>
+                    )
+            );
+<span class="nc" id="L211">            result = &quot;record sent.&quot;;</span>
 
-<span class="nc" id="L214">            producer.send(new ProducerRecord&lt;String, byte[]&gt;(name, &quot;key&quot;,bytes));</span>
-<span class="nc" id="L215">            result = &quot;rescord sent.&quot;;</span>
-
-<span class="nc" id="L217">            Thread.sleep(250);</span>
-<span class="nc" id="L218">        } catch (Exception ex) {</span>
-<span class="nc" id="L219">            result =  ex.getMessage();</span>
-<span class="nc" id="L220">            log.error(&quot;produceTopicRecord:Exception&quot;);</span>
-<span class="nc" id="L221">            ex.printStackTrace();</span>
+<span class="nc" id="L213">            Thread.sleep(250);</span>
+<span class="nc" id="L214">        } catch (Exception ex) {</span>
+<span class="nc" id="L215">            result =  ex.getMessage();</span>
+<span class="nc" id="L216">            log.error(&quot;produceTopicRecord:Exception&quot;);</span>
+<span class="nc" id="L217">            ex.printStackTrace();</span>
         } finally {
-<span class="nc bnc" id="L223" title="All 6 branches missed.">            if (producer != null) {</span>
-<span class="nc" id="L224">                producer.close();</span>
+<span class="nc bnc" id="L219" title="All 6 branches missed.">            if (producer != null) {</span>
+<span class="nc" id="L220">                producer.close();</span>
             }
         }
 
-<span class="nc" id="L228">        return result;</span>
+<span class="nc" id="L224">        return result;</span>
     }
 
     //{name=contract, type=record, fields=[{name=name, type=string}, {name=income, type=int}, {name=expenses, type=int}]}
     //  },{\&quot;name\&quot;:\&quot;str2\&quot;, \&quot;type\&quot;:\&quot;string\&quot; },&quot;&quot;  { \&quot;name\&quot;:\&quot;int1\&quot;, \&quot;type\&quot;:\&quot;int\&quot; }&quot;&quot;]}&quot;;
     private String readSchema(LinkedHashMap schema){
-<span class="nc" id="L234">        final StringBuilder result = new StringBuilder();</span>
-<span class="nc" id="L235">        result.append(&quot;{&quot;);</span>
+<span class="nc" id="L230">        final StringBuilder result = new StringBuilder();</span>
+<span class="nc" id="L231">        result.append(&quot;{&quot;);</span>
         //{&quot;\&quot;type\&quot;:\&quot;record\&quot;,
-<span class="nc" id="L237">        result.append(doubleQuote(&quot;type&quot;,(String)schema.get(&quot;type&quot;))+&quot;,&quot;);</span>
+<span class="nc" id="L233">        result.append(doubleQuote(&quot;type&quot;,(String)schema.get(&quot;type&quot;))+&quot;,&quot;);</span>
         //&quot;\&quot;name\&quot;:\&quot;myrecord\&quot;,
-<span class="nc" id="L239">        result.append(doubleQuote(&quot;name&quot;,(String)schema.get(&quot;name&quot;))+&quot;,&quot;);</span>
+<span class="nc" id="L235">        result.append(doubleQuote(&quot;name&quot;,(String)schema.get(&quot;name&quot;))+&quot;,&quot;);</span>
         //&quot;\&quot;fields\&quot;:[
-<span class="nc" id="L241">        result.append(doubleQuote(&quot;fields&quot;)+&quot;:[&quot;);</span>
-<span class="nc" id="L242">        ((List&lt;LinkedHashMap&gt;)schema.get(&quot;fields&quot;)).stream().forEach(</span>
+<span class="nc" id="L237">        result.append(doubleQuote(&quot;fields&quot;)+&quot;:[&quot;);</span>
+<span class="nc" id="L238">        ((List&lt;LinkedHashMap&gt;)schema.get(&quot;fields&quot;)).stream().forEach(</span>
                 field -&gt; {
-<span class="nc" id="L244">                    result.append(&quot;{&quot;);</span>
+<span class="nc" id="L240">                    result.append(&quot;{&quot;);</span>
                     //{ \&quot;name\&quot;:\&quot;str1\&quot;
-<span class="nc" id="L246">                    result.append(doubleQuote(&quot;name&quot;,(String)field.get(&quot;name&quot;)));</span>
+<span class="nc" id="L242">                    result.append(doubleQuote(&quot;name&quot;,(String)field.get(&quot;name&quot;)));</span>
                     //, \&quot;type\&quot;:\&quot;string\&quot; }
-<span class="nc" id="L248">                    result.append(&quot;,&quot;);</span>
-<span class="nc" id="L249">                    result.append(doubleQuote(&quot;type&quot;,(String)field.get(&quot;type&quot;)));</span>
-<span class="nc" id="L250">                    result.append(&quot;},&quot;);</span>
-<span class="nc" id="L251">                }</span>
+<span class="nc" id="L244">                    result.append(&quot;,&quot;);</span>
+<span class="nc" id="L245">                    result.append(doubleQuote(&quot;type&quot;,(String)field.get(&quot;type&quot;)));</span>
+<span class="nc" id="L246">                    result.append(&quot;},&quot;);</span>
+<span class="nc" id="L247">                }</span>
         );
         // remove the last &quot;,&quot;
-<span class="nc" id="L254">        result.deleteCharAt(result.length() - 1);</span>
-<span class="nc" id="L255">        result.append(&quot;]}&quot;);</span>
-<span class="nc" id="L256">        log.info(result.toString());</span>
-<span class="nc" id="L257">        return result.toString();</span>
+<span class="nc" id="L250">        result.deleteCharAt(result.length() - 1);</span>
+<span class="nc" id="L251">        result.append(&quot;]}&quot;);</span>
+<span class="nc" id="L252">        log.info(result.toString());</span>
+<span class="nc" id="L253">        return result.toString();</span>
     }
     private String doubleQuote(String field){
-<span class="nc" id="L260">        return  &quot;\&quot;&quot;+field+&quot;\&quot;&quot;;</span>
+<span class="nc" id="L256">        return  &quot;\&quot;&quot;+field+&quot;\&quot;&quot;;</span>
     }
     private String doubleQuote(String field, String value){
-<span class="nc" id="L263">        return  &quot;\&quot;&quot;+field+&quot;\&quot;:\&quot;&quot;+value+&quot;\&quot;&quot;;</span>
+<span class="nc" id="L259">        return  &quot;\&quot;&quot;+field+&quot;\&quot;:\&quot;&quot;+value+&quot;\&quot;&quot;;</span>
     }
 
     public List&lt;TopicRecord&gt; consumeTopicRecord(TypedValueMap arguments) {
-<span class="nc" id="L267">        log.info(&quot;consumeTopicRecord&quot;);</span>
-<span class="nc" id="L268">        log.info(arguments);</span>
-<span class="nc" id="L269">        val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L263">        log.info(&quot;consumeTopicRecord&quot;);</span>
+<span class="nc" id="L264">        List&lt;TopicRecord&gt; topicRecords = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L265">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L271">        String name = arguments.get(&quot;name&quot;);</span>
-<span class="nc" id="L272">        LinkedHashMap&lt;String,String&gt; schema = arguments.get(&quot;schema&quot;);</span>
-<span class="nc" id="L273">        String serdeKey = schema.get(&quot;serdeKey&quot;);</span>
-<span class="nc" id="L274">        String serdeValue = schema.get(&quot;serdeValue&quot;);</span>
+<span class="nc" id="L267">        log.info(&quot;arguments&quot;+arguments.toString());</span>
 
-<span class="nc" id="L276">        List&lt;TopicRecord&gt; topicRecords = new ArrayList&lt;&gt;();</span>
-        //String message = arguments.get(&quot;message&quot;);
-<span class="nc" id="L278">        log.info(&quot;name:&quot;+name);</span>
-<span class="nc" id="L279">        log.info(&quot;serdeKey:&quot;+serdeKey);</span>
-<span class="nc" id="L280">        log.info(&quot;serdeValue:&quot;+serdeValue);</span>
-        //log.info(&quot;name:&quot;+name+&quot;,schema.type:&quot;+schemaType);
+<span class="nc" id="L269">        String name = arguments.get(&quot;name&quot;);</span>
+<span class="nc" id="L270">        log.info(&quot;name:&quot;+name);</span>
+<span class="nc" id="L271">        val topic = topics.get(name);</span>
 
-<span class="nc" id="L283">        Properties props = new Properties();</span>
-<span class="nc" id="L284">        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, &quot;earliest&quot;);//latest, earliest, none</span>
-<span class="nc" id="L285">        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
-<span class="nc" id="L286">        props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());</span>
+<span class="nc" id="L273">        Properties props = new Properties();</span>
+<span class="nc" id="L274">        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, &quot;earliest&quot;);//latest, earliest, none</span>
+<span class="nc" id="L275">        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
+<span class="nc" id="L276">        props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());</span>
 
-<span class="nc" id="L288">        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());</span>
-<span class="nc" id="L289">        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());</span>
+<span class="nc" id="L278">        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,</span>
+<span class="nc" id="L279">                StringDeserializer.class.getName());</span>
+<span class="nc" id="L280">        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,</span>
+<span class="nc" id="L281">                ByteArrayDeserializer.class.getName());</span>
 
-<span class="nc" id="L291">        KafkaConsumer&lt;String, Long&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span>
-<span class="nc" id="L292">        consumer.subscribe(Collections.singletonList(name));</span>
+<span class="nc" id="L283">        KafkaConsumer&lt;String, byte[]&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span>
+<span class="nc" id="L284">        consumer.subscribe(Collections.singletonList(name));</span>
 
-<span class="nc" id="L294">        ConsumerRecords&lt;String, Long&gt; records = consumer.poll(500);</span>
-<span class="nc bnc" id="L295" title="All 2 branches missed.">        for (ConsumerRecord&lt;String, Long&gt; record : records){</span>
-<span class="nc" id="L296">            log.info( &quot;offset = &quot; + record.offset() +</span>
-<span class="nc" id="L297">                    &quot;, key = &quot; + record.key() +</span>
-<span class="nc" id="L298">                    &quot;, value = &quot; + record.value() );</span>
+<span class="nc" id="L286">        ConsumerRecords&lt;String, byte[]&gt; records = consumer.poll(500);</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        for (ConsumerRecord&lt;String, byte[]&gt; record : records){</span>
+<span class="nc" id="L288">            log.info( &quot;offset = &quot; + record.offset() +</span>
+<span class="nc" id="L289">                    &quot;, key = &quot; + record.key() +</span>
+<span class="nc" id="L290">                    &quot;, value = &quot; + record.value() );</span>
+<span class="nc" id="L291">            GenericRecord recordConverted = parseBytes(topic.getSchema(),record.value());</span>
 
-<span class="nc" id="L300">            TopicRecord topicRecord = new TopicRecord(</span>
-<span class="nc" id="L301">                    record.key(), Long.toString(record.value()), record.offset(), record.partition()</span>
+<span class="nc" id="L293">            log.info(&quot;{customer:&quot;+recordConverted.get(&quot;customer&quot;)</span>
+<span class="nc" id="L294">                    + &quot;,income:&quot; + recordConverted.get(&quot;income&quot;)</span>
+<span class="nc" id="L295">                    + &quot;,expenses:&quot; + recordConverted.get(&quot;expenses&quot;)+&quot;}&quot;);</span>
+
+<span class="nc" id="L297">            TopicRecord topicRecord = new TopicRecord(</span>
+<span class="nc" id="L298">                    record.key(), recordConverted.toString(), record.offset(), record.partition()</span>
             );
-<span class="nc" id="L303">            topicRecords.add(topicRecord);</span>
-<span class="nc" id="L304">        }</span>
+<span class="nc" id="L300">            topicRecords.add(topicRecord);</span>
+<span class="nc" id="L301">        }</span>
         //consumer.commitSync();
-<span class="nc" id="L306">        return topicRecords;</span>
+<span class="nc" id="L303">        return topicRecords;</span>
+    }
+
+    public List&lt;TableRecord&gt; getStreamByFilter(TypedValueMap arguments) {
+<span class="nc" id="L307">        log.info(&quot;getStreamByFilter&quot;);</span>
+<span class="nc" id="L308">        Kafka kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L310">        String key = arguments.get(&quot;key&quot;);</span>
+<span class="nc" id="L311">        log.info(&quot;{&quot;+key+&quot;}&quot;);</span>
+
+<span class="nc" id="L313">        ReadOnlyKeyValueStore&lt;String,Long&gt; view = streams.store(</span>
+<span class="nc" id="L314">                &quot;Counts&quot;, QueryableStoreTypes.&lt;String, Long&gt;keyValueStore());</span>
+
+<span class="nc" id="L316">        KeyValueIterator&lt;String, Long&gt; range = view.all();</span>
+
+<span class="nc" id="L318">        List&lt;TableRecord&gt; tableRecords = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        while (range.hasNext()) {</span>
+<span class="nc" id="L320">            KeyValue&lt;String, Long&gt; next = range.next();</span>
+<span class="nc" id="L321">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
+<span class="nc bnc" id="L322" title="All 4 branches missed.">            if( key == null || next.key.equals(key)) {</span>
+<span class="nc" id="L323">                TableRecord record = new TableRecord();</span>
+<span class="nc" id="L324">                record.setKey(next.key);</span>
+<span class="nc" id="L325">                record.setValue(next.value);</span>
+<span class="nc" id="L326">                tableRecords.add(record);</span>
+            }
+<span class="nc" id="L328">        }</span>
+
+<span class="nc" id="L330">        return tableRecords;</span>
+    }
+
+    private GenericRecord parseBytes(String schema, byte[] data){
+<span class="nc" id="L334">        Schema schemaParsed = new Schema.Parser().parse(schema);</span>
+<span class="nc" id="L335">        Injection&lt;GenericRecord, byte[]&gt; recordInjection = GenericAvroCodecs.toBinary(schemaParsed);</span>
+<span class="nc" id="L336">        GenericRecord recordConverted = recordInjection.invert(data).get();</span>
+<span class="nc" id="L337">        return recordConverted;</span>
+    }
+
+    public List&lt;TableRecord&gt; streamStart(TypedValueMap arguments) {
+<span class="nc" id="L341">        log.info(&quot;streamStart&quot;);</span>
+<span class="nc" id="L342">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L343">        String topicInName = arguments.get(&quot;in&quot;);</span>
+<span class="nc" id="L344">        val topicIn = topics.get(topicInName);</span>
+<span class="nc" id="L345">        String topicOut = arguments.get(&quot;out&quot;);</span>
+
+<span class="nc" id="L347">        Properties config = new Properties();</span>
+<span class="nc" id="L348">        config.put(StreamsConfig.APPLICATION_ID_CONFIG, &quot;contractApp&quot;);</span>
+<span class="nc" id="L349">        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
+<span class="nc" id="L350">        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,&quot;earliest&quot;);//latest, earliest, none</span>
+<span class="nc" id="L351">        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,</span>
+<span class="nc" id="L352">                Serdes.String().getClass());</span>
+<span class="nc" id="L353">        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,</span>
+<span class="nc" id="L354">                ByteArrayDeserializer.class.getName());</span>
+<span class="nc" id="L355">        config.put(StreamsConfig.STATE_DIR_CONFIG,&quot;streams-pipe&quot;);</span>
+
+<span class="nc" id="L357">        KStreamBuilder builder = new KStreamBuilder();</span>
+
+<span class="nc" id="L359">        KStream&lt;String, byte[]&gt; constractStream = builder.stream(topicInName);</span>
+
+<span class="nc" id="L361">        KTable&lt;String, byte[]&gt; wordCounts = constractStream</span>
+<span class="nc" id="L362">                .peek((key, record) -&gt; log.info(&quot;mapValues:{&quot;+key+&quot;:&quot;+record.toString()+&quot;}&quot;))</span>
+<span class="nc" id="L363">                .map((key, record) -&gt; {return KeyValue.pair(key,record);})</span>
+<span class="nc" id="L364">                .groupByKey()</span>
+<span class="nc" id="L365">                .reduce((aggValue, newValue) -&gt; newValue,&quot;reduced-contract&quot;);</span>
+
+<span class="nc" id="L367">        constractStream.peek((key, value) -&gt; log.info(&quot;stream:{:&quot;+key+&quot;:&quot;+value+&quot;}&quot;));</span>
+
+<span class="nc" id="L369">        wordCounts.filter((key, value) -&gt; {log.info(&quot;table:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;);return true;});</span>
+<span class="nc" id="L370">        wordCounts.to(Serdes.String(), Serdes.ByteArray(), topicOut);</span>
+
+<span class="nc" id="L372">        streams = new KafkaStreams(builder, config);</span>
+
+        //print topology
+<span class="nc" id="L375">        log.info(streams.toString());</span>
+
+        //get queryableStoreName
+<span class="nc" id="L378">        String queryableStoreName = wordCounts.queryableStoreName(); // returns null if KTable is not queryable</span>
+
+<span class="nc" id="L380">        log.info(queryableStoreName);</span>
+
+<span class="nc" id="L382">        streams.start();</span>
+
+        try {
+<span class="nc" id="L385">            Thread.sleep(1000L);</span>
+<span class="nc" id="L386">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L387">            e.printStackTrace();</span>
+<span class="nc" id="L388">        }</span>
+
+<span class="nc" id="L390">        ReadOnlyKeyValueStore&lt;String,Long&gt; view = streams.store(</span>
+<span class="nc" id="L391">                &quot;Counts&quot;, QueryableStoreTypes.&lt;String, Long&gt;keyValueStore());</span>
+
+<span class="nc" id="L393">        KeyValueIterator&lt;String, Long&gt; range = view.all();</span>
+
+<span class="nc" id="L395">        List&lt;TableRecord&gt; tableRecords = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">        while (range.hasNext()) {</span>
+<span class="nc" id="L397">            KeyValue&lt;String, Long&gt; next = range.next();</span>
+<span class="nc" id="L398">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
+<span class="nc" id="L399">            TableRecord record = new TableRecord();</span>
+<span class="nc" id="L400">            record.setKey(next.key);</span>
+<span class="nc" id="L401">            record.setValue(next.value);</span>
+
+<span class="nc" id="L403">            tableRecords.add(record);</span>
+<span class="nc" id="L404">        }</span>
+
+
+<span class="nc" id="L407">        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));</span>
+
+<span class="nc" id="L409">        return tableRecords;</span>
+    }
+
+    public Topic streamStop(TypedValueMap arguments) {
+<span class="nc" id="L413">        log.info(&quot;streamStop&quot;);</span>
+<span class="nc" id="L414">        Kafka kafka = Kafka.getInstance();</span>
+
+<span class="nc" id="L416">        return null;</span>
     }
 
     public Topic updateTopic(TypedValueMap arguments) {
-<span class="nc" id="L310">        log.info(&quot;updateTopic&quot;);</span>
-<span class="nc" id="L311">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L420">        log.info(&quot;updateTopic&quot;);</span>
+<span class="nc" id="L421">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
 
-<span class="nc bnc" id="L313" title="All 2 branches missed.">        if (arguments.containsKey(&quot;name&quot;)) {</span>
-<span class="nc" id="L314">            topic.setName(arguments.get(&quot;name&quot;));</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">        if (arguments.containsKey(&quot;name&quot;)) {</span>
+<span class="nc" id="L424">            topic.setName(arguments.get(&quot;name&quot;));</span>
         }
 
-<span class="nc" id="L317">        return topic;</span>
+<span class="nc" id="L427">        return topic;</span>
     }
 
     //TODO
     public Topic deleteTopic(TypedValueMap arguments) {
-<span class="nc" id="L322">        log.info(&quot;deleteTopic&quot;);</span>
-<span class="nc" id="L323">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L432">        log.info(&quot;deleteTopic&quot;);</span>
+<span class="nc" id="L433">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
 
         //topics.remove(topic.getId());
 
-<span class="nc" id="L327">        return topic;</span>
+<span class="nc" id="L437">        return topic;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

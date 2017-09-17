@@ -2,7 +2,6 @@ package com.scigility.graphql.sample.fields;
 
 import com.merapar.graphql.GraphQlFields;
 import com.scigility.graphql.sample.dataFetchers.TopicDataFetcher;
-import com.scigility.graphql.sample.domain.TopicRecord;
 import graphql.Scalars;
 import graphql.schema.*;
 import lombok.Getter;
@@ -23,8 +22,7 @@ import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 @Component
 public class TopicFields implements GraphQlFields {
 
@@ -32,16 +30,33 @@ public class TopicFields implements GraphQlFields {
     private TopicDataFetcher topicDataFetcher;
 
     @Getter
+    private GraphQLObjectType streamType;
+
+    @Getter
+    private GraphQLObjectType tableRecordType;
+
+    private GraphQLInputObjectType streamStartInputType;
+    private GraphQLInputObjectType streamStopInputType;
+    private GraphQLInputObjectType filterStreamInputType;
+
+    private GraphQLFieldDefinition streamField;
+
+    private GraphQLFieldDefinition streamStartField;
+    private GraphQLFieldDefinition streamStopField;
+
+    @Getter
     private GraphQLObjectType topicType;
     
     @Getter
     private GraphQLObjectType topicRecordType;
 
+    @Getter
+    private GraphQLInputObjectType schemaInputType;
+
     private GraphQLInputObjectType addTopicInputType;
     private GraphQLInputObjectType produceTopicRecordInputType;
     private GraphQLInputObjectType consumeTopicRecordInputType;
     private GraphQLInputObjectType updateTopicInputType;
-    private GraphQLInputObjectType schemaInputType;
     private GraphQLInputObjectType fieldsInputType;
     private GraphQLInputObjectType recordInputType;
 
@@ -69,7 +84,8 @@ public class TopicFields implements GraphQlFields {
         queryFields = Collections.singletonList(topicsField);
         mutationFields = Arrays.asList(
           consumeTopicRecordField, produceTopicRecordField,
-          addTopicField, updateTopicField, deleteTopicField);
+          addTopicField, updateTopicField, deleteTopicField,
+          streamStartField, streamStopField);
     }
 
     private void createTypes() {
@@ -84,16 +100,12 @@ public class TopicFields implements GraphQlFields {
                 .field(newFieldDefinition().name("partition").description("The partition").type(GraphQLInt).build())
                 .build();
 
-        addTopicInputType = newInputObject().name("addTopicInput")
-                .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
-                .build();
 
         recordInputType = newInputObject().name("record").description("A fields")
-                .field(newInputObjectField().name("constumer").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .field(newInputObjectField().name("customer").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .field(newInputObjectField().name("income").type(new GraphQLNonNull(Scalars.GraphQLInt)).build())
                 .field(newInputObjectField().name("expenses").type(new GraphQLNonNull(Scalars.GraphQLInt)).build())
                 .build();
-
 
         fieldsInputType = newInputObject().name("fields").description("A fields")
                 .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
@@ -106,15 +118,18 @@ public class TopicFields implements GraphQlFields {
                 .field(newInputObjectField().name("fields").type(new GraphQLList(fieldsInputType)).build())
                 .build();
 
+        addTopicInputType = newInputObject().name("addTopicInput")
+                .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .field(newInputObjectField().name("schema").type(schemaInputType).build())
+                .build();
+
         produceTopicRecordInputType = newInputObject().name("produceTopicRecordInput")
                 .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .field(newInputObjectField().name("record").type(recordInputType).build())
-                .field(newInputObjectField().name("schema").type(schemaInputType).build())
                 .build();
 
         consumeTopicRecordInputType = newInputObject().name("consumeTopicRecordInput")
                 .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
-                .field(newInputObjectField().name("schema").type(schemaInputType).build())
                 .build();
 
         updateTopicInputType = newInputObject().name("updateTopicInput")
@@ -127,6 +142,34 @@ public class TopicFields implements GraphQlFields {
 
         filterTopicInputType = newInputObject().name("filterTopicInput")
                 .field(newInputObjectField().name("name").type(GraphQLInt).build())
+                .build();
+
+
+        //Stream
+        streamType = newObject().name("stream").description("A stream record")
+                .field(newFieldDefinition().name("name").description("The key").type(GraphQLString).build())
+                .field(newFieldDefinition().name("in").description("The key").type(GraphQLString).build())
+                .field(newFieldDefinition().name("out").description("The value").type(GraphQLString).build())
+                .field(newFieldDefinition().name("status").description("The offset").type(GraphQLLong).build())
+                .field(newFieldDefinition().name("table").description("The partition").type(GraphQLInt).build())
+                .build();
+
+        tableRecordType = newObject().name("tableRecord").description("A table Record")
+                .field(newFieldDefinition().name("key").description("key").type(GraphQLString).build())
+                .field(newFieldDefinition().name("value").description("value").type(GraphQLString).build())
+                .build();
+
+        streamStartInputType = newInputObject().name("streamStart").description("A fields")
+                .field(newInputObjectField().name("in").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .field(newInputObjectField().name("out").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .build();
+
+        streamStopInputType = newInputObject().name("streamStop").description("A fields")
+                .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .build();
+
+        filterStreamInputType = newInputObject().name("filterStreamInput")
+                .field(newInputObjectField().name("key").type(GraphQLString).build())
                 .build();
     }
 
@@ -171,6 +214,27 @@ public class TopicFields implements GraphQlFields {
                 .type(topicType)
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteTopicInputType)).build())
                 .dataFetcher(environment -> topicDataFetcher.deleteTopic(getInputMap(environment)))
+                .build();
+
+        streamField = newFieldDefinition()
+                .name("stream").description("Provide an overview of all topics")
+                .type(new GraphQLList(tableRecordType))
+                .argument(newArgument().name(FILTER).type(filterStreamInputType).build())
+                .dataFetcher(environment -> topicDataFetcher.getStreamByFilter(getFilterMap(environment)))
+                .build();
+
+        streamStartField = newFieldDefinition()
+                .name("streamStart").description("Start the stream")
+                .type(new GraphQLList(tableRecordType))
+                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStartInputType)).build())
+                .dataFetcher(environment -> topicDataFetcher.streamStart(getInputMap(environment)))
+                .build();
+
+        streamStopField = newFieldDefinition()
+                .name("streamStop").description("Stop the stream")
+                .type(streamType)
+                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStopInputType)).build())
+                .dataFetcher(environment -> topicDataFetcher.streamStop(getInputMap(environment)))
                 .build();
     }
 }

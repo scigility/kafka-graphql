@@ -29,17 +29,19 @@ public class Kafka {
 
   private static Kafka _instance = null;
 
-  protected Kafka() {
-    broker = "localhost:9092,localhost:9093";
-    zookeeper = "localhost:2181,localhost:2888";
-  }
-
   public static Kafka getInstance() {
     if(_instance == null) {
       _instance = new Kafka();
     }
     return _instance;
   }
+
+  protected Kafka() {
+    broker = "localhost:9092,localhost:9093";
+    zookeeper = "localhost:2181,localhost:2888";
+  }
+
+
 
   @Getter
   @Setter

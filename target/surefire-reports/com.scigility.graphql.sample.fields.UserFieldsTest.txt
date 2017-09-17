@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.scigility.graphql.sample.fields.UserFieldsTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.597 sec - in com.scigility.graphql.sample.fields.UserFieldsTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.506 sec - in com.scigility.graphql.sample.fields.UserFieldsTest

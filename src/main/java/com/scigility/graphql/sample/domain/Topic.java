@@ -14,4 +14,8 @@ public class Topic {
     @Setter
     private String name;
 
+    @Getter
+    @Setter
+    private String schema;
+
 }

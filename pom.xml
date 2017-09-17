@@ -71,13 +71,12 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <kafka.version>0.11.0.1</kafka.version>
-    <kafka.scala.version>2.11</kafka.scala.version>
-    <scala.version>${kafka.scala.version}.8</scala.version>
+    <kafka.version>0.11.0.0</kafka.version>
+    <scala.version>2.11</scala.version>
     <confluent.version>3.0.0</confluent.version>
     <scalatest.version>2.2.6</scalatest.version>
     <avro.version>1.7.7</avro.version>
-    <zkclient.version>0.7</zkclient.version>
+    <zkclient.version>0.10</zkclient.version>
 </properties>
 
   <dependencies>
@@ -99,11 +98,11 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.twitter</groupId>
-      <artifactId>bijection-avro_2.10</artifactId>
-      <version>0.9.6</version>
-    </dependency>
+      <dependency>
+          <groupId>com.twitter</groupId>
+          <artifactId>bijection-avro_${scala.version}</artifactId>
+          <version>0.9.6</version>
+      </dependency>
 
     <!-- net.sf.json-lib -->
     <dependency>
@@ -141,7 +140,7 @@
 
     <dependency>
       <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_${kafka.scala.version}</artifactId>
+      <artifactId>kafka_${scala.version}</artifactId>
       <version>${kafka.version}</version>
       <exclusions> <!-- THIS MUST HAVE THE EXCULE TO BE EXECUTED -->
         <exclusion>
