@@ -174,10 +174,10 @@ public class TopicDataFetcher {
         log.info("name:"+name);
 
         LinkedHashMap record = arguments.get("record");
-        String constumer = (String)record.get("constumer");
+        String customer = (String)record.get("customer");
         Integer income = (Integer)record.get("income");
         Integer expenses = (Integer)record.get("expenses");
-        log.info("constumer:"+constumer+",income:"+income+",expenses:"+expenses);
+        log.info("constumer:"+customer+",income:"+income+",expenses:"+expenses);
 
         LinkedHashMap schema = arguments.get("schema");
         log.info("schema:"+schema.toString());
@@ -204,7 +204,7 @@ public class TopicDataFetcher {
             Schema schemaParsed = parser.parse(readSchema(schema));
 
             GenericData.Record avroRecord = new GenericData.Record(schemaParsed);
-            avroRecord.put("constumer",constumer);
+            avroRecord.put("customer",customer);
             avroRecord.put("income",income);
             avroRecord.put("expenses",expenses);
 
