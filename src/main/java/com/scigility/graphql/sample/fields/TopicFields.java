@@ -43,6 +43,8 @@ public class TopicFields implements GraphQlFields {
     private GraphQLInputObjectType updateTopicInputType;
     private GraphQLInputObjectType schemaInputType;
     private GraphQLInputObjectType fieldsInputType;
+    private GraphQLInputObjectType recordInputType;
+
     private GraphQLInputObjectType deleteTopicInputType;
 
     private GraphQLInputObjectType filterTopicInputType;
@@ -86,23 +88,27 @@ public class TopicFields implements GraphQlFields {
                 .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .build();
 
+        recordInputType = newInputObject().name("record").description("A fields")
+                .field(newInputObjectField().name("constumer").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .field(newInputObjectField().name("income").type(new GraphQLNonNull(Scalars.GraphQLInt)).build())
+                .field(newInputObjectField().name("expenses").type(new GraphQLNonNull(Scalars.GraphQLInt)).build())
+                .build();
+
+
         fieldsInputType = newInputObject().name("fields").description("A fields")
                 .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .field(newInputObjectField().name("type").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
                 .build();
 
         schemaInputType = newInputObject().name("schema").description("A schema")
+                .field(newInputObjectField().name("name").type(Scalars.GraphQLString).build())
                 .field(newInputObjectField().name("type").type(Scalars.GraphQLString).build())
-                .field(newInputObjectField().name("serdeKey").type(Scalars.GraphQLString).build())
-                .field(newInputObjectField().name("serdeValue").type(Scalars.GraphQLString).build())
-                .field(newInputObjectField().name("fields").
-                        type(new GraphQLList(fieldsInputType))
-                        .build())
+                .field(newInputObjectField().name("fields").type(new GraphQLList(fieldsInputType)).build())
                 .build();
 
         produceTopicRecordInputType = newInputObject().name("produceTopicRecordInput")
                 .field(newInputObjectField().name("name").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
-                .field(newInputObjectField().name("message").type(new GraphQLNonNull(Scalars.GraphQLString)).build())
+                .field(newInputObjectField().name("record").type(recordInputType).build())
                 .field(newInputObjectField().name("schema").type(schemaInputType).build())
                 .build();
 
@@ -134,14 +140,14 @@ public class TopicFields implements GraphQlFields {
 
         addTopicField = newFieldDefinition()
                 .name("addTopic").description("Add new topic")
-                .type(topicType)
+                .type(GraphQLString)
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addTopicInputType)).build())
                 .dataFetcher(environment -> topicDataFetcher.addTopic(getInputMap(environment)))
                 .build();
 
         produceTopicRecordField = newFieldDefinition()
                 .name("produceTopicRecord").description("Produce a record into a topic")
-                .type(topicType)
+                .type(GraphQLString)
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(produceTopicRecordInputType)).build())
                 .dataFetcher(environment -> topicDataFetcher.produceTopicRecord(getInputMap(environment)))
                 .build();

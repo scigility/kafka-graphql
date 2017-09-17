@@ -40,6 +40,9 @@ public class StreamDataFetcher {
         log.info("getStreamByFilter");
         Kafka kafka = Kafka.getInstance();
 
+        String key = arguments.get("key");
+        log.info("{"+key+"}");
+
         ReadOnlyKeyValueStore<String,Long> view = streams.store(
                 "Counts", QueryableStoreTypes.<String, Long>keyValueStore());
 
@@ -49,12 +52,14 @@ public class StreamDataFetcher {
         while (range.hasNext()) {
             KeyValue<String, Long> next = range.next();
             log.info("table{" + next.key + ":" + next.value+"}");
-            TableRecord record = new TableRecord();
-            record.setKey(next.key);
-            record.setValue(next.value);
-
-            tableRecords.add(record);
+            if( key == null || next.key.equals(key)) {
+                TableRecord record = new TableRecord();
+                record.setKey(next.key);
+                record.setValue(next.value);
+                tableRecords.add(record);
+            }
         }
+
         return tableRecords;
     }
 
@@ -70,7 +75,7 @@ public class StreamDataFetcher {
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");//latest, earliest, none
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        config.put(StreamsConfig.STATE_DIR_CONFIG,"streams-pipe");
+        config.put(StreamsConfig.STATE_DIR_CONFIG,"~/streams-pipe");
 
         KStreamBuilder builder = new KStreamBuilder();
 

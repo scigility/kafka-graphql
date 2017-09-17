@@ -54,6 +54,9 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.graphql-java:graphql-java:3.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:antlr4-runtime:4.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.twitter:bijection-avro_2.10:0.9.6" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.10.6" level="project" />
+    <orderEntry type="library" name="Maven: com.twitter:bijection-core_2.10:0.9.6" level="project" />
     <orderEntry type="library" name="Maven: net.sf.json-lib:json-lib:jdk15:2.4" level="project" />
     <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.3" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
@@ -66,7 +69,6 @@
     <orderEntry type="library" name="Maven: org.apache.kafka:kafka_2.11:0.11.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jopt-simple:jopt-simple:5.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.yammer.metrics:metrics-core:2.2.0" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.11" level="project" />
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.10" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.16" level="project" />

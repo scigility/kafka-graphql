@@ -99,6 +99,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.twitter</groupId>
+      <artifactId>bijection-avro_2.10</artifactId>
+      <version>0.9.6</version>
+    </dependency>
+
     <!-- net.sf.json-lib -->
     <dependency>
         <groupId>net.sf.json-lib</groupId>

@@ -81,7 +81,7 @@ public class StreamFields implements GraphQlFields {
                 .build();
 
         filterStreamInputType = newInputObject().name("filterStreamInput")
-                .field(newInputObjectField().name("name").type(GraphQLInt).build())
+                .field(newInputObjectField().name("key").type(GraphQLString).build())
                 .build();
 
     }
