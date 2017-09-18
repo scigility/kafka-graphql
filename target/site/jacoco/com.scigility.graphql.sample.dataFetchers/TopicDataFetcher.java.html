@@ -204,7 +204,7 @@ import org.apache.zookeeper.ZooKeeper;
 <span class="nc" id="L204">            producer.send(</span>
                     new ProducerRecord&lt;String, byte[]&gt;(
                             name,
-                            &quot;key&quot;,
+                            customer,
 <span class="nc" id="L208">                            recordInjection.apply(avroRecord)</span>
                     )
             );
@@ -224,217 +224,283 @@ import org.apache.zookeeper.ZooKeeper;
 <span class="nc" id="L224">        return result;</span>
     }
 
-    //{name=contract, type=record, fields=[{name=name, type=string}, {name=income, type=int}, {name=expenses, type=int}]}
-    //  },{\&quot;name\&quot;:\&quot;str2\&quot;, \&quot;type\&quot;:\&quot;string\&quot; },&quot;&quot;  { \&quot;name\&quot;:\&quot;int1\&quot;, \&quot;type\&quot;:\&quot;int\&quot; }&quot;&quot;]}&quot;;
-    private String readSchema(LinkedHashMap schema){
-<span class="nc" id="L230">        final StringBuilder result = new StringBuilder();</span>
-<span class="nc" id="L231">        result.append(&quot;{&quot;);</span>
-        //{&quot;\&quot;type\&quot;:\&quot;record\&quot;,
-<span class="nc" id="L233">        result.append(doubleQuote(&quot;type&quot;,(String)schema.get(&quot;type&quot;))+&quot;,&quot;);</span>
-        //&quot;\&quot;name\&quot;:\&quot;myrecord\&quot;,
-<span class="nc" id="L235">        result.append(doubleQuote(&quot;name&quot;,(String)schema.get(&quot;name&quot;))+&quot;,&quot;);</span>
-        //&quot;\&quot;fields\&quot;:[
-<span class="nc" id="L237">        result.append(doubleQuote(&quot;fields&quot;)+&quot;:[&quot;);</span>
-<span class="nc" id="L238">        ((List&lt;LinkedHashMap&gt;)schema.get(&quot;fields&quot;)).stream().forEach(</span>
-                field -&gt; {
-<span class="nc" id="L240">                    result.append(&quot;{&quot;);</span>
-                    //{ \&quot;name\&quot;:\&quot;str1\&quot;
-<span class="nc" id="L242">                    result.append(doubleQuote(&quot;name&quot;,(String)field.get(&quot;name&quot;)));</span>
-                    //, \&quot;type\&quot;:\&quot;string\&quot; }
-<span class="nc" id="L244">                    result.append(&quot;,&quot;);</span>
-<span class="nc" id="L245">                    result.append(doubleQuote(&quot;type&quot;,(String)field.get(&quot;type&quot;)));</span>
-<span class="nc" id="L246">                    result.append(&quot;},&quot;);</span>
-<span class="nc" id="L247">                }</span>
-        );
-        // remove the last &quot;,&quot;
-<span class="nc" id="L250">        result.deleteCharAt(result.length() - 1);</span>
-<span class="nc" id="L251">        result.append(&quot;]}&quot;);</span>
-<span class="nc" id="L252">        log.info(result.toString());</span>
-<span class="nc" id="L253">        return result.toString();</span>
-    }
-    private String doubleQuote(String field){
-<span class="nc" id="L256">        return  &quot;\&quot;&quot;+field+&quot;\&quot;&quot;;</span>
-    }
-    private String doubleQuote(String field, String value){
-<span class="nc" id="L259">        return  &quot;\&quot;&quot;+field+&quot;\&quot;:\&quot;&quot;+value+&quot;\&quot;&quot;;</span>
-    }
-
     public List&lt;TopicRecord&gt; consumeTopicRecord(TypedValueMap arguments) {
-<span class="nc" id="L263">        log.info(&quot;consumeTopicRecord&quot;);</span>
-<span class="nc" id="L264">        List&lt;TopicRecord&gt; topicRecords = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L265">        val kafka = Kafka.getInstance();</span>
+<span class="nc" id="L228">        log.info(&quot;consumeTopicRecord&quot;);</span>
+<span class="nc" id="L229">        List&lt;TopicRecord&gt; topicRecords = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L230">        val kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L267">        log.info(&quot;arguments&quot;+arguments.toString());</span>
+<span class="nc" id="L232">        log.info(&quot;arguments&quot;+arguments.toString());</span>
 
-<span class="nc" id="L269">        String name = arguments.get(&quot;name&quot;);</span>
-<span class="nc" id="L270">        log.info(&quot;name:&quot;+name);</span>
-<span class="nc" id="L271">        val topic = topics.get(name);</span>
+<span class="nc" id="L234">        String name = arguments.get(&quot;name&quot;);</span>
+<span class="nc" id="L235">        log.info(&quot;name:&quot;+name);</span>
+<span class="nc" id="L236">        val topic = topics.get(name);</span>
 
-<span class="nc" id="L273">        Properties props = new Properties();</span>
-<span class="nc" id="L274">        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, &quot;earliest&quot;);//latest, earliest, none</span>
-<span class="nc" id="L275">        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
-<span class="nc" id="L276">        props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());</span>
+<span class="nc" id="L238">        Properties props = new Properties();</span>
+<span class="nc" id="L239">        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, &quot;earliest&quot;);//latest, earliest, none</span>
+<span class="nc" id="L240">        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
+<span class="nc" id="L241">        props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());</span>
 
-<span class="nc" id="L278">        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,</span>
-<span class="nc" id="L279">                StringDeserializer.class.getName());</span>
-<span class="nc" id="L280">        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,</span>
-<span class="nc" id="L281">                ByteArrayDeserializer.class.getName());</span>
+<span class="nc" id="L243">        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,</span>
+<span class="nc" id="L244">                StringDeserializer.class.getName());</span>
+<span class="nc" id="L245">        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,</span>
+<span class="nc" id="L246">                ByteArrayDeserializer.class.getName());</span>
 
-<span class="nc" id="L283">        KafkaConsumer&lt;String, byte[]&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span>
-<span class="nc" id="L284">        consumer.subscribe(Collections.singletonList(name));</span>
+<span class="nc" id="L248">        KafkaConsumer&lt;String, byte[]&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span>
+<span class="nc" id="L249">        consumer.subscribe(Collections.singletonList(name));</span>
 
-<span class="nc" id="L286">        ConsumerRecords&lt;String, byte[]&gt; records = consumer.poll(500);</span>
-<span class="nc bnc" id="L287" title="All 2 branches missed.">        for (ConsumerRecord&lt;String, byte[]&gt; record : records){</span>
-<span class="nc" id="L288">            log.info( &quot;offset = &quot; + record.offset() +</span>
-<span class="nc" id="L289">                    &quot;, key = &quot; + record.key() +</span>
-<span class="nc" id="L290">                    &quot;, value = &quot; + record.value() );</span>
-<span class="nc" id="L291">            GenericRecord recordConverted = parseBytes(topic.getSchema(),record.value());</span>
+<span class="nc" id="L251">        ConsumerRecords&lt;String, byte[]&gt; records = consumer.poll(500);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        for (ConsumerRecord&lt;String, byte[]&gt; record : records){</span>
+<span class="nc" id="L253">            log.info( &quot;offset = &quot; + record.offset() +</span>
+<span class="nc" id="L254">                    &quot;, key = &quot; + record.key() +</span>
+<span class="nc" id="L255">                    &quot;, value = &quot; + record.value() );</span>
 
-<span class="nc" id="L293">            log.info(&quot;{customer:&quot;+recordConverted.get(&quot;customer&quot;)</span>
-<span class="nc" id="L294">                    + &quot;,income:&quot; + recordConverted.get(&quot;income&quot;)</span>
-<span class="nc" id="L295">                    + &quot;,expenses:&quot; + recordConverted.get(&quot;expenses&quot;)+&quot;}&quot;);</span>
+<span class="nc" id="L257">            GenericRecord recordConverted = parseBytes(topic.getSchema(),record.value());</span>
 
-<span class="nc" id="L297">            TopicRecord topicRecord = new TopicRecord(</span>
-<span class="nc" id="L298">                    record.key(), recordConverted.toString(), record.offset(), record.partition()</span>
+<span class="nc" id="L259">            log.info(&quot;{customer:&quot;+recordConverted.get(&quot;customer&quot;)</span>
+<span class="nc" id="L260">                    + &quot;,income:&quot; + recordConverted.get(&quot;income&quot;)</span>
+<span class="nc" id="L261">                    + &quot;,expenses:&quot; + recordConverted.get(&quot;expenses&quot;)+&quot;}&quot;);</span>
+
+<span class="nc" id="L263">            TopicRecord topicRecord = new TopicRecord(</span>
+<span class="nc" id="L264">                    record.key(), recordConverted.toString(), record.offset(), record.partition()</span>
             );
-<span class="nc" id="L300">            topicRecords.add(topicRecord);</span>
-<span class="nc" id="L301">        }</span>
+<span class="nc" id="L266">            topicRecords.add(topicRecord);</span>
+<span class="nc" id="L267">        }</span>
         //consumer.commitSync();
-<span class="nc" id="L303">        return topicRecords;</span>
+<span class="nc" id="L269">        return topicRecords;</span>
     }
 
     public List&lt;TableRecord&gt; getStreamByFilter(TypedValueMap arguments) {
-<span class="nc" id="L307">        log.info(&quot;getStreamByFilter&quot;);</span>
-<span class="nc" id="L308">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L273">        log.info(&quot;getStreamByFilter&quot;);</span>
+<span class="nc" id="L274">        Kafka kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L310">        String key = arguments.get(&quot;key&quot;);</span>
-<span class="nc" id="L311">        log.info(&quot;{&quot;+key+&quot;}&quot;);</span>
+<span class="nc" id="L276">        String storeKey = arguments.get(&quot;storeKey&quot;);</span>
+<span class="nc" id="L277">        log.info(&quot;{storeKey:&quot;+storeKey+&quot;}&quot;);</span>
 
-<span class="nc" id="L313">        ReadOnlyKeyValueStore&lt;String,Long&gt; view = streams.store(</span>
-<span class="nc" id="L314">                &quot;Counts&quot;, QueryableStoreTypes.&lt;String, Long&gt;keyValueStore());</span>
+<span class="nc" id="L279">        Topic topic = topics.get(arguments.get(&quot;topic&quot;));</span>
+<span class="nc" id="L280">        log.info(&quot;{topic.name:&quot;+topic.getName()+&quot;:topci.schema:&quot;+topic.getSchema()+&quot;}&quot;);</span>
 
-<span class="nc" id="L316">        KeyValueIterator&lt;String, Long&gt; range = view.all();</span>
+<span class="nc" id="L282">        String key = arguments.get(&quot;key&quot;);</span>
+<span class="nc" id="L283">        log.info(&quot;{key:&quot;+key+&quot;}&quot;);</span>
 
-<span class="nc" id="L318">        List&lt;TableRecord&gt; tableRecords = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L319" title="All 2 branches missed.">        while (range.hasNext()) {</span>
-<span class="nc" id="L320">            KeyValue&lt;String, Long&gt; next = range.next();</span>
-<span class="nc" id="L321">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
-<span class="nc bnc" id="L322" title="All 4 branches missed.">            if( key == null || next.key.equals(key)) {</span>
-<span class="nc" id="L323">                TableRecord record = new TableRecord();</span>
-<span class="nc" id="L324">                record.setKey(next.key);</span>
-<span class="nc" id="L325">                record.setValue(next.value);</span>
-<span class="nc" id="L326">                tableRecords.add(record);</span>
+<span class="nc" id="L285">        ReadOnlyKeyValueStore&lt;String,byte[]&gt; view = streams.store(</span>
+<span class="nc" id="L286">                storeKey, QueryableStoreTypes.&lt;String, byte[]&gt;keyValueStore());</span>
+
+<span class="nc" id="L288">        KeyValueIterator&lt;String, byte[]&gt; range = view.all();</span>
+
+<span class="nc" id="L290">        List&lt;TableRecord&gt; tableRecords = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">        while (range.hasNext()) {</span>
+<span class="nc" id="L292">            KeyValue&lt;String, byte[]&gt; next = range.next();</span>
+<span class="nc" id="L293">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
+<span class="nc bnc" id="L294" title="All 4 branches missed.">            if( key == null || next.key.equals(key)) {</span>
+<span class="nc" id="L295">                TableRecord record = new TableRecord();</span>
+<span class="nc" id="L296">                record.setKey(next.key);</span>
+<span class="nc" id="L297">                record.setValue(parseBytes(topic.getSchema(),next.value).toString());</span>
+<span class="nc" id="L298">                tableRecords.add(record);</span>
             }
-<span class="nc" id="L328">        }</span>
-
-<span class="nc" id="L330">        return tableRecords;</span>
-    }
-
-    private GenericRecord parseBytes(String schema, byte[] data){
-<span class="nc" id="L334">        Schema schemaParsed = new Schema.Parser().parse(schema);</span>
-<span class="nc" id="L335">        Injection&lt;GenericRecord, byte[]&gt; recordInjection = GenericAvroCodecs.toBinary(schemaParsed);</span>
-<span class="nc" id="L336">        GenericRecord recordConverted = recordInjection.invert(data).get();</span>
-<span class="nc" id="L337">        return recordConverted;</span>
+<span class="nc" id="L300">        }</span>
+<span class="nc" id="L301">        return tableRecords;</span>
     }
 
     public List&lt;TableRecord&gt; streamStart(TypedValueMap arguments) {
-<span class="nc" id="L341">        log.info(&quot;streamStart&quot;);</span>
-<span class="nc" id="L342">        Kafka kafka = Kafka.getInstance();</span>
-<span class="nc" id="L343">        String topicInName = arguments.get(&quot;in&quot;);</span>
-<span class="nc" id="L344">        val topicIn = topics.get(topicInName);</span>
-<span class="nc" id="L345">        String topicOut = arguments.get(&quot;out&quot;);</span>
+<span class="nc" id="L305">        log.info(&quot;streamStart&quot;);</span>
+<span class="nc" id="L306">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L307">        val topicIn = topics.get(arguments.get(&quot;in&quot;));</span>
+<span class="nc" id="L308">        val topicOut = topics.get(arguments.get(&quot;out&quot;));</span>
+<span class="nc" id="L309">        val storeKey = (String)arguments.get(&quot;storeKey&quot;);</span>
 
-<span class="nc" id="L347">        Properties config = new Properties();</span>
-<span class="nc" id="L348">        config.put(StreamsConfig.APPLICATION_ID_CONFIG, &quot;contractApp&quot;);</span>
-<span class="nc" id="L349">        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
-<span class="nc" id="L350">        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,&quot;earliest&quot;);//latest, earliest, none</span>
-<span class="nc" id="L351">        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,</span>
-<span class="nc" id="L352">                Serdes.String().getClass());</span>
-<span class="nc" id="L353">        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,</span>
-<span class="nc" id="L354">                ByteArrayDeserializer.class.getName());</span>
-<span class="nc" id="L355">        config.put(StreamsConfig.STATE_DIR_CONFIG,&quot;streams-pipe&quot;);</span>
+<span class="nc" id="L311">        Properties config = new Properties();</span>
+<span class="nc" id="L312">        config.put(StreamsConfig.APPLICATION_ID_CONFIG, &quot;contract-app&quot;);</span>
+<span class="nc" id="L313">        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());</span>
+<span class="nc" id="L314">        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,&quot;earliest&quot;);//latest, earliest, none</span>
+<span class="nc" id="L315">        config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, &quot;60000&quot;);</span>
+<span class="nc" id="L316">        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, &quot;1000&quot;);</span>
+<span class="nc" id="L317">        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,</span>
+<span class="nc" id="L318">                Serdes.String().getClass());</span>
+<span class="nc" id="L319">        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,</span>
+<span class="nc" id="L320">                Serdes.ByteArray().getClass());</span>
+<span class="nc" id="L321">        config.put(StreamsConfig.STATE_DIR_CONFIG,&quot;streams-pipe&quot;);</span>
 
-<span class="nc" id="L357">        KStreamBuilder builder = new KStreamBuilder();</span>
+<span class="nc" id="L323">        KStreamBuilder builder = new KStreamBuilder();</span>
 
-<span class="nc" id="L359">        KStream&lt;String, byte[]&gt; constractStream = builder.stream(topicInName);</span>
+<span class="nc" id="L325">        KStream&lt;String, byte[]&gt; constractStream = builder.stream(topicIn.getName());</span>
 
-<span class="nc" id="L361">        KTable&lt;String, byte[]&gt; wordCounts = constractStream</span>
-<span class="nc" id="L362">                .peek((key, record) -&gt; log.info(&quot;mapValues:{&quot;+key+&quot;:&quot;+record.toString()+&quot;}&quot;))</span>
-<span class="nc" id="L363">                .map((key, record) -&gt; {return KeyValue.pair(key,record);})</span>
-<span class="nc" id="L364">                .groupByKey()</span>
-<span class="nc" id="L365">                .reduce((aggValue, newValue) -&gt; newValue,&quot;reduced-contract&quot;);</span>
 
-<span class="nc" id="L367">        constractStream.peek((key, value) -&gt; log.info(&quot;stream:{:&quot;+key+&quot;:&quot;+value+&quot;}&quot;));</span>
+        //.peek((key, record) -&gt; log.info(&quot;mapValues:{&quot;+key+&quot;:&quot;+record.toString()+&quot;}&quot;))
+<span class="nc" id="L329">        log.info(&quot;configuring stream&quot;);</span>
+<span class="nc" id="L330">        KTable&lt;String, byte[]&gt; wordCounts = constractStream</span>
+<span class="nc" id="L331">                .map((key, record) -&gt; {</span>
+<span class="nc" id="L332">                    GenericRecord ParsedRecord = parseBytes(topicIn.getSchema(),record);</span>
+<span class="nc" id="L333">                    GenericRecord newParsedRecord = parseSchema(topicOut.getSchema());</span>
+<span class="nc" id="L334">                    Schema schemaParsed = new Schema.Parser().parse(topicOut.getSchema());</span>
+<span class="nc" id="L335">                    newParsedRecord.put(&quot;customer&quot;,ParsedRecord.get(&quot;customer&quot;));</span>
+<span class="nc" id="L336">                    newParsedRecord.put(&quot;income&quot;,ParsedRecord.get(&quot;income&quot;));</span>
+<span class="nc" id="L337">                    newParsedRecord.put(&quot;expenses&quot;,ParsedRecord.get(&quot;expenses&quot;));</span>
+<span class="nc" id="L338">                    newParsedRecord.put(&quot;total&quot;,</span>
+<span class="nc" id="L339">                            (Integer)ParsedRecord.get(&quot;income&quot;)-</span>
+<span class="nc" id="L340">                                    (Integer)ParsedRecord.get(&quot;expenses&quot;));</span>
 
-<span class="nc" id="L369">        wordCounts.filter((key, value) -&gt; {log.info(&quot;table:{&quot;+key+&quot;:&quot;+value+&quot;}&quot;);return true;});</span>
-<span class="nc" id="L370">        wordCounts.to(Serdes.String(), Serdes.ByteArray(), topicOut);</span>
+<span class="nc" id="L342">                    Injection&lt;GenericRecord, byte[]&gt; recordInjection =</span>
+<span class="nc" id="L343">                            GenericAvroCodecs.toBinary(schemaParsed);</span>
+<span class="nc" id="L344">                    log.info(ParsedRecord.toString());</span>
+<span class="nc" id="L345">                    log.info(newParsedRecord.toString());</span>
+<span class="nc" id="L346">                    return KeyValue.pair(key,recordInjection.apply(newParsedRecord));</span>
+                })
+<span class="nc" id="L348">                .groupByKey()</span>
+<span class="nc" id="L349">                .reduce((aggValue, newValue) -&gt; {</span>
+<span class="nc" id="L350">                    GenericRecord ParsedRecord = parseBytes(topicOut.getSchema(),aggValue);</span>
+<span class="nc" id="L351">                    GenericRecord ParsedNewRecord = parseBytes(topicOut.getSchema(),newValue);</span>
+<span class="nc" id="L352">                    Schema schemaParsed = new Schema.Parser().parse(topicOut.getSchema());</span>
+<span class="nc" id="L353">                    ParsedRecord.put(&quot;income&quot;,</span>
+<span class="nc" id="L354">                            (Integer)ParsedRecord.get(&quot;income&quot;)+</span>
+<span class="nc" id="L355">                                (Integer)ParsedNewRecord.get(&quot;income&quot;));</span>
 
-<span class="nc" id="L372">        streams = new KafkaStreams(builder, config);</span>
+<span class="nc" id="L357">                    ParsedRecord.put(&quot;expenses&quot;,</span>
+<span class="nc" id="L358">                            (Integer)ParsedRecord.get(&quot;expenses&quot;)+</span>
+<span class="nc" id="L359">                                    (Integer)ParsedNewRecord.get(&quot;expenses&quot;));</span>
+
+<span class="nc" id="L361">                    ParsedRecord.put(&quot;total&quot;,</span>
+<span class="nc" id="L362">                            (Integer)ParsedRecord.get(&quot;total&quot;)+</span>
+<span class="nc" id="L363">                                    (Integer)ParsedNewRecord.get(&quot;total&quot;));</span>
+<span class="nc" id="L364">                    log.info(ParsedRecord.toString());</span>
+<span class="nc" id="L365">                    log.info(ParsedNewRecord.toString());</span>
+<span class="nc" id="L366">                    Injection&lt;GenericRecord, byte[]&gt; recordInjection =</span>
+<span class="nc" id="L367">                            GenericAvroCodecs.toBinary(schemaParsed);</span>
+<span class="nc" id="L368">                    return recordInjection.apply(ParsedRecord);</span>
+                },storeKey);
+
+<span class="nc" id="L371">        constractStream.peek((key, value) -&gt; {</span>
+<span class="nc" id="L372">            GenericRecord ParsedRecord = parseBytes(topicIn.getSchema(),value);</span>
+<span class="nc" id="L373">            log.info(&quot;stream:{:&quot;+key+&quot;:&quot;+ParsedRecord.toString()+&quot;}&quot;);</span>
+<span class="nc" id="L374">        });</span>
+
+<span class="nc" id="L376">        wordCounts.filter((key, value) -&gt; {</span>
+<span class="nc" id="L377">            GenericRecord ParsedRecord = parseBytes(topicOut.getSchema(),value);</span>
+<span class="nc" id="L378">            log.info(&quot;table:{&quot;+key+&quot;:&quot;+ParsedRecord.toString()+&quot;}&quot;);</span>
+<span class="nc" id="L379">            return true;</span>
+        });
+
+<span class="nc" id="L382">        wordCounts.to(Serdes.String(), Serdes.ByteArray(), topicOut.getName());</span>
+
+<span class="nc" id="L384">        streams = new KafkaStreams(builder, config);</span>
 
         //print topology
-<span class="nc" id="L375">        log.info(streams.toString());</span>
+<span class="nc" id="L387">        log.info(&quot;printing stream topology&quot;);</span>
+<span class="nc" id="L388">        log.info(streams.toString());</span>
 
         //get queryableStoreName
-<span class="nc" id="L378">        String queryableStoreName = wordCounts.queryableStoreName(); // returns null if KTable is not queryable</span>
+<span class="nc" id="L391">        String queryableStoreName = wordCounts.queryableStoreName(); // returns null if KTable is not queryable</span>
 
-<span class="nc" id="L380">        log.info(queryableStoreName);</span>
+<span class="nc" id="L393">        log.info(&quot;stream Store Name&quot;);</span>
+<span class="nc" id="L394">        log.info(queryableStoreName);</span>
 
-<span class="nc" id="L382">        streams.start();</span>
+<span class="nc" id="L396">        log.info(&quot;Starting Stream&quot;);</span>
+<span class="nc" id="L397">        streams.start();</span>
 
         try {
-<span class="nc" id="L385">            Thread.sleep(1000L);</span>
-<span class="nc" id="L386">        } catch (InterruptedException e) {</span>
-<span class="nc" id="L387">            e.printStackTrace();</span>
-<span class="nc" id="L388">        }</span>
+<span class="nc" id="L400">            Thread.sleep(1000L);</span>
+<span class="nc" id="L401">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L402">            e.printStackTrace();</span>
+<span class="nc" id="L403">        }</span>
 
-<span class="nc" id="L390">        ReadOnlyKeyValueStore&lt;String,Long&gt; view = streams.store(</span>
-<span class="nc" id="L391">                &quot;Counts&quot;, QueryableStoreTypes.&lt;String, Long&gt;keyValueStore());</span>
+<span class="nc" id="L405">        log.info(&quot;Reading Stream Value&quot;);</span>
+<span class="nc" id="L406">        ReadOnlyKeyValueStore&lt;String,byte[]&gt; view = streams.store(</span>
+<span class="nc" id="L407">                storeKey, QueryableStoreTypes.&lt;String, byte[]&gt;keyValueStore()</span>
+        );
 
-<span class="nc" id="L393">        KeyValueIterator&lt;String, Long&gt; range = view.all();</span>
+<span class="nc" id="L410">        KeyValueIterator&lt;String, byte[]&gt; range = view.all();</span>
 
-<span class="nc" id="L395">        List&lt;TableRecord&gt; tableRecords = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L396" title="All 2 branches missed.">        while (range.hasNext()) {</span>
-<span class="nc" id="L397">            KeyValue&lt;String, Long&gt; next = range.next();</span>
-<span class="nc" id="L398">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
-<span class="nc" id="L399">            TableRecord record = new TableRecord();</span>
-<span class="nc" id="L400">            record.setKey(next.key);</span>
-<span class="nc" id="L401">            record.setValue(next.value);</span>
+<span class="nc" id="L412">        List&lt;TableRecord&gt; tableRecords = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">        while (range.hasNext()) {</span>
+<span class="nc" id="L414">            KeyValue&lt;String, byte[]&gt; next = range.next();</span>
+<span class="nc" id="L415">            log.info(&quot;table{&quot; + next.key + &quot;:&quot; + next.value+&quot;}&quot;);</span>
+<span class="nc" id="L416">            TableRecord record = new TableRecord();</span>
+<span class="nc" id="L417">            record.setKey(next.key);</span>
+<span class="nc" id="L418">            record.setValue(parseBytes(topicOut.getSchema(),next.value).toString());</span>
 
-<span class="nc" id="L403">            tableRecords.add(record);</span>
-<span class="nc" id="L404">        }</span>
+<span class="nc" id="L420">            tableRecords.add(record);</span>
+<span class="nc" id="L421">        }</span>
 
 
-<span class="nc" id="L407">        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));</span>
+<span class="nc" id="L424">        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));</span>
 
-<span class="nc" id="L409">        return tableRecords;</span>
+<span class="nc" id="L426">        return tableRecords;</span>
     }
 
     public Topic streamStop(TypedValueMap arguments) {
-<span class="nc" id="L413">        log.info(&quot;streamStop&quot;);</span>
-<span class="nc" id="L414">        Kafka kafka = Kafka.getInstance();</span>
+<span class="nc" id="L430">        log.info(&quot;streamStop&quot;);</span>
+<span class="nc" id="L431">        Kafka kafka = Kafka.getInstance();</span>
 
-<span class="nc" id="L416">        return null;</span>
+<span class="nc" id="L433">        return null;</span>
     }
 
     public Topic updateTopic(TypedValueMap arguments) {
-<span class="nc" id="L420">        log.info(&quot;updateTopic&quot;);</span>
-<span class="nc" id="L421">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L437">        log.info(&quot;updateTopic&quot;);</span>
+<span class="nc" id="L438">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
 
-<span class="nc bnc" id="L423" title="All 2 branches missed.">        if (arguments.containsKey(&quot;name&quot;)) {</span>
-<span class="nc" id="L424">            topic.setName(arguments.get(&quot;name&quot;));</span>
+<span class="nc bnc" id="L440" title="All 2 branches missed.">        if (arguments.containsKey(&quot;name&quot;)) {</span>
+<span class="nc" id="L441">            topic.setName(arguments.get(&quot;name&quot;));</span>
         }
 
-<span class="nc" id="L427">        return topic;</span>
+<span class="nc" id="L444">        return topic;</span>
     }
 
     //TODO
     public Topic deleteTopic(TypedValueMap arguments) {
-<span class="nc" id="L432">        log.info(&quot;deleteTopic&quot;);</span>
-<span class="nc" id="L433">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
+<span class="nc" id="L449">        log.info(&quot;deleteTopic&quot;);</span>
+<span class="nc" id="L450">        val topic = topics.get(arguments.get(&quot;id&quot;));</span>
 
         //topics.remove(topic.getId());
 
-<span class="nc" id="L437">        return topic;</span>
+<span class="nc" id="L454">        return topic;</span>
     }
+
+    private GenericRecord parseSchema(String schema){
+<span class="nc" id="L458">        Schema schemaParsed = new Schema.Parser().parse(schema);</span>
+<span class="nc" id="L459">        GenericData.Record avroRecord = new GenericData.Record(schemaParsed);</span>
+<span class="nc" id="L460">        return avroRecord;</span>
+    }
+
+    private GenericRecord parseBytes(String schema, byte[] data){
+<span class="nc" id="L464">        Schema schemaParsed = new Schema.Parser().parse(schema);</span>
+<span class="nc" id="L465">        Injection&lt;GenericRecord, byte[]&gt; recordInjection = GenericAvroCodecs.toBinary(schemaParsed);</span>
+<span class="nc" id="L466">        GenericRecord recordConverted = recordInjection.invert(data).get();</span>
+<span class="nc" id="L467">        return recordConverted;</span>
+    }
+
+    //{name=contract, type=record, fields=[{name=name, type=string}, {name=income, type=int}, {name=expenses, type=int}]}
+    //  },{\&quot;name\&quot;:\&quot;str2\&quot;, \&quot;type\&quot;:\&quot;string\&quot; },&quot;&quot;  { \&quot;name\&quot;:\&quot;int1\&quot;, \&quot;type\&quot;:\&quot;int\&quot; }&quot;&quot;]}&quot;;
+    private String readSchema(LinkedHashMap schema){
+<span class="nc" id="L473">        final StringBuilder result = new StringBuilder();</span>
+<span class="nc" id="L474">        result.append(&quot;{&quot;);</span>
+        //{&quot;\&quot;type\&quot;:\&quot;record\&quot;,
+<span class="nc" id="L476">        result.append(doubleQuote(&quot;type&quot;,(String)schema.get(&quot;type&quot;))+&quot;,&quot;);</span>
+        //&quot;\&quot;name\&quot;:\&quot;myrecord\&quot;,
+<span class="nc" id="L478">        result.append(doubleQuote(&quot;name&quot;,(String)schema.get(&quot;name&quot;))+&quot;,&quot;);</span>
+        //&quot;\&quot;fields\&quot;:[
+<span class="nc" id="L480">        result.append(doubleQuote(&quot;fields&quot;)+&quot;:[&quot;);</span>
+<span class="nc" id="L481">        ((List&lt;LinkedHashMap&gt;)schema.get(&quot;fields&quot;)).stream().forEach(</span>
+                field -&gt; {
+<span class="nc" id="L483">                    result.append(&quot;{&quot;);</span>
+                    //{ \&quot;name\&quot;:\&quot;str1\&quot;
+<span class="nc" id="L485">                    result.append(doubleQuote(&quot;name&quot;,(String)field.get(&quot;name&quot;)));</span>
+                    //, \&quot;type\&quot;:\&quot;string\&quot; }
+<span class="nc" id="L487">                    result.append(&quot;,&quot;);</span>
+<span class="nc" id="L488">                    result.append(doubleQuote(&quot;type&quot;,(String)field.get(&quot;type&quot;)));</span>
+<span class="nc" id="L489">                    result.append(&quot;},&quot;);</span>
+<span class="nc" id="L490">                }</span>
+        );
+        // remove the last &quot;,&quot;
+<span class="nc" id="L493">        result.deleteCharAt(result.length() - 1);</span>
+<span class="nc" id="L494">        result.append(&quot;]}&quot;);</span>
+<span class="nc" id="L495">        log.info(result.toString());</span>
+<span class="nc" id="L496">        return result.toString();</span>
+    }
+    private String doubleQuote(String field){
+<span class="nc" id="L499">        return  &quot;\&quot;&quot;+field+&quot;\&quot;&quot;;</span>
+    }
+    private String doubleQuote(String field, String value){
+<span class="nc" id="L502">        return  &quot;\&quot;&quot;+field+&quot;\&quot;:\&quot;&quot;+value+&quot;\&quot;&quot;;</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

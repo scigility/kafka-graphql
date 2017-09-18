@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.036" tests="5" errors="0" skipped="0" failures="0">
+<testsuite name="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.042" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib"/>
@@ -65,8 +65,8 @@
     <property name="sun.cpu.isalist" value=""/>
   </properties>
   <testcase name="addUser" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.011"/>
-  <testcase name="updateUser" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.007"/>
-  <testcase name="getUsersById" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.006"/>
-  <testcase name="deleteUser" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.005"/>
-  <testcase name="getUsers" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.007"/>
+  <testcase name="updateUser" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.006"/>
+  <testcase name="getUsersById" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.009"/>
+  <testcase name="deleteUser" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.007"/>
+  <testcase name="getUsers" classname="com.scigility.graphql.sample.fields.UserFieldsTest" time="0.009"/>
 </testsuite>

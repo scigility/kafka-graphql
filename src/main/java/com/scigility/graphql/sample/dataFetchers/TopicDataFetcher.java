@@ -204,7 +204,7 @@ public class TopicDataFetcher {
             producer.send(
                     new ProducerRecord<String, byte[]>(
                             name,
-                            "key",
+                            customer,
                             recordInjection.apply(avroRecord)
                     )
             );
@@ -222,41 +222,6 @@ public class TopicDataFetcher {
         }
 
         return result;
-    }
-
-    //{name=contract, type=record, fields=[{name=name, type=string}, {name=income, type=int}, {name=expenses, type=int}]}
-    //  },{\"name\":\"str2\", \"type\":\"string\" },""  { \"name\":\"int1\", \"type\":\"int\" }""]}";
-    private String readSchema(LinkedHashMap schema){
-        final StringBuilder result = new StringBuilder();
-        result.append("{");
-        //{"\"type\":\"record\",
-        result.append(doubleQuote("type",(String)schema.get("type"))+",");
-        //"\"name\":\"myrecord\",
-        result.append(doubleQuote("name",(String)schema.get("name"))+",");
-        //"\"fields\":[
-        result.append(doubleQuote("fields")+":[");
-        ((List<LinkedHashMap>)schema.get("fields")).stream().forEach(
-                field -> {
-                    result.append("{");
-                    //{ \"name\":\"str1\"
-                    result.append(doubleQuote("name",(String)field.get("name")));
-                    //, \"type\":\"string\" }
-                    result.append(",");
-                    result.append(doubleQuote("type",(String)field.get("type")));
-                    result.append("},");
-                }
-        );
-        // remove the last ","
-        result.deleteCharAt(result.length() - 1);
-        result.append("]}");
-        log.info(result.toString());
-        return result.toString();
-    }
-    private String doubleQuote(String field){
-        return  "\""+field+"\"";
-    }
-    private String doubleQuote(String field, String value){
-        return  "\""+field+"\":\""+value+"\"";
     }
 
     public List<TopicRecord> consumeTopicRecord(TypedValueMap arguments) {
@@ -288,7 +253,7 @@ public class TopicDataFetcher {
             log.info( "offset = " + record.offset() +
                     ", key = " + record.key() +
                     ", value = " + record.value() );
-            
+
             GenericRecord recordConverted = parseBytes(topic.getSchema(),record.value());
 
             log.info("{customer:"+recordConverted.get("customer")
@@ -308,68 +273,113 @@ public class TopicDataFetcher {
         log.info("getStreamByFilter");
         Kafka kafka = Kafka.getInstance();
 
+        String storeKey = arguments.get("storeKey");
+        log.info("{storeKey:"+storeKey+"}");
+
+        Topic topic = topics.get(arguments.get("topic"));
+        log.info("{topic.name:"+topic.getName()+":topci.schema:"+topic.getSchema()+"}");
+
         String key = arguments.get("key");
-        log.info("{"+key+"}");
+        log.info("{key:"+key+"}");
 
-        ReadOnlyKeyValueStore<String,Long> view = streams.store(
-                "Counts", QueryableStoreTypes.<String, Long>keyValueStore());
+        ReadOnlyKeyValueStore<String,byte[]> view = streams.store(
+                storeKey, QueryableStoreTypes.<String, byte[]>keyValueStore());
 
-        KeyValueIterator<String, Long> range = view.all();
+        KeyValueIterator<String, byte[]> range = view.all();
 
         List<TableRecord> tableRecords = new ArrayList<>();
         while (range.hasNext()) {
-            KeyValue<String, Long> next = range.next();
+            KeyValue<String, byte[]> next = range.next();
             log.info("table{" + next.key + ":" + next.value+"}");
             if( key == null || next.key.equals(key)) {
                 TableRecord record = new TableRecord();
                 record.setKey(next.key);
-                record.setValue(next.value);
+                record.setValue(parseBytes(topic.getSchema(),next.value).toString());
                 tableRecords.add(record);
             }
         }
-
         return tableRecords;
-    }
-
-    private GenericRecord parseBytes(String schema, byte[] data){
-        Schema schemaParsed = new Schema.Parser().parse(schema);
-        Injection<GenericRecord, byte[]> recordInjection = GenericAvroCodecs.toBinary(schemaParsed);
-        GenericRecord recordConverted = recordInjection.invert(data).get();
-        return recordConverted;
     }
 
     public List<TableRecord> streamStart(TypedValueMap arguments) {
         log.info("streamStart");
         Kafka kafka = Kafka.getInstance();
-        String topicInName = arguments.get("in");
-        val topicIn = topics.get(topicInName);
-        String topicOut = arguments.get("out");
+        val topicIn = topics.get(arguments.get("in"));
+        val topicOut = topics.get(arguments.get("out"));
+        val storeKey = (String)arguments.get("storeKey");
 
         Properties config = new Properties();
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "contractApp");
+        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "contract-app");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBroker());
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");//latest, earliest, none
+        config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "60000");
+        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1000");
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
                 Serdes.String().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
-                ByteArrayDeserializer.class.getName());
+                Serdes.ByteArray().getClass());
         config.put(StreamsConfig.STATE_DIR_CONFIG,"streams-pipe");
 
         KStreamBuilder builder = new KStreamBuilder();
 
-        KStream<String, byte[]> constractStream = builder.stream(topicInName);
+        KStream<String, byte[]> constractStream = builder.stream(topicIn.getName());
 
+
+        //.peek((key, record) -> log.info("mapValues:{"+key+":"+record.toString()+"}"))
         log.info("configuring stream");
         KTable<String, byte[]> wordCounts = constractStream
-                .peek((key, record) -> log.info("mapValues:{"+key+":"+record.toString()+"}"))
-                .map((key, record) -> {return KeyValue.pair(key,record);})
+                .map((key, record) -> {
+                    GenericRecord ParsedRecord = parseBytes(topicIn.getSchema(),record);
+                    GenericRecord newParsedRecord = parseSchema(topicOut.getSchema());
+                    Schema schemaParsed = new Schema.Parser().parse(topicOut.getSchema());
+                    newParsedRecord.put("customer",ParsedRecord.get("customer"));
+                    newParsedRecord.put("income",ParsedRecord.get("income"));
+                    newParsedRecord.put("expenses",ParsedRecord.get("expenses"));
+                    newParsedRecord.put("total",
+                            (Integer)ParsedRecord.get("income")-
+                                    (Integer)ParsedRecord.get("expenses"));
+
+                    Injection<GenericRecord, byte[]> recordInjection =
+                            GenericAvroCodecs.toBinary(schemaParsed);
+                    log.info(ParsedRecord.toString());
+                    log.info(newParsedRecord.toString());
+                    return KeyValue.pair(key,recordInjection.apply(newParsedRecord));
+                })
                 .groupByKey()
-                .reduce((aggValue, newValue) -> newValue,"reduced-contract");
+                .reduce((aggValue, newValue) -> {
+                    GenericRecord ParsedRecord = parseBytes(topicOut.getSchema(),aggValue);
+                    GenericRecord ParsedNewRecord = parseBytes(topicOut.getSchema(),newValue);
+                    Schema schemaParsed = new Schema.Parser().parse(topicOut.getSchema());
+                    ParsedRecord.put("income",
+                            (Integer)ParsedRecord.get("income")+
+                                (Integer)ParsedNewRecord.get("income"));
 
-        constractStream.peek((key, value) -> log.info("stream:{:"+key+":"+value+"}"));
+                    ParsedRecord.put("expenses",
+                            (Integer)ParsedRecord.get("expenses")+
+                                    (Integer)ParsedNewRecord.get("expenses"));
 
-        wordCounts.filter((key, value) -> {log.info("table:{"+key+":"+value+"}");return true;});
-        wordCounts.to(Serdes.String(), Serdes.ByteArray(), topicOut);
+                    ParsedRecord.put("total",
+                            (Integer)ParsedRecord.get("total")+
+                                    (Integer)ParsedNewRecord.get("total"));
+                    log.info(ParsedRecord.toString());
+                    log.info(ParsedNewRecord.toString());
+                    Injection<GenericRecord, byte[]> recordInjection =
+                            GenericAvroCodecs.toBinary(schemaParsed);
+                    return recordInjection.apply(ParsedRecord);
+                },storeKey);
+
+        constractStream.peek((key, value) -> {
+            GenericRecord ParsedRecord = parseBytes(topicIn.getSchema(),value);
+            log.info("stream:{:"+key+":"+ParsedRecord.toString()+"}");
+        });
+
+        wordCounts.filter((key, value) -> {
+            GenericRecord ParsedRecord = parseBytes(topicOut.getSchema(),value);
+            log.info("table:{"+key+":"+ParsedRecord.toString()+"}");
+            return true;
+        });
+
+        wordCounts.to(Serdes.String(), Serdes.ByteArray(), topicOut.getName());
 
         streams = new KafkaStreams(builder, config);
 
@@ -393,18 +403,19 @@ public class TopicDataFetcher {
         }
 
         log.info("Reading Stream Value");
-        ReadOnlyKeyValueStore<String,Long> view = streams.store(
-                "reduced-contract", QueryableStoreTypes.<String, Long>keyValueStore());
+        ReadOnlyKeyValueStore<String,byte[]> view = streams.store(
+                storeKey, QueryableStoreTypes.<String, byte[]>keyValueStore()
+        );
 
-        KeyValueIterator<String, Long> range = view.all();
+        KeyValueIterator<String, byte[]> range = view.all();
 
         List<TableRecord> tableRecords = new ArrayList<>();
         while (range.hasNext()) {
-            KeyValue<String, Long> next = range.next();
+            KeyValue<String, byte[]> next = range.next();
             log.info("table{" + next.key + ":" + next.value+"}");
             TableRecord record = new TableRecord();
             record.setKey(next.key);
-            record.setValue(next.value);
+            record.setValue(parseBytes(topicOut.getSchema(),next.value).toString());
 
             tableRecords.add(record);
         }
@@ -442,4 +453,53 @@ public class TopicDataFetcher {
 
         return topic;
     }
+
+    private GenericRecord parseSchema(String schema){
+        Schema schemaParsed = new Schema.Parser().parse(schema);
+        GenericData.Record avroRecord = new GenericData.Record(schemaParsed);
+        return avroRecord;
+    }
+
+    private GenericRecord parseBytes(String schema, byte[] data){
+        Schema schemaParsed = new Schema.Parser().parse(schema);
+        Injection<GenericRecord, byte[]> recordInjection = GenericAvroCodecs.toBinary(schemaParsed);
+        GenericRecord recordConverted = recordInjection.invert(data).get();
+        return recordConverted;
+    }
+
+    //{name=contract, type=record, fields=[{name=name, type=string}, {name=income, type=int}, {name=expenses, type=int}]}
+    //  },{\"name\":\"str2\", \"type\":\"string\" },""  { \"name\":\"int1\", \"type\":\"int\" }""]}";
+    private String readSchema(LinkedHashMap schema){
+        final StringBuilder result = new StringBuilder();
+        result.append("{");
+        //{"\"type\":\"record\",
+        result.append(doubleQuote("type",(String)schema.get("type"))+",");
+        //"\"name\":\"myrecord\",
+        result.append(doubleQuote("name",(String)schema.get("name"))+",");
+        //"\"fields\":[
+        result.append(doubleQuote("fields")+":[");
+        ((List<LinkedHashMap>)schema.get("fields")).stream().forEach(
+                field -> {
+                    result.append("{");
+                    //{ \"name\":\"str1\"
+                    result.append(doubleQuote("name",(String)field.get("name")));
+                    //, \"type\":\"string\" }
+                    result.append(",");
+                    result.append(doubleQuote("type",(String)field.get("type")));
+                    result.append("},");
+                }
+        );
+        // remove the last ","
+        result.deleteCharAt(result.length() - 1);
+        result.append("]}");
+        log.info(result.toString());
+        return result.toString();
+    }
+    private String doubleQuote(String field){
+        return  "\""+field+"\"";
+    }
+    private String doubleQuote(String field, String value){
+        return  "\""+field+"\":\""+value+"\"";
+    }
+
 }

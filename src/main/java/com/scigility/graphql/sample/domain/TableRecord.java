@@ -14,5 +14,5 @@ public class TableRecord {
 
     @Getter
     @Setter
-    private Long value;
+    private String value;
 }

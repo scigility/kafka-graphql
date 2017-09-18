@@ -30,7 +30,7 @@ import static graphql.schema.GraphQLObjectType.newObject;
     private TopicDataFetcher topicDataFetcher;
 
 <span class="nc" id="L32">    @Getter</span>
-    private GraphQLObjectType streamType;
+    private GraphQLObjectType tableType;
 
 <span class="nc" id="L35">    @Getter</span>
     private GraphQLObjectType tableRecordType;
@@ -39,7 +39,7 @@ import static graphql.schema.GraphQLObjectType.newObject;
     private GraphQLInputObjectType streamStopInputType;
     private GraphQLInputObjectType filterStreamInputType;
 
-    private GraphQLFieldDefinition streamField;
+    private GraphQLFieldDefinition tableField;
 
     private GraphQLFieldDefinition streamStartField;
     private GraphQLFieldDefinition streamStopField;
@@ -57,6 +57,7 @@ import static graphql.schema.GraphQLObjectType.newObject;
     private GraphQLInputObjectType produceTopicRecordInputType;
     private GraphQLInputObjectType consumeTopicRecordInputType;
     private GraphQLInputObjectType updateTopicInputType;
+
     private GraphQLInputObjectType fieldsInputType;
     private GraphQLInputObjectType recordInputType;
 
@@ -71,97 +72,96 @@ import static graphql.schema.GraphQLObjectType.newObject;
     private GraphQLFieldDefinition updateTopicField;
     private GraphQLFieldDefinition deleteTopicField;
 
-<span class="fc" id="L74">    @Getter</span>
+<span class="fc" id="L75">    @Getter</span>
     private List&lt;GraphQLFieldDefinition&gt; queryFields;
 
-<span class="fc" id="L77">    @Getter</span>
+<span class="fc" id="L78">    @Getter</span>
     private List&lt;GraphQLFieldDefinition&gt; mutationFields;
 
     @PostConstruct
     public void postConstruct() {
-<span class="fc" id="L82">        createTypes();</span>
-<span class="fc" id="L83">        createFields();</span>
-<span class="fc" id="L84">        queryFields = Collections.singletonList(topicsField);</span>
-<span class="fc" id="L85">        mutationFields = Arrays.asList(</span>
+<span class="fc" id="L83">        createTypes();</span>
+<span class="fc" id="L84">        createFields();</span>
+<span class="fc" id="L85">        queryFields = Arrays.asList(topicsField,tableField);</span>
+<span class="fc" id="L86">        mutationFields = Arrays.asList(</span>
           consumeTopicRecordField, produceTopicRecordField,
           addTopicField, updateTopicField, deleteTopicField,
           streamStartField, streamStopField);
-<span class="fc" id="L89">    }</span>
+<span class="fc" id="L90">    }</span>
 
     private void createTypes() {
-<span class="fc" id="L92">        topicType = newObject().name(&quot;topic&quot;).description(&quot;A topic&quot;)</span>
-<span class="fc" id="L93">        .field(newFieldDefinition().name(&quot;name&quot;).description(&quot;The name&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L94">                .build();</span>
+<span class="fc" id="L93">        topicType = newObject().name(&quot;topic&quot;).description(&quot;A topic&quot;)</span>
+<span class="fc" id="L94">        .field(newFieldDefinition().name(&quot;name&quot;).description(&quot;The name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L95">                .build();</span>
 
-<span class="fc" id="L96">        topicRecordType = newObject().name(&quot;topicRecord&quot;).description(&quot;A topic record&quot;)</span>
-<span class="fc" id="L97">                .field(newFieldDefinition().name(&quot;key&quot;).description(&quot;The key&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L98">                .field(newFieldDefinition().name(&quot;value&quot;).description(&quot;The value&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L99">                .field(newFieldDefinition().name(&quot;offset&quot;).description(&quot;The offset&quot;).type(GraphQLLong).build())</span>
-<span class="fc" id="L100">                .field(newFieldDefinition().name(&quot;partition&quot;).description(&quot;The partition&quot;).type(GraphQLInt).build())</span>
-<span class="fc" id="L101">                .build();</span>
+<span class="fc" id="L97">        topicRecordType = newObject().name(&quot;topicRecord&quot;).description(&quot;A topic record&quot;)</span>
+<span class="fc" id="L98">                .field(newFieldDefinition().name(&quot;key&quot;).description(&quot;The key&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L99">                .field(newFieldDefinition().name(&quot;value&quot;).description(&quot;The value&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L100">                .field(newFieldDefinition().name(&quot;offset&quot;).description(&quot;The offset&quot;).type(GraphQLLong).build())</span>
+<span class="fc" id="L101">                .field(newFieldDefinition().name(&quot;partition&quot;).description(&quot;The partition&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L102">                .build();</span>
 
 
-<span class="fc" id="L104">        recordInputType = newInputObject().name(&quot;record&quot;).description(&quot;A fields&quot;)</span>
-<span class="fc" id="L105">                .field(newInputObjectField().name(&quot;customer&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L106">                .field(newInputObjectField().name(&quot;income&quot;).type(new GraphQLNonNull(Scalars.GraphQLInt)).build())</span>
-<span class="fc" id="L107">                .field(newInputObjectField().name(&quot;expenses&quot;).type(new GraphQLNonNull(Scalars.GraphQLInt)).build())</span>
-<span class="fc" id="L108">                .build();</span>
+<span class="fc" id="L105">        recordInputType = newInputObject().name(&quot;record&quot;).description(&quot;A fields&quot;)</span>
+<span class="fc" id="L106">                .field(newInputObjectField().name(&quot;customer&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L107">                .field(newInputObjectField().name(&quot;income&quot;).type(new GraphQLNonNull(Scalars.GraphQLInt)).build())</span>
+<span class="fc" id="L108">                .field(newInputObjectField().name(&quot;expenses&quot;).type(new GraphQLNonNull(Scalars.GraphQLInt)).build())</span>
+<span class="fc" id="L109">                .build();</span>
 
-<span class="fc" id="L110">        fieldsInputType = newInputObject().name(&quot;fields&quot;).description(&quot;A fields&quot;)</span>
-<span class="fc" id="L111">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L112">                .field(newInputObjectField().name(&quot;type&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L113">                .build();</span>
+<span class="fc" id="L111">        fieldsInputType = newInputObject().name(&quot;fields&quot;).description(&quot;A fields&quot;)</span>
+<span class="fc" id="L112">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L113">                .field(newInputObjectField().name(&quot;type&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L114">                .build();</span>
 
-<span class="fc" id="L115">        schemaInputType = newInputObject().name(&quot;schema&quot;).description(&quot;A schema&quot;)</span>
-<span class="fc" id="L116">                .field(newInputObjectField().name(&quot;name&quot;).type(Scalars.GraphQLString).build())</span>
-<span class="fc" id="L117">                .field(newInputObjectField().name(&quot;type&quot;).type(Scalars.GraphQLString).build())</span>
-<span class="fc" id="L118">                .field(newInputObjectField().name(&quot;fields&quot;).type(new GraphQLList(fieldsInputType)).build())</span>
-<span class="fc" id="L119">                .build();</span>
+<span class="fc" id="L116">        schemaInputType = newInputObject().name(&quot;schema&quot;).description(&quot;A schema&quot;)</span>
+<span class="fc" id="L117">                .field(newInputObjectField().name(&quot;name&quot;).type(Scalars.GraphQLString).build())</span>
+<span class="fc" id="L118">                .field(newInputObjectField().name(&quot;type&quot;).type(Scalars.GraphQLString).build())</span>
+<span class="fc" id="L119">                .field(newInputObjectField().name(&quot;fields&quot;).type(new GraphQLList(fieldsInputType)).build())</span>
+<span class="fc" id="L120">                .build();</span>
 
-<span class="fc" id="L121">        addTopicInputType = newInputObject().name(&quot;addTopicInput&quot;)</span>
-<span class="fc" id="L122">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L123">                .field(newInputObjectField().name(&quot;schema&quot;).type(schemaInputType).build())</span>
-<span class="fc" id="L124">                .build();</span>
+<span class="fc" id="L122">        addTopicInputType = newInputObject().name(&quot;addTopicInput&quot;)</span>
+<span class="fc" id="L123">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L124">                .field(newInputObjectField().name(&quot;schema&quot;).type(schemaInputType).build())</span>
+<span class="fc" id="L125">                .build();</span>
 
-<span class="fc" id="L126">        produceTopicRecordInputType = newInputObject().name(&quot;produceTopicRecordInput&quot;)</span>
-<span class="fc" id="L127">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L128">                .field(newInputObjectField().name(&quot;record&quot;).type(recordInputType).build())</span>
-<span class="fc" id="L129">                .build();</span>
+<span class="fc" id="L127">        produceTopicRecordInputType = newInputObject().name(&quot;produceTopicRecordInput&quot;)</span>
+<span class="fc" id="L128">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L129">                .field(newInputObjectField().name(&quot;record&quot;).type(recordInputType).build())</span>
+<span class="fc" id="L130">                .build();</span>
 
-<span class="fc" id="L131">        consumeTopicRecordInputType = newInputObject().name(&quot;consumeTopicRecordInput&quot;)</span>
-<span class="fc" id="L132">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L133">                .build();</span>
+<span class="fc" id="L132">        consumeTopicRecordInputType = newInputObject().name(&quot;consumeTopicRecordInput&quot;)</span>
+<span class="fc" id="L133">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L134">                .build();</span>
 
-<span class="fc" id="L135">        updateTopicInputType = newInputObject().name(&quot;updateTopicInput&quot;)</span>
-<span class="fc" id="L136">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L137">                .build();</span>
+<span class="fc" id="L136">        updateTopicInputType = newInputObject().name(&quot;updateTopicInput&quot;)</span>
+<span class="fc" id="L137">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L138">                .build();</span>
 
-<span class="fc" id="L139">        deleteTopicInputType = newInputObject().name(&quot;deleteTopicInput&quot;)</span>
-<span class="fc" id="L140">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L141">                .build();</span>
+<span class="fc" id="L140">        deleteTopicInputType = newInputObject().name(&quot;deleteTopicInput&quot;)</span>
+<span class="fc" id="L141">                .field(newInputObjectField().name(&quot;name&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L142">                .build();</span>
 
-<span class="fc" id="L143">        filterTopicInputType = newInputObject().name(&quot;filterTopicInput&quot;)</span>
-<span class="fc" id="L144">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLInt).build())</span>
-<span class="fc" id="L145">                .build();</span>
-
+<span class="fc" id="L144">        filterTopicInputType = newInputObject().name(&quot;filterTopicInput&quot;)</span>
+<span class="fc" id="L145">                .field(newInputObjectField().name(&quot;name&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L146">                .build();</span>
 
         //Stream
-<span class="fc" id="L149">        streamType = newObject().name(&quot;stream&quot;).description(&quot;A stream record&quot;)</span>
-<span class="fc" id="L150">                .field(newFieldDefinition().name(&quot;name&quot;).description(&quot;The key&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L151">                .field(newFieldDefinition().name(&quot;in&quot;).description(&quot;The key&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L152">                .field(newFieldDefinition().name(&quot;out&quot;).description(&quot;The value&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L153">                .field(newFieldDefinition().name(&quot;status&quot;).description(&quot;The offset&quot;).type(GraphQLLong).build())</span>
-<span class="fc" id="L154">                .field(newFieldDefinition().name(&quot;table&quot;).description(&quot;The partition&quot;).type(GraphQLInt).build())</span>
-<span class="fc" id="L155">                .build();</span>
+<span class="fc" id="L149">        tableType = newObject().name(&quot;table&quot;).description(&quot;A table record&quot;)</span>
+<span class="fc" id="L150">                .field(newFieldDefinition().name(&quot;name&quot;).description(&quot;The table name&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L151">                .field(newFieldDefinition().name(&quot;tableRecord&quot;).description(&quot;The tableRecord&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L152">                .field(newFieldDefinition().name(&quot;offset&quot;).description(&quot;The offset&quot;).type(GraphQLLong).build())</span>
+<span class="fc" id="L153">                .field(newFieldDefinition().name(&quot;partition&quot;).description(&quot;The partition&quot;).type(GraphQLInt).build())</span>
+<span class="fc" id="L154">                .build();</span>
 
-<span class="fc" id="L157">        tableRecordType = newObject().name(&quot;tableRecord&quot;).description(&quot;A table Record&quot;)</span>
-<span class="fc" id="L158">                .field(newFieldDefinition().name(&quot;key&quot;).description(&quot;key&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L159">                .field(newFieldDefinition().name(&quot;value&quot;).description(&quot;value&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L160">                .build();</span>
+<span class="fc" id="L156">        tableRecordType = newObject().name(&quot;tableRecord&quot;).description(&quot;A table Record&quot;)</span>
+<span class="fc" id="L157">                .field(newFieldDefinition().name(&quot;key&quot;).description(&quot;key&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L158">                .field(newFieldDefinition().name(&quot;value&quot;).description(&quot;value&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L159">                .build();</span>
 
-<span class="fc" id="L162">        streamStartInputType = newInputObject().name(&quot;streamStart&quot;).description(&quot;A fields&quot;)</span>
-<span class="fc" id="L163">                .field(newInputObjectField().name(&quot;in&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
-<span class="fc" id="L164">                .field(newInputObjectField().name(&quot;out&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L161">        streamStartInputType = newInputObject().name(&quot;streamStart&quot;).description(&quot;A fields&quot;)</span>
+<span class="fc" id="L162">                .field(newInputObjectField().name(&quot;in&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L163">                .field(newInputObjectField().name(&quot;out&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
+<span class="fc" id="L164">                .field(newInputObjectField().name(&quot;storeKey&quot;).type(new GraphQLNonNull(Scalars.GraphQLString)).build())</span>
 <span class="fc" id="L165">                .build();</span>
 
 <span class="fc" id="L167">        streamStopInputType = newInputObject().name(&quot;streamStop&quot;).description(&quot;A fields&quot;)</span>
@@ -170,72 +170,74 @@ import static graphql.schema.GraphQLObjectType.newObject;
 
 <span class="fc" id="L171">        filterStreamInputType = newInputObject().name(&quot;filterStreamInput&quot;)</span>
 <span class="fc" id="L172">                .field(newInputObjectField().name(&quot;key&quot;).type(GraphQLString).build())</span>
-<span class="fc" id="L173">                .build();</span>
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L173">                .field(newInputObjectField().name(&quot;topic&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L174">                .field(newInputObjectField().name(&quot;storeKey&quot;).type(GraphQLString).build())</span>
+<span class="fc" id="L175">                .build();</span>
+<span class="fc" id="L176">    }</span>
 
     private void createFields() {
-<span class="fc" id="L177">        topicsField = newFieldDefinition()</span>
-<span class="fc" id="L178">                .name(&quot;topics&quot;).description(&quot;Provide an overview of all topics&quot;)</span>
-<span class="fc" id="L179">                .type(new GraphQLList(topicType))</span>
-<span class="fc" id="L180">                .argument(newArgument().name(FILTER).type(filterTopicInputType).build())</span>
-<span class="pc" id="L181">                .dataFetcher(environment -&gt; topicDataFetcher.getTopicsByFilter(getFilterMap(environment)))</span>
-<span class="fc" id="L182">                .build();</span>
+<span class="fc" id="L179">        topicsField = newFieldDefinition()</span>
+<span class="fc" id="L180">                .name(&quot;topics&quot;).description(&quot;Provide an overview of all topics&quot;)</span>
+<span class="fc" id="L181">                .type(new GraphQLList(topicType))</span>
+<span class="fc" id="L182">                .argument(newArgument().name(FILTER).type(filterTopicInputType).build())</span>
+<span class="pc" id="L183">                .dataFetcher(environment -&gt; topicDataFetcher.getTopicsByFilter(getFilterMap(environment)))</span>
+<span class="fc" id="L184">                .build();</span>
 
-<span class="fc" id="L184">        addTopicField = newFieldDefinition()</span>
-<span class="fc" id="L185">                .name(&quot;addTopic&quot;).description(&quot;Add new topic&quot;)</span>
-<span class="fc" id="L186">                .type(GraphQLString)</span>
-<span class="fc" id="L187">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addTopicInputType)).build())</span>
-<span class="pc" id="L188">                .dataFetcher(environment -&gt; topicDataFetcher.addTopic(getInputMap(environment)))</span>
-<span class="fc" id="L189">                .build();</span>
+<span class="fc" id="L186">        addTopicField = newFieldDefinition()</span>
+<span class="fc" id="L187">                .name(&quot;addTopic&quot;).description(&quot;Add new topic&quot;)</span>
+<span class="fc" id="L188">                .type(GraphQLString)</span>
+<span class="fc" id="L189">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addTopicInputType)).build())</span>
+<span class="pc" id="L190">                .dataFetcher(environment -&gt; topicDataFetcher.addTopic(getInputMap(environment)))</span>
+<span class="fc" id="L191">                .build();</span>
 
-<span class="fc" id="L191">        produceTopicRecordField = newFieldDefinition()</span>
-<span class="fc" id="L192">                .name(&quot;produceTopicRecord&quot;).description(&quot;Produce a record into a topic&quot;)</span>
-<span class="fc" id="L193">                .type(GraphQLString)</span>
-<span class="fc" id="L194">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(produceTopicRecordInputType)).build())</span>
-<span class="pc" id="L195">                .dataFetcher(environment -&gt; topicDataFetcher.produceTopicRecord(getInputMap(environment)))</span>
-<span class="fc" id="L196">                .build();</span>
+<span class="fc" id="L193">        produceTopicRecordField = newFieldDefinition()</span>
+<span class="fc" id="L194">                .name(&quot;produceTopicRecord&quot;).description(&quot;Produce a record into a topic&quot;)</span>
+<span class="fc" id="L195">                .type(GraphQLString)</span>
+<span class="fc" id="L196">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(produceTopicRecordInputType)).build())</span>
+<span class="pc" id="L197">                .dataFetcher(environment -&gt; topicDataFetcher.produceTopicRecord(getInputMap(environment)))</span>
+<span class="fc" id="L198">                .build();</span>
 
-<span class="fc" id="L198">        consumeTopicRecordField = newFieldDefinition()</span>
-<span class="fc" id="L199">                .name(&quot;consumeTopicRecord&quot;).description(&quot;Consume a records from a topic&quot;)</span>
-<span class="fc" id="L200">                .type(new GraphQLList(topicRecordType))</span>
-<span class="fc" id="L201">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(consumeTopicRecordInputType)).build())</span>
-<span class="pc" id="L202">                .dataFetcher(environment -&gt; topicDataFetcher.consumeTopicRecord(getInputMap(environment)))</span>
-<span class="fc" id="L203">                .build();</span>
+<span class="fc" id="L200">        consumeTopicRecordField = newFieldDefinition()</span>
+<span class="fc" id="L201">                .name(&quot;consumeTopicRecord&quot;).description(&quot;Consume a records from a topic&quot;)</span>
+<span class="fc" id="L202">                .type(new GraphQLList(topicRecordType))</span>
+<span class="fc" id="L203">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(consumeTopicRecordInputType)).build())</span>
+<span class="pc" id="L204">                .dataFetcher(environment -&gt; topicDataFetcher.consumeTopicRecord(getInputMap(environment)))</span>
+<span class="fc" id="L205">                .build();</span>
 
-<span class="fc" id="L205">        updateTopicField = newFieldDefinition()</span>
-<span class="fc" id="L206">                .name(&quot;updateTopic&quot;).description(&quot;Update existing topic&quot;)</span>
-<span class="fc" id="L207">                .type(topicType)</span>
-<span class="fc" id="L208">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateTopicInputType)).build())</span>
-<span class="pc" id="L209">                .dataFetcher(environment -&gt; topicDataFetcher.updateTopic(getInputMap(environment)))</span>
-<span class="fc" id="L210">                .build();</span>
+<span class="fc" id="L207">        updateTopicField = newFieldDefinition()</span>
+<span class="fc" id="L208">                .name(&quot;updateTopic&quot;).description(&quot;Update existing topic&quot;)</span>
+<span class="fc" id="L209">                .type(topicType)</span>
+<span class="fc" id="L210">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateTopicInputType)).build())</span>
+<span class="pc" id="L211">                .dataFetcher(environment -&gt; topicDataFetcher.updateTopic(getInputMap(environment)))</span>
+<span class="fc" id="L212">                .build();</span>
 
-<span class="fc" id="L212">        deleteTopicField = newFieldDefinition()</span>
-<span class="fc" id="L213">                .name(&quot;deleteTopic&quot;).description(&quot;Delete existing topic&quot;)</span>
-<span class="fc" id="L214">                .type(topicType)</span>
-<span class="fc" id="L215">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteTopicInputType)).build())</span>
-<span class="pc" id="L216">                .dataFetcher(environment -&gt; topicDataFetcher.deleteTopic(getInputMap(environment)))</span>
-<span class="fc" id="L217">                .build();</span>
+<span class="fc" id="L214">        deleteTopicField = newFieldDefinition()</span>
+<span class="fc" id="L215">                .name(&quot;deleteTopic&quot;).description(&quot;Delete existing topic&quot;)</span>
+<span class="fc" id="L216">                .type(topicType)</span>
+<span class="fc" id="L217">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(deleteTopicInputType)).build())</span>
+<span class="pc" id="L218">                .dataFetcher(environment -&gt; topicDataFetcher.deleteTopic(getInputMap(environment)))</span>
+<span class="fc" id="L219">                .build();</span>
 
-<span class="fc" id="L219">        streamField = newFieldDefinition()</span>
-<span class="fc" id="L220">                .name(&quot;stream&quot;).description(&quot;Provide an overview of all topics&quot;)</span>
-<span class="fc" id="L221">                .type(new GraphQLList(tableRecordType))</span>
-<span class="fc" id="L222">                .argument(newArgument().name(FILTER).type(filterStreamInputType).build())</span>
-<span class="pc" id="L223">                .dataFetcher(environment -&gt; topicDataFetcher.getStreamByFilter(getFilterMap(environment)))</span>
-<span class="fc" id="L224">                .build();</span>
+<span class="fc" id="L221">        tableField = newFieldDefinition()</span>
+<span class="fc" id="L222">                .name(&quot;table&quot;).description(&quot;the table result&quot;)</span>
+<span class="fc" id="L223">                .type(new GraphQLList(tableRecordType))</span>
+<span class="fc" id="L224">                .argument(newArgument().name(FILTER).type(filterStreamInputType).build())</span>
+<span class="pc" id="L225">                .dataFetcher(environment -&gt; topicDataFetcher.getStreamByFilter(getFilterMap(environment)))</span>
+<span class="fc" id="L226">                .build();</span>
 
-<span class="fc" id="L226">        streamStartField = newFieldDefinition()</span>
-<span class="fc" id="L227">                .name(&quot;streamStart&quot;).description(&quot;Start the stream&quot;)</span>
-<span class="fc" id="L228">                .type(new GraphQLList(tableRecordType))</span>
-<span class="fc" id="L229">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStartInputType)).build())</span>
-<span class="pc" id="L230">                .dataFetcher(environment -&gt; topicDataFetcher.streamStart(getInputMap(environment)))</span>
-<span class="fc" id="L231">                .build();</span>
+<span class="fc" id="L228">        streamStartField = newFieldDefinition()</span>
+<span class="fc" id="L229">                .name(&quot;streamStart&quot;).description(&quot;Start the stream&quot;)</span>
+<span class="fc" id="L230">                .type(new GraphQLList(tableRecordType))</span>
+<span class="fc" id="L231">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStartInputType)).build())</span>
+<span class="pc" id="L232">                .dataFetcher(environment -&gt; topicDataFetcher.streamStart(getInputMap(environment)))</span>
+<span class="fc" id="L233">                .build();</span>
 
-<span class="fc" id="L233">        streamStopField = newFieldDefinition()</span>
-<span class="fc" id="L234">                .name(&quot;streamStop&quot;).description(&quot;Stop the stream&quot;)</span>
-<span class="fc" id="L235">                .type(streamType)</span>
-<span class="fc" id="L236">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStopInputType)).build())</span>
-<span class="pc" id="L237">                .dataFetcher(environment -&gt; topicDataFetcher.streamStop(getInputMap(environment)))</span>
-<span class="fc" id="L238">                .build();</span>
-<span class="fc" id="L239">    }</span>
+<span class="fc" id="L235">        streamStopField = newFieldDefinition()</span>
+<span class="fc" id="L236">                .name(&quot;streamStop&quot;).description(&quot;Stop the stream&quot;)</span>
+<span class="fc" id="L237">                .type(GraphQLString)</span>
+<span class="fc" id="L238">                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(streamStopInputType)).build())</span>
+<span class="pc" id="L239">                .dataFetcher(environment -&gt; topicDataFetcher.streamStop(getInputMap(environment)))</span>
+<span class="fc" id="L240">                .build();</span>
+<span class="fc" id="L241">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
